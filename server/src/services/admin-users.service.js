@@ -50,7 +50,8 @@ export class AdminUsersService {
   }
 
   async update(id, data, actorId) {
-    if (!(await this.userRepo.findById(id))) throw AppError.notFound('User not found');
+    const existing = await this.userRepo.findById(id);
+    if (!existing) throw AppError.notFound('User not found');
 
     if (data.email) {
       const dup = await this.userRepo.findByEmail(data.email);
@@ -71,7 +72,9 @@ export class AdminUsersService {
       fields.branch_id = data.branch_id;
     }
     if (data.status !== undefined) {
-      this.assertNotSelf(id, actorId, 'You cannot change your own status');
+      if (String(id) === String(actorId) && String(data.status) !== String(existing.status)) {
+        throw AppError.badRequest('You cannot change your own status');
+      }
       fields.status = data.status;
     }
     if (data.password) fields.password_hash = await hashPassword(data.password);
