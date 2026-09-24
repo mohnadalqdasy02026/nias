@@ -4,6 +4,78 @@ CREATE INDEX idx_faculty_members_branch_id ON faculty_members(branch_id);
 
 DELETE FROM faculty_members WHERE name_ar = 'أ. د. أستاذ تجريبي';
 
+-- Ensure the colleges & departments referenced below exist (ids 2-10 are fixed
+-- in the faculty rows below). Created here so the migration is self-contained
+-- on a fresh database; ON CONFLICT keeps it safe on an already-populated one.
+INSERT INTO colleges (branch_id, name_ar, name_en, dean_name, status)
+SELECT b.id, 'كلية العلوم الإدارية', 'Faculty of Administrative Sciences', '', 'active'
+FROM institute_branches b WHERE b.slug = 'sanaa'
+  AND NOT EXISTS (SELECT 1 FROM colleges c WHERE c.name_en = 'Faculty of Administrative Sciences');
+
+INSERT INTO colleges (branch_id, name_ar, name_en, dean_name, status)
+SELECT b.id, 'كلية تكنولوجيا المعلومات', 'Faculty of Information Technology', '', 'active'
+FROM institute_branches b WHERE b.slug = 'sanaa'
+  AND NOT EXISTS (SELECT 1 FROM colleges c WHERE c.name_en = 'Faculty of Information Technology');
+
+INSERT INTO colleges (branch_id, name_ar, name_en, dean_name, status)
+SELECT b.id, 'مركز الدبلومات المتوسطة', 'Intermediate Diploma Center', '', 'active'
+FROM institute_branches b WHERE b.slug = 'sanaa'
+  AND NOT EXISTS (SELECT 1 FROM colleges c WHERE c.name_en = 'Intermediate Diploma Center');
+
+INSERT INTO colleges (branch_id, name_ar, name_en, dean_name, status)
+SELECT b.id, 'كلية الدراسات العليا', 'Postgraduate Studies College', '', 'active'
+FROM institute_branches b WHERE b.slug = 'sanaa'
+  AND NOT EXISTS (SELECT 1 FROM colleges c WHERE c.name_en = 'Postgraduate Studies College');
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم الإدارة العامة', 'Department of Public Administration'
+FROM colleges c WHERE c.name_en = 'Faculty of Administrative Sciences'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم المحاسبة والمراجعة', 'Department of Accounting'
+FROM colleges c WHERE c.name_en = 'Faculty of Administrative Sciences'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم الاقتصاد والعلوم المالية والمصرفية', 'Department of Economics & Finance'
+FROM colleges c WHERE c.name_en = 'Faculty of Administrative Sciences'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم القانون والإدارة المحلية', 'Department of Law & Local Administration'
+FROM colleges c WHERE c.name_en = 'Faculty of Administrative Sciences'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم النظم وتقنية المعلومات', 'Department of Information Systems'
+FROM colleges c WHERE c.name_en = 'Faculty of Information Technology'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم البرمجة والوسائط المتعددة', 'Department of Programming & Multimedia'
+FROM colleges c WHERE c.name_en = 'Faculty of Information Technology'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم الدبلوم الإداري', 'Diploma - Administration'
+FROM colleges c WHERE c.name_en = 'Intermediate Diploma Center'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم الدبلوم المحاسبي', 'Diploma - Accounting'
+FROM colleges c WHERE c.name_en = 'Intermediate Diploma Center'
+ON CONFLICT DO NOTHING;
+
+INSERT INTO departments (college_id, name_ar, name_en)
+SELECT c.id, 'قسم الدراسات العليا — إدارة عامة', 'Postgraduate - Public Administration'
+FROM colleges c WHERE c.name_en = 'Postgraduate Studies College'
+ON CONFLICT DO NOTHING;
+
+-- NOTE: on a fresh database the inserts above land on colleges 2-5 and
+-- departments 2-10 (after demo rows from 008 get id 1), which matches the
+-- fixed ids used in the faculty rows below.
+
 INSERT INTO faculty_members (department_id, branch_id, name_ar, title, specialization) VALUES
 (2, 1, 'محمد عبده علي القطراني', 'أستاذ مساعد', 'ادارة اعمال'),
 (2, 1, 'احمد محمد صالح شمسان', 'أستاذ مساعد', 'ادارة اعمال'),
