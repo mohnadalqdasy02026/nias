@@ -137,7 +137,7 @@ export default function BranchesPage() {
               {branches.map((b) => (
                 <Link key={b.id} to={`/branches/${b.slug}`} className={`card branch-page-card${b.is_headquarters ? ' is-hq' : ''}`}>
                   <div className="branch-page-cover">
-                    <img src={logo} alt="المعهد الوطني للعلوم الإدارية" loading="lazy" />
+                    <img src={b.cover_image || logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
                   </div>
                   <div className="branch-page-body">
                     <span className="branch-page-city">{b.name_en ?? b.slug}</span>
@@ -164,7 +164,7 @@ export default function BranchesPage() {
             <>
               <article className={`card branch-detail-card${hq ? ' is-hq' : ''}`}>
                 <div className="branch-detail-cover">
-                  <img src={logo} alt="المعهد الوطني للعلوم الإدارية" />
+                  <img src={branch.cover_image || logo} alt={branch.name_ar || 'المعهد الوطني للعلوم الإدارية'} />
                 </div>
                 <div className="branch-detail-body">
                   <span className="branch-page-city">{branch.name_en ?? branch.slug}</span>
@@ -185,6 +185,16 @@ export default function BranchesPage() {
                     <Link to="/branches" className="btn btn-soft">جميع الفروع</Link>
                     {branch.phone && (
                       <a className="btn btn-primary" href={`tel:${branch.phone}`}>اتصل بالفرع</a>
+                    )}
+                    {branch.latitude != null && branch.longitude != null && (
+                      <a
+                        className="btn btn-outline"
+                        href={`https://www.google.com/maps?q=${branch.latitude},${branch.longitude}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        الموقع على الخريطة
+                      </a>
                     )}
                   </div>
                 </div>

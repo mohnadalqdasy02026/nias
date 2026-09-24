@@ -4,6 +4,7 @@ export class BranchesRepository {
   async list() {
     const { rows } = await pool.query(
       `SELECT id, slug, name_ar, name_en, address, phone, is_headquarters,
+              cover_image, latitude, longitude,
               dean_name_ar, dean_name_en, dean_message_ar, dean_message_en, created_at, updated_at
          FROM institute_branches
         ORDER BY is_headquarters DESC, id`,
@@ -14,6 +15,7 @@ export class BranchesRepository {
   async findById(id) {
     const { rows } = await pool.query(
       `SELECT id, slug, name_ar, name_en, address, phone, is_headquarters,
+              cover_image, latitude, longitude,
               dean_name_ar, dean_name_en, dean_message_ar, dean_message_en
          FROM institute_branches WHERE id = $1`,
       [id],
@@ -24,10 +26,21 @@ export class BranchesRepository {
   async update(id, data) {
     const fields = [];
     const values = [id];
-    const editable = ['name_ar', 'name_en', 'address', 'phone', 'dean_name_ar', 'dean_name_en', 'dean_message_ar', 'dean_message_en'];
+    const editable = [
+      'name_ar', 'name_en', 'address', 'phone', 'is_headquarters',
+      'cover_image', 'latitude', 'longitude',
+      'dean_name_ar', 'dean_name_en', 'dean_message_ar', 'dean_message_en',
+    ];
     for (const key of editable) {
       if (data[key] !== undefined) {
-        values.push(data[key] ?? null);
+        if (key === 'is_headquarters') {
+          values.push(data[key] ? true : false);
+        } else if (key === 'latitude' || key === 'longitude') {
+          const num = Number(data[key]);
+          values.push(Number.isFinite(num) && String(data[key]).trim() !== '' ? num : null);
+        } else {
+          values.push(data[key] ?? null);
+        }
         fields.push(`${key} = $${values.length}`);
       }
     }
@@ -35,6 +48,7 @@ export class BranchesRepository {
     const { rows } = await pool.query(
       `UPDATE institute_branches SET ${fields.join(', ')}, updated_at = NOW()
         WHERE id = $1 RETURNING id, slug, name_ar, name_en, address, phone, is_headquarters,
+                                  cover_image, latitude, longitude,
                                   dean_name_ar, dean_name_en, dean_message_ar, dean_message_en`,
       values,
     );

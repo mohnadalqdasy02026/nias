@@ -122,7 +122,9 @@ p.name_ar, p.name_en, p.program_type,
 
   async listBranches() {
     const { rows } = await pool.query(
-      `SELECT id, name_ar, name_en, slug, address, phone, is_headquarters, dean_name_ar, dean_name_en, dean_message_ar, dean_message_en
+      `SELECT id, name_ar, name_en, slug, address, phone, is_headquarters,
+              cover_image, latitude, longitude,
+              dean_name_ar, dean_name_en, dean_message_ar, dean_message_en
        FROM institute_branches WHERE status = 'active' ORDER BY is_headquarters DESC, id`,
     );
     return rows;
@@ -130,7 +132,9 @@ p.name_ar, p.name_en, p.program_type,
 
   async getBranchBySlug(slug) {
     const { rows } = await pool.query(
-      `SELECT id, name_ar, name_en, slug, address, phone, is_headquarters, dean_name_ar, dean_name_en, dean_message_ar, dean_message_en
+      `SELECT id, name_ar, name_en, slug, address, phone, is_headquarters,
+              cover_image, latitude, longitude,
+              dean_name_ar, dean_name_en, dean_message_ar, dean_message_en
        FROM institute_branches WHERE status = 'active' AND slug = $1`,
       [slug],
     );
