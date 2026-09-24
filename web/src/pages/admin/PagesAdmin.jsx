@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../../api/client.js';
+import RichEditor from '../../components/admin/RichEditor.jsx';
 
 const statusLabel = { draft: 'مسودة', published: 'منشور', archived: 'مؤرشف' };
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
@@ -115,7 +116,7 @@ export default function PagesAdmin() {
             </div>
             <div className="form-field form-field--full">
               <label>المحتوى (عربي)</label>
-              <textarea rows={8} value={form.content_ar ?? ''} onChange={(e) => setForm({ ...form, content_ar: e.target.value })} />
+              <RichEditor value={form.content_ar ?? ''} onChange={(html) => setForm({ ...form, content_ar: html })} rows={12} />
             </div>
           </div>
           <div className="admin-form-actions">

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../contexts/auth.jsx';
 import { branchLabel } from '../../lib/branch.js';
+import RichEditor from '../../components/admin/RichEditor.jsx';
 
 const MAX_IMAGE_WIDTH = 1280;
 const IMAGE_QUALITY = 0.82;
@@ -237,7 +238,7 @@ export default function NewsAdmin() {
             </div>
             <div className="form-field form-field--full">
               <label>النص الكامل</label>
-              <textarea rows={6} value={form.body_ar ?? ''} onChange={(e) => setForm({ ...form, body_ar: e.target.value })} />
+              <RichEditor value={form.body_ar ?? ''} onChange={(html) => setForm({ ...form, body_ar: html })} rows={8} />
             </div>
             <div className="form-field form-field--full">
               <label>صورة الغلاف (cover)</label>
