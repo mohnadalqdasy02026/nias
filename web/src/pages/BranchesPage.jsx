@@ -137,7 +137,7 @@ export default function BranchesPage() {
               {branches.map((b) => (
                 <Link key={b.id} to={`/branches/${b.slug}`} className={`card branch-page-card${b.is_headquarters ? ' is-hq' : ''}`}>
                   <div className="branch-page-cover">
-                    <img src={b.cover_image || logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
+                    <img src={logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
                   </div>
                   <div className="branch-page-body">
                     <span className="branch-page-city">{b.name_en ?? b.slug}</span>
@@ -164,7 +164,7 @@ export default function BranchesPage() {
             <>
               <article className={`card branch-detail-card${hq ? ' is-hq' : ''}`}>
                 <div className="branch-detail-cover">
-                  <img src={branch.cover_image || logo} alt={branch.name_ar || 'المعهد الوطني للعلوم الإدارية'} />
+                  <img src={logo} alt={branch.name_ar || 'المعهد الوطني للعلوم الإدارية'} />
                 </div>
                 <div className="branch-detail-body">
                   <span className="branch-page-city">{branch.name_en ?? branch.slug}</span>
@@ -214,8 +214,12 @@ export default function BranchesPage() {
                     <section className="card branch-dean-speech">
                       <div className="branch-dean-speech-head">
                         <div className="branch-dean-speech-avatar">
-                          <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
-                        </div>
+                    {branch.dean_image ? (
+                      <img src={branch.dean_image} alt={`عميد فرع ${label ?? 'المعهد'}`} />
+                    ) : (
+                      <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
+                    )}
+                  </div>
                         <div>
                           <span className="branch-dean-role">كلمة عميد فرع {label ?? 'المعهد'}</span>
                           <h2 className="branch-dean-speech-title">كلمة العميد</h2>
@@ -237,8 +241,12 @@ export default function BranchesPage() {
                   )}
                   {(branch.dean_name_ar || branch.dean_name_en) && (
                     <div className="card branch-dean-card">
-                      <div className="branch-dean-avatar" aria-hidden="true">
-                        <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
+<div className="branch-dean-avatar" aria-hidden="true">
+                        {branch.dean_image ? (
+                          <img src={branch.dean_image} alt={`عميد فرع ${label ?? 'المعهد'}`} />
+                        ) : (
+                          <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
+                        )}
                       </div>
                       <div className="branch-dean-role">عميد فرع {label ?? 'المعهد'}</div>
                       <h3 className="branch-dean-name">{branch.dean_name_ar ?? branch.dean_name_en}</h3>

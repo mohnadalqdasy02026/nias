@@ -11,7 +11,7 @@ const emptyForm = {
   address: '',
   phone: '',
   is_headquarters: false,
-  cover_image: '',
+  dean_image: '',
   latitude: '',
   longitude: '',
   dean_name_ar: '',
@@ -52,7 +52,7 @@ export default function BranchesAdmin() {
       address: b?.address ?? '',
       phone: b?.phone ?? '',
       is_headquarters: b?.is_headquarters ?? false,
-      cover_image: b?.cover_image ?? '',
+      dean_image: b?.dean_image ?? '',
       latitude: b?.latitude != null ? String(b.latitude) : '',
       longitude: b?.longitude != null ? String(b.longitude) : '',
       dean_name_ar: b?.dean_name_ar ?? '',
@@ -99,13 +99,13 @@ export default function BranchesAdmin() {
       const outType = isPng ? 'image/webp' : 'image/jpeg';
       const compressed = canvas.toDataURL(outType, IMAGE_QUALITY);
       const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'branch';
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'branch-dean';
       const saved = await api.post(
         '/admin/media',
-        { file_name: `branch-${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: form.name_ar || 'فرع المعهد' },
+        { file_name: `branch-dean-${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: form.name_ar || 'عميد فرع المعهد' },
         { auth: true },
       );
-      setForm((f) => ({ ...f, cover_image: saved.url }));
+      setForm((f) => ({ ...f, dean_image: saved.url }));
       if (imageFileRef.current) imageFileRef.current.value = '';
     } catch (e) {
       setError(e.message);
@@ -114,8 +114,8 @@ export default function BranchesAdmin() {
     }
   };
 
-  const removeCover = () => {
-    setForm((f) => ({ ...f, cover_image: '' }));
+  const removeDeanImage = () => {
+    setForm((f) => ({ ...f, dean_image: '' }));
     if (imageFileRef.current) imageFileRef.current.value = '';
   };
 
@@ -130,7 +130,7 @@ export default function BranchesAdmin() {
         address: form.address.trim() || null,
         phone: form.phone.trim() || null,
         is_headquarters: !!form.is_headquarters,
-        cover_image: form.cover_image.trim() || null,
+        dean_image: form.dean_image.trim() || null,
         latitude: form.latitude.trim() || null,
         longitude: form.longitude.trim() || null,
         dean_name_ar: form.dean_name_ar.trim() || null,
@@ -150,7 +150,7 @@ export default function BranchesAdmin() {
   return (
     <section>
       <h1 className="admin-page-title">إعدادات الفروع</h1>
-      <p className="muted">بيانات الفروع كاملة: الاسم، المقر الرئيسي، الصورة، موقع الخريطة، العميد وكلمة العميد. تنعكس مباشرة على قائمة الموقع وصفحة كل فرع.</p>
+      <p className="muted">بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة العميد، موقع الخريطة، العميد وكلمة العميد. تنعكس مباشرة على قائمة الموقع وصفحة كل فرع.</p>
 
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
@@ -185,11 +185,11 @@ export default function BranchesAdmin() {
               <input value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} dir="ltr" placeholder="مثال: 15.3694" />
             </div>
             <div className="form-field form-field--full">
-              <label>صورة الفرع</label>
+              <label>صورة عميد الفرع</label>
               <div className="course-image-picker">
-                {form.cover_image ? (
-                  <div className="course-image-preview">
-                    <img src={form.cover_image} alt="" />
+                {form.dean_image ? (
+                  <div className="dean-image-preview">
+                    <img src={form.dean_image} alt="" />
                   </div>
                 ) : null}
                 <div className="course-image-actions">
@@ -199,10 +199,10 @@ export default function BranchesAdmin() {
                     disabled={imageBusy}
                     onClick={() => imageFileRef.current?.click()}
                   >
-                    {imageBusy ? 'جارٍ التجهيز والضغط...' : form.cover_image ? 'استبدال الصورة' : 'اختيار صورة من الجهاز'}
+                    {imageBusy ? 'جارٍ التجهيز والضغط...' : form.dean_image ? 'استبدال صورة العميد' : 'اختيار صورة من الجهاز'}
                   </button>
-                  {form.cover_image ? (
-                    <button type="button" className="btn btn-sm btn-danger-soft" onClick={removeCover}>إزالة</button>
+                  {form.dean_image ? (
+                    <button type="button" className="btn btn-sm btn-danger-soft" onClick={removeDeanImage}>إزالة</button>
                   ) : null}
                 </div>
               </div>
@@ -251,7 +251,7 @@ export default function BranchesAdmin() {
           <thead>
             <tr>
               <th>الفرع</th>
-              <th>الصورة</th>
+              <th>صورة العميد</th>
               <th>العميد</th>
               <th>كلمة العميد</th>
               <th>العنوان</th>
@@ -267,8 +267,8 @@ export default function BranchesAdmin() {
                   <div className="muted">{b.is_headquarters ? 'المقر الرئيسي — ' : ''}{b.slug}</div>
                 </td>
                 <td>
-                  {b.cover_image ? (
-                    <img src={b.cover_image} alt="" className="table-thumb" />
+                  {b.dean_image ? (
+                    <img src={b.dean_image} alt="" className="table-thumb table-thumb--round" />
                   ) : (
                     <span className="table-muted">—</span>
                   )}
