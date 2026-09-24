@@ -3,7 +3,7 @@ services:
     name: nias-academy
     runtime: node
     plan: free
-    buildCommand: npm install && npm run build --workspace web
+    buildCommand: npm install --include=dev && npm run build --workspace web
     startCommand: node server/src/scripts/migrate.js up && node server/src/scripts/seed-demo-passwords.js && node server/src/server.js
     healthCheckPath: /healthz
     envVars:
