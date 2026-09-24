@@ -372,6 +372,23 @@
   display: block;
 }
 
+/* College dean photo preview (square, person crop) */
+.dean-image-preview {
+  width: 110px;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  background: var(--color-edge);
+}
+
+.dean-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
 .course-image-actions {
   display: flex;
   flex-direction: column;
@@ -1053,6 +1070,15 @@
   height: 40px;
   object-fit: cover;
   border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  display: block;
+}
+
+.table-thumb--round {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
   border: 1px solid var(--color-border);
   display: block;
 }

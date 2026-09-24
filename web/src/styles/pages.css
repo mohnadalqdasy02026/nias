@@ -441,6 +441,26 @@
   font-size: 0.88rem;
   font-weight: 700;
   padding: 0 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.college-dean-photo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  border: 2px solid var(--color-primary);
+  background: var(--color-edge);
+}
+
+.college-dean-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .college-about {

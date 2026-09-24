@@ -85,7 +85,7 @@ p.name_ar, p.name_en, p.program_type,
 
   async listColleges() {
     const { rows } = await pool.query(
-      `SELECT id, branch_id, name_ar, name_en, vision, mission, about, dean_name, image
+      `SELECT id, branch_id, name_ar, name_en, vision, mission, about, dean_name, image, dean_image
        FROM colleges WHERE status = 'active' ORDER BY id`,
     );
     return rows;

@@ -163,7 +163,16 @@ export default function Home() {
                     />
                   </div>
                   <h3>{c.name_ar}</h3>
-                  {c.dean_name && <span className="college-dean">عميد الكلية: {c.dean_name}</span>}
+                  {c.dean_name && (
+                    <div className="college-dean">
+                      {c.dean_image && c.dean_image !== 'null' ? (
+                        <span className="college-dean-photo">
+                          <img src={c.dean_image} alt="" loading="lazy" />
+                        </span>
+                      ) : null}
+                      <span>عميد الكلية: {c.dean_name}</span>
+                    </div>
+                  )}
                   {c.about && <p className="college-about">{c.about}</p>}
                 </article>
               ))}
