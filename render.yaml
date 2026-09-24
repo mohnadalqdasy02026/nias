@@ -23,17 +23,8 @@ services:
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
-      - key: CORS_ORIGINS
-        fromService:
-          name: nias-academy
-          type: web
-          property: url
       - key: UPLOAD_DIR
-        value: /data/uploads
-    disk:
-      name: nias-uploads
-      mountPath: /data
-      sizeGB: 1
+        value: uploads
 
 databases:
   - name: nias-postgres
