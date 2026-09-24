@@ -8,6 +8,7 @@ import trainingRoutes from './training.routes.js';
 import mediaRoutes from './media.routes.js';
 import programsRoutes from './programs.routes.js';
 import branchesRoutes from './branches.routes.js';
+import settingsRoutes from './settings.routes.js';
 import { adminUsersRouter, adminRolesRouter } from './admin-users.routes.js';
 
 const router = Router();
@@ -23,6 +24,7 @@ router.use('/admin/programs', programsRoutes);
 router.use('/admin/users', adminUsersRouter);
 router.use('/admin/roles', adminRolesRouter);
 router.use('/admin/branches', branchesRoutes);
+router.use('/admin/settings', settingsRoutes);
 router.get('/', (_req, res) => {
   res.json({ success: true, data: { service: 'nias-api', version: 'v1', docs: '/api/v1/public/stats' } });
 });

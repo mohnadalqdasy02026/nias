@@ -13,7 +13,6 @@ const navSections = [
     items: [
       { to: '/admin/content/news', label: 'الأخبار', perm: 'news.read' },
       { to: '/admin/content/pages', label: 'الصفحات الثابتة', perm: 'site_pages.read' },
-      { to: '/admin/messages', label: 'رسائل التواصل', perm: 'contact_messages.read' },
     ],
   },
   {
@@ -33,7 +32,13 @@ const navSections = [
     title: 'البرامج',
     items: [
       { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.read' },
-      { to: '/admin/branches', label: 'فروع المعهد', perm: 'branches.read' },
+    ],
+  },
+  {
+    title: 'الإعدادات',
+    items: [
+      { to: '/admin/settings/site', label: 'الصفحة الرئيسية', perm: 'site_settings.read' },
+      { to: '/admin/branches', label: 'إعدادات الفروع', perm: 'branches.read' },
     ],
   },
   {

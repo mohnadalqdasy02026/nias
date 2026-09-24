@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchLabel, isHeadquartersName } from '../lib/branch.js';
 
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
@@ -73,6 +74,8 @@ export default function BranchesPage() {
   const [faculty, setFaculty] = useState([]);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('dean');
+  const settings = useSiteSettings();
+  const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
     slug ? `فرع المعهد — ${branchLabel(branch?.name_ar) ?? ''}` : 'فروع المعهد',
@@ -134,7 +137,7 @@ export default function BranchesPage() {
               {branches.map((b) => (
                 <Link key={b.id} to={`/branches/${b.slug}`} className={`card branch-page-card${b.is_headquarters ? ' is-hq' : ''}`}>
                   <div className="branch-page-cover">
-                    <img src="/uploads/design/site/logo.jpg" alt="المعهد الوطني للعلوم الإدارية" loading="lazy" />
+                    <img src={logo} alt="المعهد الوطني للعلوم الإدارية" loading="lazy" />
                   </div>
                   <div className="branch-page-body">
                     <span className="branch-page-city">{b.name_en ?? b.slug}</span>
@@ -161,7 +164,7 @@ export default function BranchesPage() {
             <>
               <article className={`card branch-detail-card${hq ? ' is-hq' : ''}`}>
                 <div className="branch-detail-cover">
-                  <img src="/uploads/design/site/logo.jpg" alt="المعهد الوطني للعلوم الإدارية" />
+                  <img src={logo} alt="المعهد الوطني للعلوم الإدارية" />
                 </div>
                 <div className="branch-detail-body">
                   <span className="branch-page-city">{branch.name_en ?? branch.slug}</span>
@@ -201,7 +204,7 @@ export default function BranchesPage() {
                     <section className="card branch-dean-speech">
                       <div className="branch-dean-speech-head">
                         <div className="branch-dean-speech-avatar">
-                          <img src="/uploads/design/site/logo.jpg" alt="شعار المعهد الوطني للعلوم الإدارية" />
+                          <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
                         </div>
                         <div>
                           <span className="branch-dean-role">كلمة عميد فرع {label ?? 'المعهد'}</span>
@@ -225,7 +228,7 @@ export default function BranchesPage() {
                   {(branch.dean_name_ar || branch.dean_name_en) && (
                     <div className="card branch-dean-card">
                       <div className="branch-dean-avatar" aria-hidden="true">
-                        <img src="/uploads/design/site/logo.jpg" alt="شعار المعهد الوطني للعلوم الإدارية" />
+                        <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
                       </div>
                       <div className="branch-dean-role">عميد فرع {label ?? 'المعهد'}</div>
                       <h3 className="branch-dean-name">{branch.dean_name_ar ?? branch.dean_name_en}</h3>

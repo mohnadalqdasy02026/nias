@@ -12,11 +12,6 @@ const statGroups = [
     title: 'التدريب',
     keys: ['trainingCourses', 'trainingEnrollments'],
   },
-  {
-    title: 'التواصل',
-    keys: ['contactNew', 'contactTotal'],
-    highlight: 'contactNew',
-  },
 ];
 
 const quickActions = [
@@ -25,7 +20,7 @@ const quickActions = [
   { to: '/admin/training/courses', label: 'إدارة الدورات التدريبية', perm: 'training_courses.create', icon: '🎯' },
   { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.update', icon: '🎓' },
   { to: '/admin/media', label: 'مكتبة الوسائط', perm: 'media_library.create', icon: '🖼️' },
-  { to: '/admin/messages', label: 'رسائل التواصل', perm: 'contact_messages.read', icon: '✉️' },
+  { to: '/admin/settings/site', label: 'إعدادات الموقع', perm: 'site_settings.read', icon: '⚙️' },
 ];
 
 export default function Dashboard() {
@@ -39,7 +34,6 @@ export default function Dashboard() {
   }, []);
 
   const has = (perm) => perms.includes(perm);
-  const canAny = (keys) => keys.some((k) => quickActions.find((q) => q.perm === k));
 
   const visibleCounts = Object.entries({
     branches: stats?.branches ?? 0,
@@ -67,7 +61,7 @@ export default function Dashboard() {
         <>
           <div className="admin-stat-grid admin-stat-grid--main">
             {visibleCounts.map(([key, value]) => (
-              <div key={key} className={`card admin-stat-card${key === 'contactNew' && (value ?? 0) > 0 ? ' is-hot' : ''}`}>
+              <div key={key} className="card admin-stat-card">
                 <span className="admin-stat-value">{value}</span>
                 <span className="admin-stat-label">
                   {{
@@ -85,14 +79,13 @@ export default function Dashboard() {
 
           <div className="admin-dash-grid">
             {statGroups.map((group) => {
-              const anyVisible = group.keys.some((k) => ['newsPublished', 'newsDrafts', 'pagesPublished', 'trainingCourses', 'trainingEnrollments', 'contactNew', 'contactTotal'].includes(k) ? true : false);
-              if (!anyVisible) return null;
+              if (!group.keys.some((k) => stats[k] !== undefined)) return null;
               return (
                 <div key={group.title} className="card admin-dash-card">
                   <h3>{group.title}</h3>
                   <div className="admin-stat-grid admin-stat-grid--nested">
                     {group.keys.map((key) => (
-                      <div key={key} className={`admin-stat-cell${group.highlight === key && (stats[key] ?? 0) > 0 ? ' is-hot' : ''}`}>
+                      <div key={key} className="admin-stat-cell">
                         <strong>{stats[key] ?? 0}</strong>
                         <small>
                           {{
@@ -101,8 +94,6 @@ export default function Dashboard() {
                             pagesPublished: 'صفحات منشورة',
                             trainingCourses: 'دورات مفتوحة',
                             trainingEnrollments: 'تسجيلات',
-                            contactNew: 'جديدة',
-                            contactTotal: 'إجمالي',
                           }[key]}
                         </small>
                       </div>

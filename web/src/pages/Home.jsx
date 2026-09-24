@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchLabel } from '../lib/branch.js';
 
 const statsKeys = [
@@ -67,23 +68,26 @@ function SectionHeading({ title, subtitle, to, linkText }) {
   );
 }
 
-const features = [
+const defaultFeatures = [
   { icon: '🎓', title: 'برامج أكاديمية معتمدة', text: 'بكالوريوس وماجستير ودبلوم متوسط وفق أعلى معايير الجودة الأكاديمية.' },
   { icon: '🛠️', title: 'تدريب عملي مكثف', text: 'دورات تدريبية متطورة تواكب متطلبات سوق العمل اليمني وتنمي مهارات الكوادر.' },
   { icon: '🏛️', title: 'فروع في كل المحافظات', text: 'شبكة واسعة من الفروع تُعنى بتقديم خدمات المعهد قربًا من المتدربين وطلابنا.' },
   { icon: '👨‍🏫', title: 'كادر أكاديمي متميز', text: 'نخبة من الأكاديميين والباحثين ذوي الخبرة في مجال العلوم الإدارية.' },
 ];
 
-function FeaturesBand() {
+function FeaturesBand({ features }) {
+  const list = (features?.length ? features : defaultFeatures)
+    .filter((f) => f?.title || f?.text);
+  if (list.length === 0) return null;
   return (
     <section className="section">
       <div className="container">
         <div className="highlight-grid">
-          {features.map((f) => (
-            <div key={f.title} className="card highlight-card">
-              <span className="highlight-mark" aria-hidden="true">{f.icon}</span>
-              <h3>{f.title}</h3>
-              <p>{f.text}</p>
+          {list.map((f) => (
+            <div key={f.title ?? f.icon ?? Math.random().toString(36)} className="card highlight-card">
+              <span className="highlight-mark" aria-hidden="true">{f.icon ?? '✦'}</span>
+              {f.title && <h3>{f.title}</h3>}
+              {f.text && <p>{f.text}</p>}
             </div>
           ))}
         </div>
@@ -99,6 +103,9 @@ export default function Home() {
   const [news, setNews] = useState([]);
   const [branches, setBranches] = useState([]);
   const [colleges, setColleges] = useState([]);
+  const settings = useSiteSettings();
+
+  const home = settings?.home ?? {};
 
   usePageMeta(
     'الرئيسية',
@@ -118,11 +125,11 @@ export default function Home() {
     <>
       <section className="hero">
         <div className="hero-inner">
-          <p className="hero-eyebrow">الجمهورية اليمنية — المعهد الوطني للعلوم الإدارية</p>
-          <h1>بناء القدرات الإدارية وإعداد الكوادر المؤهلة لخدمة اليمن</h1>
+          <p className="hero-eyebrow">{home.hero_eyebrow ?? 'الجمهورية اليمنية — المعهد الوطني للعلوم الإدارية'}</p>
+          <h1>{home.hero_title ?? 'بناء القدرات الإدارية وإعداد الكوادر المؤهلة لخدمة اليمن'}</h1>
           <p className="hero-sub">
-            المعهد الوطني للعلوم الإدارية مؤسسة وطنية معنية بالتنمية الإدارية، تقدم
-            برامج أكاديمية ودورات تدريبية متطورة عبر فروعها في محافظات الجمهورية.
+            {home.hero_subtitle ??
+              'المعهد الوطني للعلوم الإدارية مؤسسة وطنية معنية بالتنمية الإدارية، تقدم برامج أكاديمية ودورات تدريبية متطورة عبر فروعها في محافظات الجمهورية.'}
           </p>
           <div className="hero-actions">
             <Link to="/programs" className="btn btn-primary">البرامج الأكاديمية</Link>
@@ -139,7 +146,7 @@ export default function Home() {
         </div>
       </section>
 
-      <FeaturesBand />
+      <FeaturesBand features={home.features} />
 
       {colleges.length > 0 && (
         <section className="section section-alt">
@@ -305,8 +312,8 @@ export default function Home() {
       <section className="cta-band">
         <div className="container cta-inner">
           <div>
-            <h2>انضم إلى صفوف كوادرنا المؤهلة</h2>
-            <p>سجّل الآن في أحد برامجنا الأكاديمية أو دوراتنا التدريبية وابدأ مسارك المهني.</p>
+            <h2>{home.cta_title ?? 'انضم إلى صفوف كوادرنا المؤهلة'}</h2>
+            <p>{home.cta_text ?? 'سجّل الآن في أحد برامجنا الأكاديمية أو دوراتنا التدريبية وابدأ مسارك المهني.'}</p>
           </div>
           <div className="cta-actions">
             <Link to="/programs" className="btn btn-primary">سجّل عبر بوابة التنسيق</Link>

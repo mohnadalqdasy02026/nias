@@ -15,10 +15,12 @@ import {
 } from '../validators/public.validators.js';
 import { trainingRegisterSchema } from '../validators/training.validators.js';
 import { publicLimiter } from '../middleware/rateLimit.js';
+import { SettingsController } from '../controllers/settings.controller.js';
 
 const router = Router();
 const publicController = new PublicController();
 const trainingController = new TrainingController();
+const settingsController = new SettingsController();
 
 // Content
 router.get('/news', validate(listNewsSchema), publicController.listNews);
@@ -49,6 +51,9 @@ router.get('/pages/:slug', validate(getPageParams), publicController.getPage);
 // Discovery
 router.get('/search', validate(searchSchema), publicController.search);
 router.get('/stats', publicController.stats);
+
+// Site settings (public: logo, colors, homepage content)
+router.get('/settings', settingsController.getPublic);
 
 // Contact
 router.post('/contact', publicLimiter, validate(contactSchema), publicController.submitContact);

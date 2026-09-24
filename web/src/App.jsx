@@ -19,7 +19,7 @@ import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import AdminDashboard from './pages/admin/Dashboard.jsx';
-import AdminContactMessages from './pages/admin/ContactMessages.jsx';
+import AdminSettings from './pages/admin/Settings.jsx';
 import AdminNews from './pages/admin/NewsAdmin.jsx';
 import AdminPages from './pages/admin/PagesAdmin.jsx';
 import AdminTrainingCourses from './pages/admin/TrainingCourses.jsx';
@@ -64,14 +64,6 @@ export default function App() {
             }
           >
             <Route index element={<AdminDashboard />} />
-            <Route
-              path="messages"
-              element={
-                <ProtectedRoute permission="contact_messages.read">
-                  <AdminContactMessages />
-                </ProtectedRoute>
-              }
-            />
             <Route
               path="content/news"
               element={
@@ -141,6 +133,14 @@ export default function App() {
               element={
                 <ProtectedRoute permission="branches.read">
                   <BranchesAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="settings/site"
+              element={
+                <ProtectedRoute permission="site_settings.read">
+                  <AdminSettings />
                 </ProtectedRoute>
               }
             />

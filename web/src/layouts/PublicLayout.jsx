@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
 import { branchLabel, isHeadquartersName } from '../lib/branch.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const navItems = [
   { to: '/', label: 'الرئيسية' },
@@ -12,10 +13,10 @@ const navItems = [
   { to: '/training', label: 'التدريب' },
 ];
 
-function Logo({ small }) {
+function Logo({ small, src }) {
   return (
     <span className={`logo${small ? ' logo--small' : ''}`}>
-      <img src="/uploads/design/site/logo.jpg" alt="شعار المعهد الوطني للعلوم الإدارية" width="48" height="48" />
+      <img src={src || '/uploads/design/site/logo.jpg'} alt="شعار المعهد الوطني للعلوم الإدارية" width="48" height="48" />
     </span>
   );
 }
@@ -25,7 +26,9 @@ function Header() {
   const [branchOpen, setBranchOpen] = useState(false);
   const [branches, setBranches] = useState([]);
   const { user } = useAuth();
+  const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
+  const general = settings?.general ?? {};
 
   useEffect(() => {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
@@ -41,10 +44,10 @@ function Header() {
       <a className="skip-link" href="#main-content">تخطى إلى المحتوى</a>
       <div className="container header-inner">
         <Link to="/" className="brand" aria-label="المعهد الوطني للعلوم الإدارية - الرئيسية">
-          <Logo />
+          <Logo src={general.logo} />
           <span className="brand-text">
-            <strong>المعهد الوطني للعلوم الإدارية</strong>
-            <small>National Institute of Administrative Sciences</small>
+            <strong>{general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'}</strong>
+            <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
           </span>
         </Link>
 
