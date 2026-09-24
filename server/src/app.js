@@ -27,7 +27,9 @@ app.use('/uploads', (_req, res, next) => {
   );
   next();
 });
-app.use('/uploads', express.static(path.resolve(process.cwd(), env.UPLOAD_DIR), { fallthrough: false }));
+app.use('/uploads/design', express.static(path.resolve(process.cwd(), 'web/dist/uploads/design'), { fallthrough: true }));
+app.use('/uploads/design', express.static(path.resolve(process.cwd(), 'web/public/uploads/design'), { fallthrough: true }));
+app.use('/uploads', express.static(path.resolve(process.cwd(), env.UPLOAD_DIR), { fallthrough: true }));
 
 app.use('/api/v1', apiRoutes);
 
