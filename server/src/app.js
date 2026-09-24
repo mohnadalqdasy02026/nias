@@ -35,5 +35,13 @@ app.get('/healthz', (_req, res) => {
   res.json({ status: 'ok', service: 'nias-api', time: new Date().toISOString() });
 });
 
+const webDist = path.resolve(process.cwd(), 'web/dist');
+app.use(express.static(webDist));
+app.get(/^\/(?!api|uploads|healthz).*/, (_req, res, next) => {
+  res.sendFile(path.join(webDist, 'index.html'), (err) => {
+    if (err && err.code !== 'ENOENT') next(err);
+  });
+});
+
 app.use(notFoundHandler);
 app.use(errorHandler);

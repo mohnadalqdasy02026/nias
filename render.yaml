@@ -1,0 +1,40 @@
+services:
+  - type: web
+    name: nias-academy
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build --workspace web
+    startCommand: node server/src/scripts/migrate.js up && node server/src/scripts/seed-demo-passwords.js && node server/src/server.js
+    healthCheckPath: /healthz
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: HOST
+        value: 0.0.0.0
+      - key: TRUST_PROXY
+        value: "true"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: nias-postgres
+          property: connectionString
+      - key: JWT_ACCESS_SECRET
+        generateValue: true
+      - key: JWT_REFRESH_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        fromService:
+          name: nias-academy
+          type: web
+          property: url
+      - key: UPLOAD_DIR
+        value: /data/uploads
+    disk:
+      name: nias-uploads
+      mountPath: /data
+      sizeGB: 1
+
+databases:
+  - name: nias-postgres
+    plan: free
