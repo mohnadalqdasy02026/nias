@@ -1,4 +1,4 @@
-﻿-- ============================================================
+-- ============================================================
 -- NIAS Academy - 026: replace demo data with real content
 --  - Removes clearly demo-labelled records (dev seeds) from every
 --    content table, on both local and production databases.
