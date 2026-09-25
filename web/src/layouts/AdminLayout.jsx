@@ -1,4 +1,5 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/auth.jsx';
 
 const navSections = [
@@ -48,18 +49,41 @@ const navSections = [
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [sidebarOpen]);
+
   return (
     <div className="admin-shell">
-      <aside className="admin-sidebar">
+      <div
+        className={`admin-sidebar-overlay${sidebarOpen ? ' is-open' : ''}`}
+        onClick={() => setSidebarOpen(false)}
+        aria-hidden="true"
+      />
+      <aside className={`admin-sidebar${sidebarOpen ? ' is-open' : ''}`}>
         <div className="admin-brand">
           <span className="brand-badge">NIAS</span>
           <span className="admin-brand-text">لوحة التحكم</span>
+          <button
+            type="button"
+            className="admin-sidebar-close"
+            aria-label="إغلاق القائمة"
+            onClick={() => setSidebarOpen(false)}
+          >
+            ✕
+          </button>
         </div>
 
         <nav className="admin-nav">
@@ -74,6 +98,7 @@ export default function AdminLayout() {
                         to={item.to}
                         end={item.end}
                         className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
+                        onClick={() => setSidebarOpen(false)}
                       >
                         {item.label}
                       </NavLink>
@@ -88,6 +113,14 @@ export default function AdminLayout() {
 
       <div className="admin-main">
         <header className="admin-topbar">
+          <button
+            type="button"
+            className="admin-menu-btn"
+            aria-label="فتح القائمة"
+            onClick={() => setSidebarOpen(true)}
+          >
+            ☰
+          </button>
           <div className="admin-user">
             <span className="admin-user-name">{user?.nameAr ?? user?.nameEn}</span>
             <span className="admin-user-roles">{(user?.roles ?? []).join('، ')}</span>
