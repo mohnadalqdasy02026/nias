@@ -254,6 +254,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
+  background: linear-gradient(to left, rgba(4, 22, 18, 0.92) 0%, rgba(6, 38, 31, 0.82) 34%, rgba(6, 38, 31, 0.28) 58%, rgba(6, 38, 31, 0) 76%);
   pointer-events: none;
 }
 
