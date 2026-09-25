@@ -53,15 +53,6 @@ const courseCovers = [
   '/uploads/design/site/main_1787071099_197.jpg',
 ];
 
-const branchImages = {
-  'صنعاء': '/uploads/design/site/main_1787952645_645.jpg',
-  'عدن': '/uploads/design/site/main_1786787438_869.jpg',
-  'تعز': '/uploads/design/site/main_1782830791_165.jpg',
-  'الحديدة': '/uploads/design/site/main_1783197092_280.jpg',
-  'إب': '/uploads/design/site/about_National.jpg',
-  'المكلا': '/uploads/design/site/main_1778701899_784.jpg',
-};
-
 function SectionHeading({ title, subtitle, to, linkText }) {
   return (
     <div className="section-head">
@@ -107,7 +98,6 @@ export default function Home() {
   const [programs, setPrograms] = useState([]);
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
-  const [branches, setBranches] = useState([]);
   const [colleges, setColleges] = useState([]);
   const settings = useSiteSettings();
 
@@ -123,7 +113,6 @@ export default function Home() {
     api.get('/public/programs').then(setPrograms).catch(() => {});
     api.get('/public/training-courses').then(setCourses).catch(() => {});
     api.get('/public/news?limit=3').then((d) => setNews(d ?? [])).catch(() => {});
-    api.get('/public/branches').then(setBranches).catch(() => {});
     api.get('/public/colleges').then(setColleges).catch(() => {});
   }, []);
 
@@ -303,25 +292,6 @@ export default function Home() {
               </article>
             ))}
             {news.length === 0 && <p className="muted">لا توجد أخبار منشورة حاليًا.</p>}
-          </div>
-        </div>
-      </section>
-
-      <section className="section section-alt">
-        <div className="container">
-          <SectionHeading title="فروع المعهد" subtitle="فروعنا في محافظات الجمهورية اليمنية" to="/branches" linkText="جميع الفروع" />
-          <div className="branches-grid">
-            {branches.map((b, bi) => (
-              <article key={b.id} className="card branch-card">
-                <img src={branchImages[b.name_ar] ?? Object.values(branchImages)[bi % Object.values(branchImages).length]} alt="" className="branch-cover" loading="lazy" />
-                <div className="branch-body">
-                  <span className="branch-name">{b.name_ar}</span>
-                  <span className="branch-phone" dir="ltr">{b.phone ?? '—'}</span>
-                  {b.address && <span className="branch-address">{b.address}</span>}
-                </div>
-              </article>
-            ))}
-            {branches.length === 0 && <p className="muted">لا توجد فروع مسجلة.</p>}
           </div>
         </div>
       </section>
