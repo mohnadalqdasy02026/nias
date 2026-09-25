@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <meta name="description" content="المعهد الوطني للعلوم الإدارية في الجمهورية اليمنية — مؤسسة وطنية معنية بالتنمية الإدارية وبناء القدرات، تقدم برامج أكاديمية ودورات تدريبية متطورة عبر فروعها في جميع المحافظات." />
     <meta name="keywords" content="المعهد الوطني للعلوم الإدارية, NIAS, العلوم الإدارية, اليمن, دورات تدريبية, برامج أكاديمية, بكالوريوس, ماجستير, إدارة عامة, تنمية إدارية" />
     <meta name="author" content="المعهد الوطني للعلوم الإدارية" />
@@ -27,6 +27,38 @@
       rel="stylesheet"
     />
     <title>المعهد الوطني للعلوم الإدارية | NIAS Academy</title>
+    <script>
+      (function () {
+        var isLocked = true;
+        function block(e) {
+          if (isLocked) e.preventDefault();
+        }
+        document.addEventListener('gesturestart', block);
+        document.addEventListener('gesturechange', block);
+        document.addEventListener('gestureend', block);
+        document.addEventListener(
+          'touchmove',
+          function (e) {
+            if (isLocked && e.touches && e.touches.length > 1) e.preventDefault();
+          },
+          { passive: false }
+        );
+        document.addEventListener(
+          'wheel',
+          function (e) {
+            if (isLocked && (e.ctrlKey || e.metaKey)) e.preventDefault();
+          },
+          { passive: false }
+        );
+        function onKey(e) {
+          if (isLocked && (e.ctrlKey || e.metaKey) && (e.key === '+' || e.key === '-' || e.key === '0')) {
+            e.preventDefault();
+          }
+        }
+        document.addEventListener('keydown', onKey);
+        document.addEventListener('dblclick', block);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
