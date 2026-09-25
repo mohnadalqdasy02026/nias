@@ -47,6 +47,14 @@ function shorten(text, max = 120) {
   return trimmed.length > max ? `${trimmed.slice(0, max).trimEnd()}…` : trimmed;
 }
 
+const DEFAULT_HERO_IMAGE = '/uploads/design/site/about_National.jpg';
+
+function heroImagesFrom(home) {
+  const added = (home.hero_images ?? []).filter((src) => src && src !== 'null');
+  const all = [DEFAULT_HERO_IMAGE, ...added];
+  return all.filter((src, i) => all.indexOf(src) === i);
+}
+
 const courseCovers = [
   '/uploads/design/site/main_1786901865_894.jpg',
   '/uploads/design/site/main_1786899199_299.jpg',
@@ -117,7 +125,7 @@ export default function Home() {
     api.get('/public/colleges').then(setColleges).catch(() => {});
   }, []);
 
-  const heroImages = (home.hero_images ?? []).filter((src) => src && src !== 'null');
+  const heroImages = heroImagesFrom(home);
 
   useEffect(() => {
     if (heroImages.length < 2) return;

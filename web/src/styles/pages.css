@@ -218,9 +218,6 @@
   position: relative;
   overflow: hidden;
   background-color: var(--color-hero);
-  background-image: url('/uploads/design/site/about_National.jpg');
-  background-size: cover;
-  background-position: center;
   color: #fff;
   padding: 0;
 }
@@ -257,7 +254,6 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(100deg, rgba(4, 26, 21, 0.93) 0%, rgba(6, 43, 36, 0.82) 46%, rgba(6, 43, 36, 0.42) 100%);
   pointer-events: none;
 }
 
@@ -287,6 +283,7 @@
   color: var(--color-accent);
   margin-bottom: 20px;
   letter-spacing: 0.02em;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
 }
 
 .hero-eyebrow::before {
@@ -312,6 +309,7 @@
   opacity: 0.92;
   margin-bottom: 36px;
   line-height: 1.85;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
 }
 
 .hero-actions {
