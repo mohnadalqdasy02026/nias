@@ -938,7 +938,6 @@
   flex-direction: column;
   gap: 22px;
   margin-top: 22px;
-  max-width: 920px;
 }
 
 .settings-stack .admin-form {
@@ -946,7 +945,7 @@
 }
 
 .settings-stack .form-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .settings-stack .settings-feature-row {
