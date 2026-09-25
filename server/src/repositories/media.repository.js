@@ -60,12 +60,20 @@ export class MediaRepository {
 
   async create(data) {
     const { rows } = await pool.query(
-      `INSERT INTO media_library (file_name, file_path, file_type, file_size, alt_text, uploaded_by)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [data.file_name, data.file_path, data.file_type, data.file_size, data.alt_text, data.uploaded_by],
+      `INSERT INTO media_library (file_name, file_path, file_type, file_size, alt_text, uploaded_by, data)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, file_name, file_path, file_type, file_size, alt_text, uploaded_by, created_at, updated_at`,
+      [data.file_name, data.file_path, data.file_type, data.file_size, data.alt_text, data.uploaded_by, data.data ?? null],
     );
     return rows[0];
+  }
+
+  async findDataByPath(filePath) {
+    const { rows } = await pool.query(
+      `SELECT file_type, data FROM media_library WHERE file_path = $1 AND data IS NOT NULL LIMIT 1`,
+      [filePath],
+    );
+    return rows[0] ?? null;
   }
 
   async update(id, data) {

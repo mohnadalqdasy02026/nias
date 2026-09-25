@@ -62,6 +62,7 @@ export class MediaService {
       file_size: buffer.length,
       alt_text: alt_text ?? null,
       uploaded_by: userId,
+      data: buffer,
     });
 
     return this.toPublicUrl(saved);
