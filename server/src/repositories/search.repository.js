@@ -35,14 +35,15 @@ export class SearchRepository {
 }
 
 export class StatsRepository {
-  // Official figures published on the legacy NIAS site (nias-ye.academy).
-  // Used as documented baselines; DB counters may refine them when seeded.
+  // Real figures verified against the production database after
+  // migration 026 removed all demo seed data. DB counts win over
+  // these floors so future seeding always reflects reality.
   static legacyBaselines = {
-    departments: 8,
+    departments: 9,
     branches: 6,
-    colleges: 11,
+    colleges: 4,
     programs: 13,
-    students: 4900,
+    students: 0,
     faculty: 187,
   };
 
