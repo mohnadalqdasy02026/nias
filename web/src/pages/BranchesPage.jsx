@@ -7,6 +7,16 @@ import { branchLabel, isHeadquartersName } from '../lib/branch.js';
 
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
 
+const decodeEntities = (s) =>
+  s
+    .replaceAll('&lt;', '<')
+    .replaceAll('&gt;', '>')
+    .replaceAll('&quot;', '"')
+    .replaceAll('&#39;', "'")
+    .replaceAll('&amp;', '&');
+
+const stripHtml = (s = '') => decodeEntities(String(s)).replace(/<[^>]*>/g, '');
+
 function Cover({ item }) {
   if (item.cover_image) {
     return <img className="news-cover" src={item.cover_image} alt={item.title_ar ?? item.title_en} loading="lazy" />;
@@ -226,7 +236,7 @@ export default function BranchesPage() {
                         </div>
                       </div>
                       <div className="branch-dean-speech-body">
-                        <p>{branch.dean_message_ar}</p>
+                        <p>{stripHtml(branch.dean_message_ar)}</p>
                       </div>
                       {(branch.dean_name_ar || branch.dean_name_en) && (
                         <div className="branch-dean-speech-sign">
