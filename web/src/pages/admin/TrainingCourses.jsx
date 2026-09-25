@@ -309,19 +309,19 @@ export default function TrainingCourses() {
           <tbody>
             {items.map((c) => (
               <tr key={c.id}>
-                <td>
+                <td data-label="الصورة">
                   {c.image_url
                     ? <img className="admin-thumb" src={c.image_url} alt="" loading="lazy" />
                     : <span className="admin-thumb admin-thumb--empty">—</span>}
                 </td>
-                <td>{c.title}</td>
-                <td>{c.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(c.branch_name_ar)}</span> : '—'}</td>
-                <td><span className={`badge-msg badge-${c.status === 'open' ? 'success' : 'draft'}`}>{statusLabel[c.status]}</span></td>
-                <td>{c.enrollments_count}</td>
-                <td>{c.capacity ?? '—'}</td>
-                <td>{c.fees != null ? c.fees : '—'}</td>
-                <td>{c.trainer ?? '—'}</td>
-                <td className="table-actions">
+                <td data-label="العنوان">{c.title}</td>
+                <td data-label="الفرع">{c.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(c.branch_name_ar)}</span> : '—'}</td>
+                <td data-label="الحالة"><span className={`badge-msg badge-${c.status === 'open' ? 'success' : 'draft'}`}>{statusLabel[c.status]}</span></td>
+                <td data-label="التسجيلات">{c.enrollments_count}</td>
+                <td data-label="المقاعد">{c.capacity ?? '—'}</td>
+                <td data-label="الرسوم">{c.fees != null ? c.fees : '—'}</td>
+                <td data-label="المدرب">{c.trainer ?? '—'}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === c.id} onClick={() => startEdit(c)}>تعديل</button>
                   <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button>
                 </td>

@@ -258,11 +258,11 @@ export default function RolesAdmin() {
           <tbody>
             {roles.map((r) => (
               <tr key={r.id}>
-                <td><strong>{r.name}</strong>{isProtected(r) && <span className="muted"> (محمي)</span>}</td>
-                <td>{r.description ?? '—'}</td>
-                <td><span className={`badge-msg ${r.permissions_count > 0 ? 'badge-success' : 'badge-archived'}`}>{r.permissions_count}</span></td>
-                <td>{r.members_count}</td>
-                <td className="table-actions">
+                <td data-label="الدور"><strong>{r.name}</strong>{isProtected(r) && <span className="muted"> (محمي)</span>}</td>
+                <td data-label="الوصف">{r.description ?? '—'}</td>
+                <td data-label="الصلاحيات"><span className={`badge-msg ${r.permissions_count > 0 ? 'badge-success' : 'badge-archived'}`}>{r.permissions_count}</span></td>
+                <td data-label="المستخدمون">{r.members_count}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === r.id} onClick={() => openEditor(r)}>تعديل</button>
                   <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === r.id || isProtected(r) || r.members_count > 0} title={r.members_count > 0 ? 'الدور مُسند لمستخدمين' : ''} onClick={() => remove(r)}>حذف</button>
                 </td>

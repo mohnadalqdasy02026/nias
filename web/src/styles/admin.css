@@ -992,6 +992,243 @@
   .admin-content {
     padding: 16px;
   }
+
+  .admin-page-title {
+    font-size: 1.3rem;
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+  }
+
+  .admin-stat-card {
+    padding: 16px 14px;
+  }
+
+  .admin-stat-value {
+    font-size: 1.6rem;
+  }
+
+  .admin-dash-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .admin-quick-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .admin-toolbar select,
+  .admin-toolbar input,
+  .admin-toolbar .btn {
+    width: 100%;
+  }
+
+  .admin-search {
+    min-width: 0;
+  }
+
+  .admin-form {
+    padding: 16px;
+  }
+
+  .admin-form-actions {
+    flex-wrap: wrap;
+  }
+
+  .admin-form-actions .btn {
+    flex: 1;
+  }
+
+  .admin-pagination {
+    flex-wrap: wrap;
+  }
+
+  .settings-stack .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-feature-row,
+  .settings-stack .settings-feature-row {
+    grid-template-columns: 1fr;
+  }
+
+  .perm-matrix {
+    grid-template-columns: 1fr;
+  }
+
+  .perm-templates {
+    grid-template-columns: 1fr;
+  }
+
+  .role-pick {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+
+  .table-actions {
+    justify-content: flex-start;
+  }
+
+  .admin-detail-row td[colspan] {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 720px) {
+  .admin-table thead {
+    display: none;
+  }
+
+  .admin-table-wrap {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .admin-table,
+  .admin-table tbody,
+  .admin-table tr,
+  .admin-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-table {
+    background: transparent;
+  }
+
+  .admin-table tbody {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .admin-table tr {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: 6px 14px;
+  }
+
+  .admin-table td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px dashed var(--color-border);
+    text-align: right;
+    font-size: 0.9rem;
+    white-space: normal;
+  }
+
+  .admin-table td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-weight: 800;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    min-width: 84px;
+    padding-top: 2px;
+  }
+
+  .admin-table td > *:not(::before) {
+    min-width: 0;
+    flex: 1;
+    margin: 0;
+  }
+
+  .admin-table tr:last-child td:last-child {
+    border-bottom: none;
+  }
+
+  .admin-table tbody tr:last-child td {
+    border-bottom: 1px dashed var(--color-border);
+  }
+
+  .admin-table td:last-child {
+    border-bottom: none;
+  }
+
+  .admin-table td.table-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 6px;
+    margin-top: 4px;
+  }
+
+  .admin-table td.table-actions::before {
+    margin-bottom: 2px;
+  }
+
+  .admin-table td.table-actions .btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .admin-table td .user-roles-cell,
+  .admin-table td .role-checks {
+    justify-content: flex-start;
+  }
+
+  .admin-thumb,
+  .table-thumb {
+    width: 100%;
+    height: 120px;
+    border-radius: var(--radius-sm);
+  }
+
+  .table-thumb--round {
+    width: 84px;
+    height: 84px;
+  }
+
+  .admin-detail-row td[colspan] {
+    flex-direction: column;
+    gap: 6px;
+    font-size: 0.88rem;
+  }
+
+  .admin-detail-row td[colspan]::before {
+    content: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-content {
+    padding: 12px;
+  }
+
+  .admin-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-topbar {
+    padding: 10px 12px;
+  }
+
+  .admin-topbar-actions {
+    flex: 1;
+    justify-content: space-between;
+  }
 }
 /* Settings page */
 .settings-stack {

@@ -304,16 +304,16 @@ export default function NewsAdmin() {
           <tbody>
             {items.map((n) => (
               <tr key={n.id}>
-                <td>{n.title_ar}{n.is_featured ? ' ★' : ''}</td>
-                <td>{n.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(n.branch_name_ar)}</span> : '—'}</td>
-                <td>{n.category_name ?? '—'}</td>
-                <td>
+                <td data-label="العنوان">{n.title_ar}{n.is_featured ? ' ★' : ''}</td>
+                <td data-label="الفرع">{n.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(n.branch_name_ar)}</span> : '—'}</td>
+                <td data-label="التصنيف">{n.category_name ?? '—'}</td>
+                <td data-label="الحالة">
                   <button type="button" className={`badge-msg badge-${n.status}`} disabled={busy === n.id} onClick={() => toggleStatus(n)}>
                     {statusLabel[n.status]}
                   </button>
                 </td>
-                <td>{n.published_at ? new Date(n.published_at).toLocaleString('ar-YE') : '—'}</td>
-                <td className="table-actions">
+                <td data-label="المنشور في">{n.published_at ? new Date(n.published_at).toLocaleString('ar-YE') : '—'}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === n.id} onClick={() => startEdit(n)}>تعديل</button>
                   <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === n.id} onClick={() => remove(n)}>حذف</button>
                 </td>

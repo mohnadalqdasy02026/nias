@@ -193,15 +193,15 @@ export default function PagesAdmin() {
           <tbody>
             {pages.map((p) => (
               <tr key={p.id}>
-                <td dir="ltr"><code>{p.slug}</code></td>
-                <td>{p.title_ar}</td>
-                <td>
+                <td data-label="Slug" dir="ltr"><code>{p.slug}</code></td>
+                <td data-label="العنوان">{p.title_ar}</td>
+                <td data-label="الحالة">
                   <button type="button" className={`badge-msg badge-${p.status}`} disabled={busy === p.id} onClick={() => toggleStatus(p)}>
                     {statusLabel[p.status]}
                   </button>
                 </td>
-                <td>{new Date(p.updated_at).toLocaleString('ar-YE')}</td>
-                <td className="table-actions">
+                <td data-label="تاريخ التحديث">{new Date(p.updated_at).toLocaleString('ar-YE')}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === p.id} onClick={() => startEdit(p)}>تعديل</button>
                   <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button>
                 </td>

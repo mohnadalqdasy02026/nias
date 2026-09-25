@@ -262,22 +262,22 @@ export default function BranchesAdmin() {
           <tbody>
             {items.map((b) => (
               <tr key={b.id}>
-                <td>
+                <td data-label="الفرع">
                   <strong>{b.name_ar}</strong>
                   <div className="muted">{b.is_headquarters ? 'المقر الرئيسي — ' : ''}{b.slug}</div>
                 </td>
-                <td>
+                <td data-label="صورة العميد">
                   {b.dean_image ? (
                     <img src={b.dean_image} alt="" className="table-thumb table-thumb--round" />
                   ) : (
                     <span className="table-muted">—</span>
                   )}
                 </td>
-                <td>{b.dean_name_ar ? <span className="badge-msg badge-success">{b.dean_name_ar}</span> : '—'}</td>
-                <td className="table-muted">{b.dean_message_ar ? 'منشورة' : '—'}</td>
-                <td>{b.address ?? '—'}</td>
-                <td dir="ltr">{b.phone ?? '—'}</td>
-                <td className="table-actions">
+                <td data-label="العميد">{b.dean_name_ar ? <span className="badge-msg badge-success">{b.dean_name_ar}</span> : '—'}</td>
+                <td data-label="كلمة العميد" className="table-muted">{b.dean_message_ar ? 'منشورة' : '—'}</td>
+                <td data-label="العنوان">{b.address ?? '—'}</td>
+                <td data-label="الهاتف" dir="ltr">{b.phone ?? '—'}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === b.id} onClick={() => startEdit(b)}>تعديل</button>
                 </td>
               </tr>

@@ -91,12 +91,12 @@ export default function ContactMessages() {
           <tbody>
             {items.map((m) => (
               <tr key={m.id}>
-                <td>{m.name}</td>
-                <td dir="ltr">{m.email}</td>
-                <td>{m.subject ?? m.message.slice(0, 40)}</td>
-                <td><span className={`badge-msg badge-${m.status}`}>{statusLabel[m.status]}</span></td>
-                <td>{new Date(m.created_at).toLocaleString('ar-YE')}</td>
-                <td className="table-actions">
+                <td data-label="الاسم">{m.name}</td>
+                <td data-label="البريد" dir="ltr">{m.email}</td>
+                <td data-label="الموضوع">{m.subject ?? m.message.slice(0, 40)}</td>
+                <td data-label="الحالة"><span className={`badge-msg badge-${m.status}`}>{statusLabel[m.status]}</span></td>
+                <td data-label="التاريخ">{new Date(m.created_at).toLocaleString('ar-YE')}</td>
+                <td data-label="إجراءات" className="table-actions">
                   {m.status !== 'read' && (
                     <button type="button" className="btn btn-sm btn-soft" disabled={busy === m.id} onClick={() => handleStatus(m.id, 'read')}>مقروءة</button>
                   )}

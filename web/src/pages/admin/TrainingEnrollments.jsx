@@ -88,12 +88,12 @@ export default function TrainingEnrollments() {
             {items.map((e) => (
               <Fragment key={e.id}>
                   <tr key={e.id}>
-                  <td>{e.full_name}</td>
-                  <td dir="ltr">{e.phone}</td>
-                  <td>{e.course_title}</td>
-                  <td><span className={`badge-msg badge-${e.status === 'cancelled' ? 'archived' : 'draft'}`}>{statusLabel[e.status]}</span></td>
-                  <td>{new Date(e.enrolled_at).toLocaleString('ar-YE')}</td>
-                  <td className="table-actions">
+                  <td data-label="المتدرب">{e.full_name}</td>
+                  <td data-label="الجوال" dir="ltr">{e.phone}</td>
+                  <td data-label="الدورة">{e.course_title}</td>
+                  <td data-label="الحالة"><span className={`badge-msg badge-${e.status === 'cancelled' ? 'archived' : 'draft'}`}>{statusLabel[e.status]}</span></td>
+                  <td data-label="التاريخ">{new Date(e.enrolled_at).toLocaleString('ar-YE')}</td>
+                  <td data-label="إجراءات" className="table-actions">
                     {e.status !== 'cancelled' && workflow.map((w) => (
                       <button key={w.value} type="button" className="btn btn-sm btn-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, w.value)}>{w.label}</button>
                     ))}

@@ -272,16 +272,16 @@ export default function UsersAdmin() {
               const permCount = userRoleNames.reduce((acc, n) => acc + (roleMeta.get(n)?.permissions_count ?? 0), 0);
               return (
                 <tr key={u.id}>
-                  <td><strong>{u.full_name_ar}</strong></td>
-                  <td dir="ltr">{u.email ?? '—'}</td>
-                  <td>{u.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(u.branch_name_ar)}</span> : '—'}</td>
-                  <td>
+                  <td data-label="الاسم"><strong>{u.full_name_ar}</strong></td>
+                  <td data-label="البريد" dir="ltr">{u.email ?? '—'}</td>
+                  <td data-label="الفرع">{u.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(u.branch_name_ar)}</span> : '—'}</td>
+                  <td data-label="الأدوار / الصلاحيات">
                     {userRoleNames.length > 0
                       ? <div className="user-roles-cell">{roleChips(u.roles_list)}<span className="user-perm-count">≈ {permCount} صلاحية</span></div>
                       : <span className="muted">—</span>}
                   </td>
-                  <td><span className={`badge-msg badge-${u.status === 'active' ? 'success' : 'archived'}`}>{u.status === 'active' ? 'نشط' : 'محظور'}</span></td>
-                  <td className="table-actions">
+                  <td data-label="الحالة"><span className={`badge-msg badge-${u.status === 'active' ? 'success' : 'archived'}`}>{u.status === 'active' ? 'نشط' : 'محظور'}</span></td>
+                  <td data-label="إجراءات" className="table-actions">
                     <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => startEdit(u)}>تعديل</button>
                     {u.status === 'active' ? (
                       <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => setStatus(u, 'banned')}>حظر</button>

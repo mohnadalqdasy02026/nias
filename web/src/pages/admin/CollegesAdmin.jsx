@@ -242,20 +242,20 @@ export default function CollegesAdmin() {
           <tbody>
             {items.map((c) => (
               <tr key={c.id}>
-                <td>
+                <td data-label="الكلية">
                   <strong>{c.name_ar}</strong>
                   <div className="muted">{c.name_en ?? ''}</div>
                 </td>
-                <td>
+                <td data-label="صورة الكلية">
                   {c.image ? <img src={c.image} alt="" className="table-thumb" /> : <span className="table-muted">—</span>}
                 </td>
-                <td>{c.dean_name ? <span className="badge-msg badge-success">{c.dean_name}</span> : '—'}</td>
-                <td>
+                <td data-label="العميد">{c.dean_name ? <span className="badge-msg badge-success">{c.dean_name}</span> : '—'}</td>
+                <td data-label="صورة العميد">
                   {c.dean_image ? <img src={c.dean_image} alt="" className="table-thumb table-thumb--round" /> : <span className="table-muted">—</span>}
                 </td>
-                <td className="table-muted">{c.status}</td>
-                <td className="table-muted">{c.vision ? 'منشورة' : '—'}</td>
-                <td className="table-actions">
+                <td data-label="الصورة" className="table-muted">{c.status}</td>
+                <td data-label="الرؤية" className="table-muted">{c.vision ? 'منشورة' : '—'}</td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === c.id} onClick={() => startEdit(c)}>تعديل</button>
                 </td>
               </tr>

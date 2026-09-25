@@ -322,19 +322,19 @@ export default function ProgramsAdmin() {
           <tbody>
             {items.map((p) => (
               <tr key={p.id}>
-                <td>
+                <td data-label="الصورة">
                   {p.image_url
                     ? <img className="admin-thumb" src={p.image_url} alt="" loading="lazy" />
                     : <span className="admin-thumb admin-thumb--empty">—</span>}
                 </td>
-                <td>{p.name_ar}</td>
-                <td>{typeLabel[p.program_type]}</td>
-                <td>{p.branch_name_ar ? <span className="badge-msg badge-success">{p.branch_name_ar}</span> : '—'}</td>
-                <td>{p.college_name_ar ?? '—'}</td>
-                <td>{p.department_name_ar ?? '—'}</td>
-                <td>{p.admission_open ? 'مفتوح' : 'مغلق'}</td>
-                <td><span className={`badge-msg badge-${p.status}`}>{p.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
-                <td className="table-actions">
+                <td data-label="البرنامج">{p.name_ar}</td>
+                <td data-label="النوع">{typeLabel[p.program_type]}</td>
+                <td data-label="الفرع">{p.branch_name_ar ? <span className="badge-msg badge-success">{p.branch_name_ar}</span> : '—'}</td>
+                <td data-label="الكلية">{p.college_name_ar ?? '—'}</td>
+                <td data-label="القسم">{p.department_name_ar ?? '—'}</td>
+                <td data-label="التقديم">{p.admission_open ? 'مفتوح' : 'مغلق'}</td>
+                <td data-label="الحالة"><span className={`badge-msg badge-${p.status}`}>{p.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
+                <td data-label="إجراءات" className="table-actions">
                   <button type="button" className="btn btn-sm btn-soft" disabled={busy === p.id} onClick={() => startEdit(p)}>تعديل</button>
                   <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button>
                 </td>
