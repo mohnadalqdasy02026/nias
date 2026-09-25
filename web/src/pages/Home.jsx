@@ -178,24 +178,6 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <SectionHeading title="معرض وملفات" subtitle="صور من أنشطة المعهد وملفاته المتاحة للتحميل" />
-          <div className="feature-band">
-            <Link to="/gallery" className="feature-tile">
-              <span className="feature-tile-icon" aria-hidden="true">📸</span>
-              <strong>معرض الصور</strong>
-              <small>لقطات من فعاليات المعهد</small>
-            </Link>
-            <Link to="/downloads" className="feature-tile">
-              <span className="feature-tile-icon" aria-hidden="true">⬇️</span>
-              <strong>التحميلات</strong>
-              <small>نماذج وللوائح وبرشورات</small>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container">
           <SectionHeading title="البرامج الأكاديمية" subtitle="برامجنا المتاحة للتسجيل" to="/programs" linkText="عرض جميع البرامج" />
           <div className="programs-results">
             {programs.slice(0, 3).map((p) => (
