@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 
+const AR_ERRORS = {
+  'Invalid credentials': 'بيانات الدخول غير صحيحة. تأكد من كتابة المعرف وكلمة المرور بشكل صحيح.',
+  'Account unavailable': 'هذا الحساب غير متاح حاليًا.',
+  'Missing refresh token': 'جلسة الدخول غير صالحة، يرجى تسجيل الدخول مجددًا.',
+};
+
+const translateError = (msg) => AR_ERRORS[msg] ?? msg;
+
 export default function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -22,7 +30,7 @@ export default function Login() {
       const redirectTo = from ?? (user?.permissions?.includes('dashboard.access') ? '/admin' : '/');
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      setError(err.message ?? 'فشل تسجيل الدخول');
+      setError(translateError(err.message ?? 'فشل تسجيل الدخول'));
     } finally {
       setSubmitting(false);
     }
