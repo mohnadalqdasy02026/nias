@@ -826,6 +826,14 @@
 .perm-group--settings .perm-group-icon { color: #b45309; }
 .perm-group--accounts .perm-group-icon { color: #7c3aed; }
 .perm-group--training .perm-group-icon { color: #0369a1; }
+.perm-group--colleges .perm-group-icon { color: #0f766e; }
+.perm-group--site .perm-group-icon { color: #b45309; }
+.perm-group--news .perm-group-icon { color: #2563eb; }
+.perm-group--pages .perm-group-icon { color: #6366f1; }
+.perm-group--messages .perm-group-icon { color: #db2777; }
+.perm-group--branches .perm-group-icon { color: #ea580c; }
+.perm-group--enrollments .perm-group-icon { color: #0891b2; }
+.perm-group--dashboard .perm-group-icon { color: #16a34a; }
 
 .perm-group-head .perm-group-title {
   margin: 0;

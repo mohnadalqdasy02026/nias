@@ -10,7 +10,9 @@ export const AREAS = [
   { key: 'enrollments', label: 'التسجيلات والمتدربون', icon: 'students' },
   { key: 'media', label: 'مكتبة الوسائط', icon: 'media' },
   { key: 'programs', label: 'البرامج الأكاديمية', icon: 'programs' },
+  { key: 'colleges', label: 'الكليات', icon: 'building' },
   { key: 'branches', label: 'فروع المعهد', icon: 'settings' },
+  { key: 'site', label: 'إعدادات الموقع', icon: 'settings' },
   { key: 'accounts', label: 'المستخدمون والأدوار', icon: 'accounts' },
 ];
 
@@ -55,8 +57,14 @@ const CODE_AREA = {
   'academic_programs.update': 'programs',
   'academic_programs.delete': 'programs',
 
+  'colleges.read': 'colleges',
+  'colleges.manage': 'colleges',
+
   'branches.read': 'branches',
   'branches.manage': 'branches',
+
+  'site_settings.read': 'site',
+  'site_settings.update': 'site',
 
   'users.view': 'accounts',
   'users.manage': 'accounts',
@@ -96,6 +104,8 @@ export const AREA_ICON_PATHS = {
   media: 'M2 20l6-16 4 9 3-6 7 13z',
   pages: 'M4 4h16v16H4zM8 4v16M12 8h4M12 12h4',
   programs: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z',
+  building: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4M9 9h.01M15 9h.01M9 13h.01M15 13h.01',
+  colleges: 'M3 21h18M5 21V7l7-4 7 4v14M9 21v-4h6v4M9 9h.01M15 9h.01M9 13h.01M15 13h.01',
   students: 'M2 21h20M17 21v-4a5 5 0 0 0-10 0v4M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
   settings: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06',
   accounts: 'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75',
@@ -153,6 +163,15 @@ export const TEMPLATES = [
     codes: [
       'dashboard.access',
       'branches.read', 'branches.manage',
+    ],
+  },
+  {
+    key: 'colleges',
+    name: 'قسم الكليات',
+    desc: 'إدارة بيانات الكليات والعمادات (الصور، الرؤية، العميد).',
+    codes: [
+      'dashboard.access',
+      'colleges.read', 'colleges.manage',
     ],
   },
   {
