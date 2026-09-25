@@ -67,6 +67,7 @@ function ProgramCard({ program }) {
           </span>
         )}
         <h3>{program.name_ar ?? program.name_en}</h3>
+        {program.description && <p className="program-card-desc">{program.description}</p>}
         <div className="program-card-footer">
           {program.admission_open ? (
             <span className="program-badge program-badge--open">التسجيل مفتوح</span>

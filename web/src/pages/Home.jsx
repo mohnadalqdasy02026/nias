@@ -41,6 +41,12 @@ const programCovers = {
   diploma: '/uploads/design/site/main_1782830791_165.jpg',
 };
 
+function shorten(text, max = 120) {
+  if (!text) return text;
+  const trimmed = text.replace(/\s+/g, ' ').trim();
+  return trimmed.length > max ? `${trimmed.slice(0, max).trimEnd()}…` : trimmed;
+}
+
 const courseCovers = [
   '/uploads/design/site/main_1786901865_894.jpg',
   '/uploads/design/site/main_1786899199_299.jpg',
@@ -203,7 +209,7 @@ export default function Home() {
         <div className="container">
           <SectionHeading title="البرامج الأكاديمية" subtitle="برامجنا المتاحة للتسجيل" to="/programs" linkText="عرض جميع البرامج" />
           <div className="programs-results">
-            {programs.map((p) => (
+            {programs.slice(0, 3).map((p) => (
               <article key={p.id} className={`program-card program-card--${p.program_type}`}>
                 <div className="program-card-cover">
                   <img src={programCovers[programCoverKind[p.program_type] ?? 'bachelor']} alt="" loading="lazy" />
@@ -217,7 +223,7 @@ export default function Home() {
                     </span>
                   )}
                   <h3>{p.name_ar ?? p.name_en}</h3>
-                  {p.description && <p className="program-card-desc">{p.description}</p>}
+                  {p.description && <p className="program-card-desc">{shorten(p.description)}</p>}
                   <div className="program-card-footer">
                     {p.admission_open ? (
                       <span className="program-badge program-badge--open">التسجيل مفتوح</span>
