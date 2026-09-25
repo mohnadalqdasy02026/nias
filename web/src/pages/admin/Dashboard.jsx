@@ -19,7 +19,6 @@ const quickActions = [
   { to: '/admin/content/pages', label: 'تحرير الصفحات الثابتة', perm: 'site_pages.update', icon: '📄' },
   { to: '/admin/training/courses', label: 'إدارة الدورات التدريبية', perm: 'training_courses.create', icon: '🎯' },
   { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.update', icon: '🎓' },
-  { to: '/admin/media', label: 'مكتبة الوسائط', perm: 'media_library.create', icon: '🖼️' },
   { to: '/admin/settings/site', label: 'إعدادات الموقع', perm: 'site_settings.read', icon: '⚙️' },
 ];
 

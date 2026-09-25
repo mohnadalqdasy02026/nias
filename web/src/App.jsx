@@ -26,7 +26,6 @@ import AdminNews from './pages/admin/NewsAdmin.jsx';
 import AdminPages from './pages/admin/PagesAdmin.jsx';
 import AdminTrainingCourses from './pages/admin/TrainingCourses.jsx';
 import AdminTrainingEnrollments from './pages/admin/TrainingEnrollments.jsx';
-import MediaLibrary from './pages/admin/MediaLibrary.jsx';
 import ProgramsAdmin from './pages/admin/ProgramsAdmin.jsx';
 import UsersAdmin from './pages/admin/UsersAdmin.jsx';
 import RolesAdmin from './pages/admin/RolesAdmin.jsx';
@@ -108,14 +107,6 @@ export default function App() {
               element={
                 <ProtectedRoute permission="training_enrollments.read">
                   <AdminTrainingEnrollments />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="media"
-              element={
-                <ProtectedRoute permission="media_library.read">
-                  <MediaLibrary />
                 </ProtectedRoute>
               }
             />

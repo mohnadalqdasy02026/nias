@@ -23,12 +23,6 @@ const navSections = [
     ],
   },
   {
-    title: 'الوسائط',
-    items: [
-      { to: '/admin/media', label: 'مكتبة الوسائط', perm: 'media_library.read' },
-    ],
-  },
-  {
     title: 'البرامج',
     items: [
       { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.read' },
