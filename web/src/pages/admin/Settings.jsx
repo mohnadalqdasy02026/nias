@@ -186,7 +186,7 @@ export default function Settings() {
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
       {saved && <div className="alert alert-success" role="alert">{saved}</div>}
 
-      <div className="admin-dash-grid">
+      <div className="settings-stack">
         <form className="card admin-form" onSubmit={saveGeneral}>
           <h3>إعدادات عامة</h3>
           <div className="form-grid">

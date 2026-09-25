@@ -933,6 +933,25 @@
   }
 }
 /* Settings page */
+.settings-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-top: 22px;
+  max-width: 920px;
+}
+
+.settings-stack .admin-form {
+  margin-bottom: 0;
+}
+
+.settings-stack .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-stack .settings-feature-row {
+  grid-template-columns: 160px 1fr 2fr;
+}
 .settings-color-row {
   display: flex;
   align-items: center;
