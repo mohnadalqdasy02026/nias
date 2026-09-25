@@ -134,6 +134,9 @@ function Footer() {
               </a>
             ))}
           </div>
+          <div className="footer-legal">
+            <Link to="/terms">الشروط والأحكام</Link>
+          </div>
         </div>
       </div>
       <div className="footer-ticker" aria-hidden="true">
