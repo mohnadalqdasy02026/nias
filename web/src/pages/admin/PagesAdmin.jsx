@@ -11,6 +11,7 @@ export default function PagesAdmin() {
   const [busy, setBusy] = useState(null);
   const [editing, setEditing] = useState(null);
   const [form, setForm] = useState(null);
+  const [imageBusy, setImageBusy] = useState(false);
 
   const load = useCallback(async () => {
     setError(null);
@@ -33,6 +34,7 @@ export default function PagesAdmin() {
       title_ar: page?.title_ar ?? '',
       title_en: page?.title_en ?? '',
       content_ar: page?.content_ar ?? '',
+      primary_image: page?.primary_image ?? '',
       status: page?.status ?? 'draft',
     });
   };
@@ -40,6 +42,49 @@ export default function PagesAdmin() {
   const cancelEdit = () => {
     setEditing(null);
     setForm(null);
+  };
+
+  const uploadImage = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('الرجاء اختيار ملف صورة.');
+      return;
+    }
+    setImageBusy(true);
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ''));
+        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
+        reader.readAsDataURL(file);
+      });
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
+        image.src = dataUrl;
+      });
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const outType = file.type === 'image/png' ? 'image/webp' : 'image/jpeg';
+      const compressed = canvas.toDataURL(outType, 0.9);
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'image';
+      const savedMedia = await api.post(
+        '/admin/media',
+        { file_name: `${form.slug || 'page'}-${baseName}.${outType === 'image/webp' ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: compressed.slice(compressed.indexOf(',') + 1), alt_text: form.title_ar ?? 'صفحة' },
+        { auth: true },
+      );
+      setForm((p) => ({ ...p, primary_image: savedMedia.url }));
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setImageBusy(false);
+    }
   };
 
   const save = async (e) => {
@@ -113,6 +158,14 @@ export default function PagesAdmin() {
                 <option value="published">منشور</option>
                 <option value="archived">مؤرشف</option>
               </select>
+            </div>
+            <div className="form-field form-field--full">
+              <label>الصورة الرئيسية للصفحة</label>
+              <div className="settings-logo-row">
+                {form.primary_image && <img src={form.primary_image} alt="الصورة الرئيسية للصفحة" className="settings-logo-preview" />}
+                <input type="file" accept="image/*" disabled={imageBusy} onChange={(e) => uploadImage(e.target.files[0])} />
+              </div>
+              {form.primary_image && <small className="muted" dir="ltr">{form.primary_image}</small>}
             </div>
             <div className="form-field form-field--full">
               <label>المحتوى (عربي)</label>
