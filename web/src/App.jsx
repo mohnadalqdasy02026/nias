@@ -5,6 +5,7 @@ import AdminLayout from './layouts/AdminLayout.jsx';
 import ProtectedRoute from './components/admin/ProtectedRoute.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
+import StaticPage from './pages/StaticPage.jsx';
 import Programs from './pages/Programs.jsx';
 import Training from './pages/Training.jsx';
 import TrainingDetail from './pages/TrainingDetail.jsx';
@@ -40,6 +41,17 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
+            <Route
+              path="terms"
+              element={
+                <StaticPage
+                  slug="terms"
+                  fallbackTitle="الشروط والأحكام"
+                  metaTitle="الشروط والأحكام"
+                  metaDescription="شروط وأحكام استخدام موقع المعهد الوطني للعلوم الإدارية."
+                />
+              }
+            />
             <Route path="programs" element={<Programs />} />
             <Route path="programs/:id" element={<ProgramDetail />} />
             <Route path="news" element={<NewsList />} />
