@@ -252,7 +252,6 @@ export default function Home() {
                 </div>
                 <div className="card-body">
                   <h3>{c.title}</h3>
-                  {c.description && <p className="course-card-desc clamp-3">{c.description}</p>}
                   <div className="course-meta">
                     {c.location && <span>{c.location}</span>}
                     {c.start_date && <span>يبدأ: {new Date(c.start_date).toLocaleDateString('ar-YE')}</span>}
