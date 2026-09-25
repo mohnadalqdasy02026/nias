@@ -24,6 +24,11 @@ const emptyHome = {
   cta_text: '',
 };
 
+const emptyStats = {
+  students_male: '',
+  students_female: '',
+};
+
 function field(name, value, onChange, label, as = 'input', dir, rows) {
   return (
     <div className="form-field">
@@ -38,6 +43,7 @@ function field(name, value, onChange, label, as = 'input', dir, rows) {
 export default function Settings() {
   const [general, setGeneral] = useState(emptyGeneral);
   const [home, setHome] = useState(emptyHome);
+  const [stats, setStats] = useState(emptyStats);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
@@ -49,18 +55,21 @@ export default function Settings() {
       .then((data) => {
         const g = data.general ?? {};
         const h = data.home ?? {};
+        const s = data.stats ?? {};
         setGeneral({ ...emptyGeneral, ...g });
         setHome({
           ...emptyHome,
           ...h,
           features: h.features?.length ? h.features : emptyHome.features,
         });
+        setStats({ ...emptyStats, ...s });
       })
       .catch((e) => setError(e.message));
   }, []);
 
   const setG = (k, v) => setGeneral((p) => ({ ...p, [k]: v }));
   const setH = (k, v) => setHome((p) => ({ ...p, [k]: v }));
+  const setS = (k, v) => setStats((p) => ({ ...p, [k]: v }));
 
   const compressAndUploadLogo = async (file) => {
     if (!file) return;
@@ -146,6 +155,22 @@ export default function Settings() {
     }
   };
 
+  const saveStats = async (e) => {
+    e.preventDefault();
+    setBusy('stats');
+    setError(null);
+    setSaved(null);
+    try {
+      await api.patch('/admin/settings/stats', stats, { auth: true });
+      notifySaved();
+      setSaved('تم حفظ عدادات الإحصائيات.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const setFeature = (i, k, v) => {
     setHome((p) => ({
       ...p,
@@ -212,6 +237,20 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'home'}>
               {busy === 'home' ? 'حفظ...' : 'حفظ إعدادات الصفحة الرئيسية'}
+            </button>
+          </div>
+        </form>
+
+        <form className="card admin-form" onSubmit={saveStats}>
+          <h3>عدادات الإحصائيات</h3>
+          <p className="muted">عدد الطلاب والطالبات يظهر في أعلى الصفحة الرئيسية ضمن عدادات المعهد. اترك الحقل فارغًا لاعتماد العدد المسجّل في النظام.</p>
+          <div className="form-grid">
+            {field('students_male', stats.students_male, setS, 'عدد الطلاب', 'input', 'ltr')}
+            {field('students_female', stats.students_female, setS, 'عدد الطالبات', 'input', 'ltr')}
+          </div>
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
+              {busy === 'stats' ? 'حفظ...' : 'حفظ عدادات الإحصائيات'}
             </button>
           </div>
         </form>

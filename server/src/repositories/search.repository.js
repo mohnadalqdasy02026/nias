@@ -1,4 +1,5 @@
 import { pool } from '../config/db.js';
+import { SettingsRepository } from './settings.repository.js';
 
 export class SearchRepository {
   async search({ q, limit = 10 }) {
@@ -69,6 +70,20 @@ export class StatsRepository {
     }
 
     counters.departments ??= StatsRepository.legacyBaselines.departments;
+
+    const settingsRepo = new SettingsRepository();
+    const overview = (await settingsRepo.getGroup('stats')) ?? {};
+    const manualTotal = Number(overview.students_total);
+    const manualMale = Number(overview.students_male);
+    const manualFemale = Number(overview.students_female);
+    const hasTotal = overview.students_total !== undefined && overview.students_total !== null && overview.students_total !== '';
+    const hasMale = overview.students_male !== undefined && overview.students_male !== null && overview.students_male !== '';
+    const hasFemale = overview.students_female !== undefined && overview.students_female !== null && overview.students_female !== '';
+    if (hasTotal && Number.isFinite(manualTotal) && manualTotal >= 0) {
+      counters.students = manualTotal;
+    } else if (hasMale && hasFemale && Number.isFinite(manualMale) && Number.isFinite(manualFemale) && manualMale >= 0 && manualFemale >= 0) {
+      counters.students = manualMale + manualFemale;
+    }
 
     return counters;
   }
