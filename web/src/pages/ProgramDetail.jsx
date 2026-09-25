@@ -31,6 +31,7 @@ const iconPaths = {
   code: 'M8 6l-6 6 6 6M16 6l6 6-6 6M14 4l-4 16',
   grad: 'M22 10l-10-5L2 10l10 5 10-5zM6 12v5c3 2 7 2 10 0v-5M22 10v6',
   clock: 'M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM12 6v6l4 2',
+  locations: 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
   list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
 };
 
@@ -88,6 +89,7 @@ export default function ProgramDetail() {
     { icon: 'grad', label: 'الدرجة العلمية', value: type.plural ?? type.label },
     { icon: 'book', label: 'الكلية', value: college },
     { icon: 'list', label: 'القسم', value: department ?? '—' },
+    { icon: 'locations', label: 'الفرع', value: program.branch_name_ar ? branchLabel(program.branch_name_ar) : '—' },
   ];
 
   return (
