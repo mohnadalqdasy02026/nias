@@ -33,7 +33,7 @@ export default function Training() {
                   </Link>
                 </span>
               )}
-              {c.description && <p>{c.description}</p>}
+              {c.description && <p className="course-card-desc clamp-3">{c.description}</p>}
               <div className="course-meta">
                 {c.location && <span className="course-loc">{c.location}</span>}
                 {c.capacity != null && <span>المقاعد: {c.capacity}</span>}
