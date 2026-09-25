@@ -38,7 +38,10 @@ export default function Training() {
                 {c.location && <span className="course-loc">{c.location}</span>}
                 {c.capacity != null && <span>المقاعد: {c.capacity}</span>}
               </div>
-              <Link to="/training/register" className="btn btn-primary">التسجيل</Link>
+              <div className="course-card-actions">
+                <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
+                <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+              </div>
               </div>
             </article>
           ))}

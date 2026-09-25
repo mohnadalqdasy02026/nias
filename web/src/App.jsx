@@ -7,6 +7,7 @@ import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import Programs from './pages/Programs.jsx';
 import Training from './pages/Training.jsx';
+import TrainingDetail from './pages/TrainingDetail.jsx';
 import TrainingRegister from './pages/TrainingRegister.jsx';
 import ProgramDetail from './pages/ProgramDetail.jsx';
 import Contact from './pages/Contact.jsx';
@@ -45,6 +46,7 @@ export default function App() {
             <Route path="news/:id" element={<NewsDetail />} />
             <Route path="training" element={<Training />} />
             <Route path="training/register" element={<TrainingRegister />} />
+            <Route path="training/:id" element={<TrainingDetail />} />
             <Route path="gallery" element={<GalleryPage />} />
             <Route path="downloads" element={<DownloadsPage />} />
             <Route path="faculty" element={<FacultyPage />} />

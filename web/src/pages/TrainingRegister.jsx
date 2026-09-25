@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 
@@ -23,14 +23,22 @@ export default function TrainingRegister() {
   const [error, setError] = useState(null);
   const [done, setDone] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [searchParams] = useSearchParams();
+  const preselectedCourseId = searchParams.get('course');
 
   usePageMeta('التسجيل في الدورات التدريبية', 'سجّل في الدورات التدريبية المفتوحة في المعهد الوطني للعلوم الإدارية.');
 
   useEffect(() => {
     api.get('/public/branches').then(setBranches).catch(() => {});
-    api.get('/public/training-courses').then(setCourses).catch(() => {});
+    api.get('/public/training-courses').then((d) => {
+      setCourses(d ?? []);
+      const preselect = Number(preselectedCourseId);
+      if (d && d.some((c) => Number(c.id) === preselect)) {
+        setForm((prev) => ({ ...prev, course_id: String(preselect) }));
+      }
+    }).catch(() => {});
     api.get('/public/training/register/config').then(setCaptcha).catch(() => {});
-  }, []);
+  }, [preselectedCourseId]);
 
   const refreshCaptcha = () => {
     setCaptcha(null);

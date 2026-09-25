@@ -213,6 +213,19 @@ p.name_ar, p.name_en, p.program_type,
     return rows;
   }
 
+  async getTrainingCourse(id) {
+    const { rows } = await pool.query(
+      `SELECT c.id, c.title, c.description, c.fees, c.start_date, c.end_date, c.location,
+              c.capacity, c.trainer, c.category, c.image_url, c.status, c.branch_id,
+              b.name_ar AS branch_name_ar, b.slug AS branch_slug
+       FROM training_courses c
+       LEFT JOIN institute_branches b ON b.id = c.branch_id
+       WHERE c.id = $1`,
+      [id],
+    );
+    return rows[0] ?? null;
+  }
+
   async listPages() {
     const { rows } = await pool.query(
       `SELECT id, slug, title_ar, title_en, content_ar, content_en, primary_image

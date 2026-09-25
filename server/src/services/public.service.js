@@ -87,6 +87,12 @@ export class PublicService {
     return this.publicRepo.listTrainingCourses({ branchId: query.branchId ? Number(query.branchId) : null });
   }
 
+  async getTrainingCourse(id) {
+    const course = await this.publicRepo.getTrainingCourse(id);
+    if (!course) throw AppError.notFound('Course not found');
+    return course;
+  }
+
   async listPages() {
     return this.publicRepo.listPages();
   }

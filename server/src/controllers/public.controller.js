@@ -28,6 +28,7 @@ export class PublicController {
   listJournalIssues = asyncHandler(async (_req, res) => success(res, await this.publicService.listJournalIssues()));
   listJournalArticles = asyncHandler(async (req, res) => success(res, await this.publicService.listJournalArticles(req.query.issueId)));
   listTrainingCourses = asyncHandler(async (req, res) => success(res, await this.publicService.listTrainingCourses(req.query)));
+  getTrainingCourse = asyncHandler(async (req, res) => success(res, await this.publicService.getTrainingCourse(req.params.id)));
   listPages = asyncHandler(async (_req, res) => success(res, await this.publicService.listPages()));
   getPage = asyncHandler(async (req, res) => success(res, await this.publicService.getPage(req.params.slug)));
   search = asyncHandler(async (req, res) => success(res, await this.publicService.search(req.query.q)));

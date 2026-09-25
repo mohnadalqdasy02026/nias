@@ -8,6 +8,7 @@ import {
   listProgramsSchema,
   getNewsParams,
   getProgramParams,
+  getCourseParams,
   getBranchParams,
   getPageParams,
   searchSchema,
@@ -44,6 +45,7 @@ router.get('/journal/issues', publicController.listJournalIssues);
 router.get('/journal/articles', publicController.listJournalArticles);
 
 router.get('/training-courses', validate(listTrainingCoursesSchema), publicController.listTrainingCourses);
+router.get('/training-courses/:id', validate(getCourseParams), publicController.getTrainingCourse);
 
 router.get('/pages', publicController.listPages);
 router.get('/pages/:slug', validate(getPageParams), publicController.getPage);

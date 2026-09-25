@@ -244,7 +244,7 @@ export default function Home() {
         <div className="container">
           <SectionHeading title="الدورات التدريبية" subtitle="دورات مفتوحة للتسجيل الآن" to="/training" linkText="عرض جميع الدورات" />
           <div className="courses-grid">
-            {courses.map((c, ci) => (
+            {courses.slice(0, 3).map((c, ci) => (
               <article key={c.id} className="card course-card">
                 <div className="card-cover">
                   <img src={courseCovers[ci % courseCovers.length]} alt="" loading="lazy" />
@@ -252,13 +252,16 @@ export default function Home() {
                 </div>
                 <div className="card-body">
                   <h3>{c.title}</h3>
-                  {c.description && <p>{c.description}</p>}
+                  {c.description && <p>{shorten(c.description)}</p>}
                   <div className="course-meta">
                     {c.location && <span>{c.location}</span>}
                     {c.start_date && <span>يبدأ: {new Date(c.start_date).toLocaleDateString('ar-YE')}</span>}
                     {c.trainer && <span>المدرب: {c.trainer}</span>}
                   </div>
-                  <Link to="/training/register" className="btn btn-primary">التسجيل في الدورة</Link>
+                  <div className="course-card-actions">
+                    <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
+                    <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+                  </div>
                 </div>
               </article>
             ))}
