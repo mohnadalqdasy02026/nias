@@ -14,6 +14,7 @@ const emptyHome = {
   hero_eyebrow: '',
   hero_title: '',
   hero_subtitle: '',
+  hero_images: [],
   features: [
     { icon: '', title: '', text: '' },
     { icon: '', title: '', text: '' },
@@ -48,7 +49,9 @@ export default function Settings() {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
   const [logoBusy, setLogoBusy] = useState(false);
+  const [heroBusy, setHeroBusy] = useState(false);
   const logoRef = useRef(null);
+  const heroRef = useRef(null);
 
   useEffect(() => {
     api.get('/public/settings', { auth: true })
@@ -60,6 +63,7 @@ export default function Settings() {
         setHome({
           ...emptyHome,
           ...h,
+          hero_images: h.hero_images?.filter(Boolean) ?? [],
           features: h.features?.length ? h.features : emptyHome.features,
         });
         setStats({ ...emptyStats, ...s });
@@ -116,6 +120,57 @@ export default function Settings() {
     } finally {
       setLogoBusy(false);
     }
+  };
+
+  const compressAndUploadHero = async (file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      setError('الرجاء اختيار ملف صورة.');
+      return;
+    }
+    setHeroBusy(true);
+    setError(null);
+    try {
+      const dataUrl = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ''));
+        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
+        reader.readAsDataURL(file);
+      });
+      const img = await new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
+        image.src = dataUrl;
+      });
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const isPng = file.type === 'image/png';
+      const outType = isPng ? 'image/webp' : 'image/jpeg';
+      const compressed = canvas.toDataURL(outType, 0.85);
+      const base64 = compressed.slice(compressed.indexOf(',') + 1);
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'hero';
+      const savedMedia = await api.post(
+        '/admin/media',
+        { file_name: `hero-${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: 'صورة خلفية الهيرو' },
+        { auth: true },
+      );
+      setHome((p) => ({ ...p, hero_images: [...(p.hero_images ?? []), savedMedia.url] }));
+      if (heroRef.current) heroRef.current.value = '';
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setHeroBusy(false);
+    }
+  };
+
+  const removeHeroImage = (index) => {
+    setHome((p) => ({ ...p, hero_images: (p.hero_images ?? []).filter((_, i) => i !== index) }));
   };
 
   const notifySaved = () => {
@@ -223,6 +278,21 @@ export default function Settings() {
             {field('hero_subtitle', home.hero_subtitle, setH, 'الوصف تحت العنوان', 'textarea', undefined, 3)}
             {field('cta_title', home.cta_title, setH, 'عنوان الدعوة السفلية')}
             {field('cta_text', home.cta_text, setH, 'نص الدعوة السفلية', 'textarea', undefined, 2)}
+          </div>
+
+          <h4 className="admin-settings-subtitle">صور خلفية الهيرو (تتبدل كل 5 ثوانٍ)</h4>
+          <p className="muted">اضف صورة واحدة أو أكثر؛ تُعرض كخلفية متحركة في أعلى الصفحة الرئيسية. أول صورة هي الافتراضية إن لم تتوفر صور.</p>
+          <div className="settings-hero-row">
+            {(home.hero_images ?? []).map((url, i) => (
+              <div key={`${url}-${i}`} className="settings-hero-thumb">
+                <img src={url} alt={`صورة الهيرو ${i + 1}`} />
+                <button type="button" className="btn btn-sm btn-danger-soft" onClick={() => removeHeroImage(i)}>إزالة</button>
+              </div>
+            ))}
+          </div>
+          <div className="settings-hero-upload">
+            <input type="file" accept="image/*" ref={heroRef} onChange={(e) => compressAndUploadHero(e.target.files[0])} disabled={heroBusy} />
+            <span className="muted">{heroBusy ? 'جارٍ التجهيز والرفع...' : 'تُضغط الصور تلقائيًا وتُخزَّن بشكل دائم.'}</span>
           </div>
 
           <h4 className="admin-settings-subtitle">المميزات (بطاقات تحت العنوان)</h4>

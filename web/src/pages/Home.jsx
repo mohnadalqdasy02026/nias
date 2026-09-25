@@ -99,6 +99,7 @@ export default function Home() {
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
   const [colleges, setColleges] = useState([]);
+  const [heroIndex, setHeroIndex] = useState(0);
   const settings = useSiteSettings();
 
   const home = settings?.home ?? {};
@@ -116,9 +117,30 @@ export default function Home() {
     api.get('/public/colleges').then(setColleges).catch(() => {});
   }, []);
 
+  const heroImages = (home.hero_images ?? []).filter((src) => src && src !== 'null');
+
+  useEffect(() => {
+    if (heroImages.length < 2) return;
+    const timer = setInterval(() => {
+      setHeroIndex((i) => (i + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [heroImages.length]);
+
   return (
     <>
-      <section className="hero">
+      <section className={heroImages.length > 0 ? 'hero has-slides' : 'hero'}>
+        {heroImages.length > 0 && (
+          <div className="hero-slides" aria-hidden="true">
+            {heroImages.map((src, i) => (
+              <div
+                key={`${src}-${i}`}
+                className={`hero-slide${i === heroIndex ? ' is-active' : ''}`}
+                style={{ backgroundImage: `url('${src}')` }}
+              />
+            ))}
+          </div>
+        )}
         <div className="hero-inner">
           <p className="hero-eyebrow">{home.hero_eyebrow ?? 'الجمهورية اليمنية — المعهد الوطني للعلوم الإدارية'}</p>
           <h1>{home.hero_title ?? 'بناء القدرات الإدارية وإعداد الكوادر المؤهلة لخدمة اليمن'}</h1>
