@@ -81,6 +81,7 @@ export default function BranchesPage() {
   const [faculty, setFaculty] = useState([]);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('dean');
+  const [facultyFilter, setFacultyFilter] = useState('all');
   const settings = useSiteSettings();
   const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
 
@@ -111,6 +112,7 @@ export default function BranchesPage() {
           ...m,
           department_name_ar: names.get(String(m.department_id)) ?? 'عام',
         })));
+        setFacultyFilter('all');
       })
       .catch((e) => setError(e.message));
   }, [slug]);
@@ -321,37 +323,72 @@ export default function BranchesPage() {
                 <section className="branch-section" aria-labelledby="branch-faculty-title">
                   <h2 className="section-title" id="branch-faculty-title">الكادر الأكاديمي للفرع</h2>
                   {faculty.length > 0 ? (
-                    Object.entries(
-                      faculty.reduce((acc, m) => {
-                        const key = m.department_name_ar ?? 'عام';
-                        (acc[key] ??= []).push(m);
-                        return acc;
-                      }, {}),
-                    ).map(([deptName, members]) => (
-                      <div key={deptName} style={{ marginBottom: 32 }}>
-                        <h3 className="faculty-dept-title">{deptName}</h3>
-                        <div className="faculty-grid">
-                          {members.map((m) => (
-                            <article key={m.id} className="card faculty-card">
-                              {m.photo ? (
-                                <img className="faculty-photo" src={m.photo} alt={m.name_ar} loading="lazy" />
-                              ) : (
-                                <div className="faculty-photo faculty-photo--placeholder" aria-hidden="true">
-                                  {(m.name_ar ?? 'NIAS').slice(0, 1)}
+                    <>
+                      {(() => {
+                        const titles = Array.from(new Set(faculty.map((m) => m.title).filter(Boolean).map((t) => t.trim())))
+                          .sort((a, b) => a.localeCompare(b, 'ar'));
+                        return titles.length > 0 ? (
+                          <div className="faculty-filters" role="tablist" aria-label="فلترة كادر الفرع حسب الرتبة">
+                            <button
+                              type="button"
+                              role="tab"
+                              aria-selected={facultyFilter === 'all'}
+                              className={`faculty-filter${facultyFilter === 'all' ? ' faculty-filter--active' : ''}`}
+                              onClick={() => setFacultyFilter('all')}
+                            >
+                              الكل
+                            </button>
+                            {titles.map((t) => (
+                              <button
+                                key={t}
+                                type="button"
+                                role="tab"
+                                aria-selected={facultyFilter === t}
+                                className={`faculty-filter${facultyFilter === t ? ' faculty-filter--active' : ''}`}
+                                onClick={() => setFacultyFilter(t)}
+                              >
+                                {t}
+                              </button>
+                            ))}
+                          </div>
+                        ) : null;
+                      })()}
+                      {(() => {
+                        const visible = facultyFilter === 'all' ? faculty : faculty.filter((m) => (m.title ?? '').trim() === facultyFilter);
+                        const groups = visible.reduce((acc, m) => {
+                          const key = m.department_name_ar ?? 'عام';
+                          (acc[key] ??= []).push(m);
+                          return acc;
+                        }, {});
+                        return Object.keys(groups).length === 0
+                          ? <p className="muted">لا يوجد أعضاء برتبة «{facultyFilter}» في هذا الفرع.</p>
+                          : Object.entries(groups).map(([deptName, members]) => (
+                              <div key={deptName} style={{ marginBottom: 32 }}>
+                                <h3 className="faculty-dept-title">{deptName}</h3>
+                                <div className="faculty-grid">
+                                  {members.map((m) => (
+                                    <article key={m.id} className="card faculty-card">
+                                      {m.photo ? (
+                                        <img className="faculty-photo" src={m.photo} alt={m.name_ar} loading="lazy" />
+                                      ) : (
+                                        <div className="faculty-photo faculty-photo--placeholder" aria-hidden="true">
+                                          {(m.name_ar ?? 'NIAS').slice(0, 1)}
+                                        </div>
+                                      )}
+                                      <h3>{m.name_ar}</h3>
+                                      {m.title && <span className="faculty-title">{m.title}</span>}
+                                      {m.specialization && <span className="faculty-spec">{m.specialization}</span>}
+                                      <div className="faculty-contacts">
+                                        {m.email && <a href={`mailto:${m.email}`} dir="ltr">{m.email}</a>}
+                                        {m.phone && <span dir="ltr">{m.phone}</span>}
+                                      </div>
+                                    </article>
+                                  ))}
                                 </div>
-                              )}
-                              <h3>{m.name_ar}</h3>
-                              {m.title && <span className="faculty-title">{m.title}</span>}
-                              {m.specialization && <span className="faculty-spec">{m.specialization}</span>}
-                              <div className="faculty-contacts">
-                                {m.email && <a href={`mailto:${m.email}`} dir="ltr">{m.email}</a>}
-                                {m.phone && <span dir="ltr">{m.phone}</span>}
                               </div>
-                            </article>
-                          ))}
-                        </div>
-                      </div>
-                    ))
+                            ));
+                      })()}
+                    </>
                   ) : (
                     <p className="muted">لا يوجد كادر أكاديمي مسجل لهذا الفرع بعد.</p>
                   )}
