@@ -2775,7 +2775,30 @@ code {
   .main-nav {
     order: 3;
     width: 100%;
-    overflow-x: auto;
+  }
+
+  /* Branches dropdown within the mobile drawer: open it as an inline
+     block instead of an absolute overlay so nothing hides behind the
+     navbar / needs scrolling to be seen. */
+  .nav-drop {
+    width: 100%;
+  }
+
+  .nav-drop-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav-drop--open .nav-drop-menu {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+  }
+
+  .nav-drop--open .nav-drop-menu::before {
+    display: none;
   }
 
   .hero h1 {
