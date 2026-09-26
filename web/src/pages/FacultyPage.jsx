@@ -5,6 +5,7 @@ import { usePageMeta } from '../hooks/usePageMeta.js';
 export default function FacultyPage() {
   const [faculty, setFaculty] = useState([]);
   const [error, setError] = useState(null);
+  const [filter, setFilter] = useState('all');
 
   usePageMeta('أعضاء هيئة التدريس', 'نخبة من الأكاديميين والباحثين في المعهد الوطني للعلوم الإدارية.');
 
@@ -21,7 +22,12 @@ export default function FacultyPage() {
     }).catch((e) => setError(e.message));
   }, []);
 
-  const groups = faculty.reduce((acc, m) => {
+  const titles = Array.from(new Set(faculty.map((m) => m.title).filter(Boolean).map((t) => t.trim())))
+    .sort((a, b) => a.localeCompare(b, 'ar'));
+
+  const visible = filter === 'all' ? faculty : faculty.filter((m) => (m.title ?? '').trim() === filter);
+
+  const groups = visible.reduce((acc, m) => {
     const key = m.department_name_ar ?? 'عام';
     (acc[key] ??= []).push(m);
     return acc;
@@ -41,6 +47,32 @@ export default function FacultyPage() {
         <div className="container">
           {error && <div className="alert alert-danger">{error}</div>}
           {faculty.length === 0 && !error && <p className="muted admin-empty">لم يسجَّل أعضاء هيئة تدريس بعد.</p>}
+          {titles.length > 0 && (
+            <div className="faculty-filters" role="tablist" aria-label="فلترة الكادر حسب الرتبة">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={filter === 'all'}
+                className={`faculty-filter${filter === 'all' ? ' faculty-filter--active' : ''}`}
+                onClick={() => setFilter('all')}
+              >
+                الكل
+              </button>
+              {titles.map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  role="tab"
+                  aria-selected={filter === t}
+                  className={`faculty-filter${filter === t ? ' faculty-filter--active' : ''}`}
+                  onClick={() => setFilter(t)}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+          )}
+          {visible.length === 0 && faculty.length > 0 && <p className="muted admin-empty">لا يوجد أعضاء بهذه الرتبة.</p>}
           {Object.entries(groups).map(([dept, members]) => (
             <div key={dept} style={{ marginBottom: 40 }}>
               <h2 className="faculty-dept-title">{dept}</h2>

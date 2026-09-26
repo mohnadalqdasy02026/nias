@@ -2534,6 +2534,41 @@ code {
 }
 
 /* Faculty */
+.faculty-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+.faculty-filter {
+  display: inline-flex;
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.faculty-filter:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary-dark);
+}
+
+.faculty-filter--active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(14, 124, 102, 0.28);
+}
+
 .faculty-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
