@@ -11,6 +11,11 @@ import {
 import { hashToken } from '../utils/token.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import { TokenRepository } from '../repositories/token.repository.js';
+import {
+  assertLoginAllowed,
+  clearFailedLogins,
+  recordFailedLogin,
+} from '../middleware/rateLimit.js';
 
 const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 60 min
 
@@ -21,14 +26,20 @@ export class AuthService {
   }
 
   async login({ identifier, password, userAgent, ipAddress }) {
+    assertLoginAllowed(identifier);
     const user = await this.userRepo.findWithPasswordByIdentifier(identifier);
     if (!user || user.status !== 'active') {
+      recordFailedLogin(identifier);
       throw AppError.unauthorized('Invalid credentials');
     }
 
     const ok = await verifyPassword(password, user.password_hash);
-    if (!ok) throw AppError.unauthorized('Invalid credentials');
+    if (!ok) {
+      recordFailedLogin(identifier);
+      throw AppError.unauthorized('Invalid credentials');
+    }
 
+    clearFailedLogins(identifier);
     const { roles, permissions } = await this.userRepo.findRolesAndPermissions(user.id);
     const tokens = await this.issueTokens(user, userAgent, ipAddress);
 

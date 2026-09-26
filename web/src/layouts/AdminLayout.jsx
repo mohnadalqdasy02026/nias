@@ -24,6 +24,12 @@ const navSections = [
     ],
   },
   {
+    title: 'التواصل',
+    items: [
+      { to: '/admin/messages', label: 'رسائل التواصل', perm: 'contact_messages.read' },
+    ],
+  },
+  {
     title: 'البرامج',
     items: [
       { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.read' },

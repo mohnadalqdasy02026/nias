@@ -1,9 +1,26 @@
-import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
+import { randomBytes } from 'node:crypto';
 import { AppError } from '../utils/AppError.js';
 import { TrainingRepository } from '../repositories/training.repository.js';
 
-const CAPTCHA_TTL = '5m';
+const CAPTCHA_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const CAPTCHA_REAP_MS = 60 * 1000;    // cleanup sweep interval
+
+// Server-side challenge store: ids and answers NEVER leave the server.
+const captchaStore = new Map(); // challengeId -> { answer, expiresAt }
+setInterval(() => {
+  const now = Date.now();
+  for (const [id, entry] of captchaStore) {
+    if (entry.expiresAt < now) captchaStore.delete(id);
+  }
+}, CAPTCHA_REAP_MS).unref();
+
+function storeCaptcha() {
+  const a = Math.floor(Math.random() * 10) + 3;
+  const b = Math.floor(Math.random() * 10) + 1;
+  const challengeId = randomBytes(16).toString('hex');
+  captchaStore.set(challengeId, { answer: a + b, attempts: 0, expiresAt: Date.now() + CAPTCHA_TTL_MS });
+  return { challengeId, question: `كم ناتج جمع ${a} + ${b} ؟` };
+}
 
 function normalizePhone(phone) {
   const arabic = '٠١٢٣٤٥٦٧٨٩'.split('');
@@ -81,27 +98,25 @@ export class TrainingService {
 
   // ---------- Public registration ----------
   buildCaptcha() {
-    const a = Math.floor(Math.random() * 10) + 3;
-    const b = Math.floor(Math.random() * 10) + 1;
-    const challengeId = jwt.sign(
-      { type: 'captcha', a, b },
-      env.JWT_ACCESS_SECRET,
-      { expiresIn: CAPTCHA_TTL },
-    );
-    return { challengeId, question: `كم ناتج جمع ${a} + ${b} ؟` };
+    return storeCaptcha();
   }
 
   async registerForCourse({ first_name, father_name, grandfather_name, family_name, phone, branch_id, course_id, signature_data, challenge_id, answer }) {
-    // 1) Verify captcha (stateless signed challenge)
-    let payload;
-    try {
-      payload = jwt.verify(challenge_id, env.JWT_ACCESS_SECRET);
-    } catch {
+    // 1) Verify captcha (server-side challenge store; answers never leaked)
+    const entry = captchaStore.get(challenge_id);
+    if (!entry || entry.expiresAt < Date.now()) {
+      captchaStore.delete(challenge_id);
       throw AppError.unprocessable('Invalid captcha challenge', [{ field: 'challengeId', message: 'انتهت صلاحية التحقق أو أنه غير صالح' }]);
     }
-    if (payload.type !== 'captcha' || Number(payload.a) + Number(payload.b) !== Number(answer)) {
+    if (entry.attempts >= 3) {
+      captchaStore.delete(challenge_id);
+      throw AppError.unprocessable('Captcha expired', [{ field: 'challengeId', message: 'أُجريت محاولات أكثر من اللازم، أعد التحقق' }]);
+    }
+    if (entry.answer !== Number(answer)) {
+      entry.attempts += 1;
       throw AppError.unprocessable('Captcha incorrect', [{ field: 'answer', message: 'الإجابة غير صحيحة' }]);
     }
+    captchaStore.delete(challenge_id);
 
     // 2) Course must exist (open + capacity enforced atomically at insert)
     const course = await this.repo.getCourse(course_id);
