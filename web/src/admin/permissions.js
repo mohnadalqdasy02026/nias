@@ -11,6 +11,7 @@ export const AREAS = [
   { key: 'media', label: 'مكتبة الوسائط', icon: 'media' },
   { key: 'programs', label: 'البرامج الأكاديمية', icon: 'programs' },
   { key: 'colleges', label: 'الكليات', icon: 'building' },
+  { key: 'faculty', label: 'الكادر الأكاديمي', icon: 'students' },
   { key: 'branches', label: 'فروع المعهد', icon: 'settings' },
   { key: 'site', label: 'إعدادات الموقع', icon: 'settings' },
   { key: 'accounts', label: 'المستخدمون والأدوار', icon: 'accounts' },
@@ -59,6 +60,11 @@ const CODE_AREA = {
 
   'colleges.read': 'colleges',
   'colleges.manage': 'colleges',
+
+  'faculty_members.read': 'faculty',
+  'faculty_members.create': 'faculty',
+  'faculty_members.update': 'faculty',
+  'faculty_members.delete': 'faculty',
 
   'branches.read': 'branches',
   'branches.manage': 'branches',
@@ -172,6 +178,16 @@ export const TEMPLATES = [
     codes: [
       'dashboard.access',
       'colleges.read', 'colleges.manage',
+    ],
+  },
+  {
+    key: 'faculty',
+    name: 'قسم الكادر',
+    desc: 'إدارة أعضاء هيئة التدريس (الرتب، الأقسام، الفروع، الصور).',
+    codes: [
+      'dashboard.access',
+      'faculty_members.read', 'faculty_members.create', 'faculty_members.update', 'faculty_members.delete',
+      'media_library.read',
     ],
   },
   {

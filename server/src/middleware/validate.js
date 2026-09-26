@@ -49,6 +49,11 @@ const FIELD_LABELS = {
   outcomes: 'مخرجات التعلم',
   admission_open: 'التقديم مفتوح',
   branch_filter: 'الفلتر',
+  name_ar: 'الاسم بالعربية',
+  name_en: 'الاسم بالإنجليزية',
+  specialization: 'التخصص',
+  photo: 'الصورة الشخصية',
+  is_dept_head: 'رئيس قسم',
 };
 
 function fieldLabel(path) {

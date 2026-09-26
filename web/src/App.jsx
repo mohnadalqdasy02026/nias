@@ -32,6 +32,7 @@ import RolesAdmin from './pages/admin/RolesAdmin.jsx';
 import ContactMessages from './pages/admin/ContactMessages.jsx';
 import BranchesAdmin from './pages/admin/BranchesAdmin.jsx';
 import CollegesAdmin from './pages/admin/CollegesAdmin.jsx';
+import FacultyAdmin from './pages/admin/FacultyAdmin.jsx';
 
 export default function App() {
   return (
@@ -156,6 +157,14 @@ export default function App() {
               element={
                 <ProtectedRoute permission="colleges.read">
                   <CollegesAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="faculty"
+              element={
+                <ProtectedRoute permission="faculty_members.read">
+                  <FacultyAdmin />
                 </ProtectedRoute>
               }
             />
