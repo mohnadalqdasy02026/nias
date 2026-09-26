@@ -59,6 +59,7 @@ function Header() {
         </Link>
 
         <nav className={`main-nav${open ? ' main-nav--open' : ''}`} aria-label="التنقل الرئيسي">
+          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); }}>×</button>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
