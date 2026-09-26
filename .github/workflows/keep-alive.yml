@@ -2,7 +2,7 @@ name: keep-alive
 
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    - cron: "*/5 * * * *"
   workflow_dispatch: {}
 
 jobs:
@@ -10,4 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Wake NIAS Academy
-        run: curl -fsS https://nias-academy.onrender.com/healthz
+        shell: bash
+        run: |
+          for i in 1 2 3; do
+            if curl -fsS --max-time 30 https://nias-academy.onrender.com/healthz; then
+              echo "ping ok on attempt $i"
+              exit 0
+            fi
+            echo "ping attempt $i failed, retrying..."
+            sleep 15
+          done
+          echo "ping failed after 3 attempts"
+          exit 1
