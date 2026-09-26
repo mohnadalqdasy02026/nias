@@ -2826,11 +2826,23 @@ code {
     padding: 12px 18px;
   }
 
-  /* Show the whole slide image instead of cropping it on phones */
+  /* On phones give the hero image a realistic band at the top and let
+     the content sit below on the solid hero background. This avoids the
+     aggressive vertical crop of a full-height cover. */
+  .hero.has-slides .hero-slides {
+    top: 0;
+    bottom: auto;
+    height: 340px;
+  }
+
+  .hero.has-slides .hero-inner {
+    padding-top: 372px; /* image band (340px) + breathing room */
+  }
+
   .hero-slide {
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
-    background-position: center center;
+    background-position: center top;
   }
 
   .hero-stats {
