@@ -39,11 +39,18 @@ function Header() {
     return isHeadquartersName(label) ? label : (label.includes('فرع') ? label : `فرع ${label}`);
   };
 
+  const handleBrandClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.location.reload();
+    }
+  };
+
   return (
     <header className="site-header">
       <a className="skip-link" href="#main-content">تخطى إلى المحتوى</a>
       <div className="container header-inner">
-        <Link to="/" className="brand" aria-label="المعهد الوطني للعلوم الإدارية - الرئيسية">
+        <Link to="/" className="brand" aria-label="المعهد الوطني للعلوم الإدارية - الرئيسية" onClick={handleBrandClick}>
           <Logo src={general.logo} />
           <span className="brand-text">
             <strong>{general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'}</strong>
