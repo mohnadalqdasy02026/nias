@@ -1,4 +1,5 @@
 import { CollegesRepository } from '../repositories/colleges.repository.js';
+import { AppError } from '../utils/AppError.js';
 
 export class CollegesService {
   constructor(repo = new CollegesRepository()) {
@@ -9,13 +10,25 @@ export class CollegesService {
     return this.repo.list();
   }
 
+  async create(data) {
+    if (data.branch_id && !(await this.repo.branchExists(data.branch_id))) {
+      throw AppError.badRequest('الفرع المحدد غير موجود.');
+    }
+    return this.repo.create(data);
+  }
+
   async update(id, data) {
     const college = await this.repo.findById(id);
-    if (!college) {
-      const error = new Error('الكلية غير موجودة.');
-      error.status = 404;
-      throw error;
+    if (!college) throw AppError.notFound('الكلية غير موجودة.');
+    if (data.branch_id && !(await this.repo.branchExists(data.branch_id))) {
+      throw AppError.badRequest('الفرع المحدد غير موجود.');
     }
     return this.repo.update(id, data);
+  }
+
+  async remove(id) {
+    const college = await this.repo.findById(id);
+    if (!college) throw AppError.notFound('الكلية غير موجودة.');
+    return this.repo.remove(id);
   }
 }

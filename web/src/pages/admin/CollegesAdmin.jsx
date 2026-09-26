@@ -1,13 +1,19 @@
 import { useEffect, useState, useRef } from 'react';
 import { api } from '../../api/client.js';
+import RichEditor from '../../components/admin/RichEditor.jsx';
 
 const MAX_IMAGE_WIDTH = 1280;
 const IMAGE_QUALITY = 0.85;
 
 const emptyForm = {
+  branch_id: '',
   name_ar: '',
   name_en: '',
   dean_name: '',
+  dean_name_ar: '',
+  dean_name_en: '',
+  dean_message_ar: '',
+  dean_message_en: '',
   image: '',
   dean_image: '',
   vision: '',
@@ -24,11 +30,11 @@ export default function CollegesAdmin() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(emptyForm);
   const [imageBusy, setImageBusy] = useState(null);
-  const [paths, setPaths] = useState({ branches: [] });
+  const [branches, setBranches] = useState([]);
 
   useEffect(() => {
     load();
-    api.get('/admin/branches', { auth: true }).then((list) => setPaths({ branches: list ?? [] })).catch(() => {});
+    api.get('/admin/branches', { auth: true }).then((list) => setBranches(list ?? [])).catch(() => {});
   }, []);
 
   const load = async () => {
@@ -48,6 +54,10 @@ export default function CollegesAdmin() {
       name_ar: c?.name_ar ?? '',
       name_en: c?.name_en ?? '',
       dean_name: c?.dean_name ?? '',
+      dean_name_ar: c?.dean_name_ar ?? '',
+      dean_name_en: c?.dean_name_en ?? '',
+      dean_message_ar: c?.dean_message_ar ?? '',
+      dean_message_en: c?.dean_message_en ?? '',
       image: c?.image ?? '',
       dean_image: c?.dean_image ?? '',
       vision: c?.vision ?? '',
@@ -55,6 +65,12 @@ export default function CollegesAdmin() {
       about: c?.about ?? '',
       status: c?.status ?? 'active',
     });
+  };
+
+  const startNew = () => {
+    setEditingId(null);
+    setForm(emptyForm);
+    setShowForm(true);
   };
 
   const cancel = () => { setShowForm(false); setEditingId(null); setForm(emptyForm); };
@@ -94,10 +110,10 @@ export default function CollegesAdmin() {
       const outType = isPng ? 'image/webp' : 'image/jpeg';
       const compressed = canvas.toDataURL(outType, IMAGE_QUALITY);
       const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || (targetKey === 'dean_image' ? 'dean' : 'college');
+      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || (targetKey === 'dean_image' ? 'college-dean' : 'college');
       const saved = await api.post(
         '/admin/media',
-        { file_name: `${baseName}-${Date.now()}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: baseName },
+        { file_name: `${baseName}-${Date.now()}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: form.name_ar || 'كلية' },
         { auth: true },
       );
       setForm((f) => ({ ...f, [targetKey]: saved.url }));
@@ -117,19 +133,28 @@ export default function CollegesAdmin() {
     e.preventDefault();
     setBusy('save');
     setError(null);
+    const payload = {
+      branch_id: form.branch_id ? Number(form.branch_id) : null,
+      name_ar: form.name_ar.trim(),
+      name_en: form.name_en.trim() || null,
+      dean_name: form.dean_name.trim() || null,
+      dean_name_ar: form.dean_name_ar.trim() || null,
+      dean_name_en: form.dean_name_en.trim() || null,
+      dean_message_ar: form.dean_message_ar.trim() || null,
+      dean_message_en: form.dean_message_en.trim() || null,
+      image: form.image.trim() || null,
+      dean_image: form.dean_image.trim() || null,
+      vision: form.vision.trim() || null,
+      mission: form.mission.trim() || null,
+      about: form.about.trim() || null,
+      status: form.status,
+    };
     try {
-      await api.patch(`/admin/colleges/${editingId}`, {
-        branch_id: form.branch_id ? Number(form.branch_id) : null,
-        name_ar: form.name_ar.trim(),
-        name_en: form.name_en.trim() || null,
-        dean_name: form.dean_name.trim() || null,
-        image: form.image.trim() || null,
-        dean_image: form.dean_image.trim() || null,
-        vision: form.vision.trim() || null,
-        mission: form.mission.trim() || null,
-        about: form.about.trim() || null,
-        status: form.status,
-      }, { auth: true });
+      if (editingId) {
+        await api.patch(`/admin/colleges/${editingId}`, payload, { auth: true });
+      } else {
+        await api.post('/admin/colleges', payload, { auth: true });
+      }
       cancel();
       await load();
     } catch (err) {
@@ -139,10 +164,27 @@ export default function CollegesAdmin() {
     }
   };
 
+  const remove = async (c) => {
+    if (!window.confirm(`هل تريد حذف الكلية «${c.name_ar}»؟ سيُحذف كل ما يرتبط بها من أقسام.`)) return;
+    setBusy(c.id);
+    setError(null);
+    try {
+      await api.del(`/admin/colleges/${c.id}`, { auth: true });
+      cancel();
+      await load();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const totalDepartments = items.length;
+
   return (
     <section>
       <h1 className="admin-page-title">الكليات</h1>
-      <p className="muted">بيانات الكليات: الاسم، صورة الكلية، العميد وصورته، الرؤية والرسالة والنبذة. تنعكس على الصفحة الرئيسية وصفحات البرامج.</p>
+      <p className="muted">بيانات الكليات في كل فرع: الاسم، صورة الكلية، عميد الكلية وصورته وكلمته، الرؤية والرسالة والنبذة. تُعرض في صفحة الفرع بالتبويب «الكليات».</p>
 
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
@@ -162,7 +204,7 @@ export default function CollegesAdmin() {
               <label>الفرع</label>
               <select value={form.branch_id ?? ''} onChange={(e) => setForm({ ...form, branch_id: e.target.value })}>
                 <option value="">غير محدد</option>
-                {paths.branches.map((b) => <option key={b.id} value={b.id}>{b.name_ar}</option>)}
+                {branches.map((b) => <option key={b.id} value={b.id}>{b.name_ar}</option>)}
               </select>
             </div>
             <div className="form-field">
@@ -173,7 +215,15 @@ export default function CollegesAdmin() {
               </select>
             </div>
             <div className="form-field form-field--full">
-              <label>عميد الكلية (اسم)</label>
+              <label>عميد الكلية (اسم بالعربية)</label>
+              <input value={form.dean_name_ar ?? ''} onChange={(e) => setForm({ ...form, dean_name_ar: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>عميد الكلية (اسم بالإنجليزية)</label>
+              <input value={form.dean_name_en ?? ''} onChange={(e) => setForm({ ...form, dean_name_en: e.target.value })} dir="ltr" />
+            </div>
+            <div className="form-field form-field--full">
+              <label>عميد الكلية (اسم مختصر / قديم)</label>
               <input value={form.dean_name ?? ''} onChange={(e) => setForm({ ...form, dean_name: e.target.value })} />
             </div>
             <div className="form-field form-field--full">
@@ -203,6 +253,14 @@ export default function CollegesAdmin() {
               </div>
             </div>
             <div className="form-field form-field--full">
+              <label>كلمة عميد الكلية (عربي)</label>
+              <RichEditor value={form.dean_message_ar ?? ''} onChange={(html) => setForm({ ...form, dean_message_ar: html })} rows={5} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>كلمة عميد الكلية (إنجليزي)</label>
+              <RichEditor value={form.dean_message_en ?? ''} onChange={(html) => setForm({ ...form, dean_message_en: html })} rows={5} />
+            </div>
+            <div className="form-field form-field--full">
               <label>الرؤية</label>
               <textarea rows={2} value={form.vision ?? ''} onChange={(e) => setForm({ ...form, vision: e.target.value })} />
             </div>
@@ -223,6 +281,9 @@ export default function CollegesAdmin() {
       )}
 
       <div className="admin-toolbar">
+        <button type="button" className="btn btn-primary" onClick={startNew}>
+          {busy === 'save' ? 'جاري...' : 'كلية جديدة'}
+        </button>
         <button type="button" className="btn btn-soft" onClick={load}>تحديث</button>
       </div>
 
@@ -231,11 +292,13 @@ export default function CollegesAdmin() {
           <thead>
             <tr>
               <th>الكلية</th>
+              <th>الفرع</th>
               <th>صورة الكلية</th>
               <th>العميد</th>
               <th>صورة العميد</th>
-              <th>الصورة</th>
+              <th>كلمة العميد</th>
               <th>الرؤية</th>
+              <th>الحالة</th>
               <th>إجراءات</th>
             </tr>
           </thead>
@@ -246,23 +309,32 @@ export default function CollegesAdmin() {
                   <strong>{c.name_ar}</strong>
                   <div className="muted">{c.name_en ?? ''}</div>
                 </td>
+                <td data-label="الفرع">{c.branch_name_ar ?? '—'}</td>
                 <td data-label="صورة الكلية">
                   {c.image ? <img src={c.image} alt="" className="table-thumb" /> : <span className="table-muted">—</span>}
                 </td>
-                <td data-label="العميد">{c.dean_name ? <span className="badge-msg badge-success">{c.dean_name}</span> : '—'}</td>
+                <td data-label="العميد">
+                  {c.dean_name_ar || c.dean_name_en || c.dean_name
+                    ? <span className="badge-msg badge-success">{c.dean_name_ar ?? c.dean_name_en ?? c.dean_name}</span>
+                    : '—'}
+                </td>
                 <td data-label="صورة العميد">
                   {c.dean_image ? <img src={c.dean_image} alt="" className="table-thumb table-thumb--round" /> : <span className="table-muted">—</span>}
                 </td>
-                <td data-label="الصورة" className="table-muted">{c.status}</td>
+                <td data-label="كلمة العميد" className="table-muted">{c.dean_message_ar ? 'منشورة' : '—'}</td>
                 <td data-label="الرؤية" className="table-muted">{c.vision ? 'منشورة' : '—'}</td>
+                <td data-label="الحالة" className="table-muted">{c.status}</td>
                 <td data-label="إجراءات" className="table-actions">
-                  <button type="button" className="btn btn-sm btn-soft" disabled={busy === c.id} onClick={() => startEdit(c)}>تعديل</button>
+                  <div className="admin-action-row">
+                    <button type="button" className="btn btn-sm btn-soft" disabled={busy === c.id} onClick={() => startEdit(c)}>تعديل</button>
+                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-        {items.length === 0 && !error && <p className="muted admin-empty">لا توجد كليات.</p>}
+        {items.length === 0 && !error && <p className="muted admin-empty">لا توجد كليات.{totalDepartments === 0 ? '' : ''}</p>}
       </div>
     </section>
   );

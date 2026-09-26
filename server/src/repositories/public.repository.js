@@ -83,10 +83,24 @@ p.name_ar, p.name_en, p.program_type,
     return rows[0] ?? null;
   }
 
-  async listColleges() {
+  async listColleges(branchId = null) {
+    const params = [];
+    let where = "c.status = 'active'";
+    if (branchId) {
+      params.push(branchId);
+      where += ` AND c.branch_id = $1`;
+    }
     const { rows } = await pool.query(
-      `SELECT id, branch_id, name_ar, name_en, vision, mission, about, dean_name, image, dean_image
-       FROM colleges WHERE status = 'active' ORDER BY id`,
+      `SELECT c.id, c.branch_id,
+              b.name_ar AS branch_name_ar, b.slug AS branch_slug,
+              c.name_ar, c.name_en, c.vision, c.mission, c.about,
+              c.dean_name, c.dean_name_ar, c.dean_name_en,
+              c.dean_message_ar, c.dean_message_en,
+              c.image, c.dean_image
+         FROM colleges c
+         LEFT JOIN institute_branches b ON b.id = c.branch_id
+        WHERE ${where} ORDER BY c.id`,
+      params,
     );
     return rows;
   }

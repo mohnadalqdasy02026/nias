@@ -13,11 +13,29 @@ export class CollegesController {
     }
   };
 
+  create = async (req, res, next) => {
+    try {
+      res.status(201).json({ data: await this.service.create(req.body) });
+    } catch (e) {
+      next(e);
+    }
+  };
+
   update = async (req, res, next) => {
     try {
       const id = Number(req.params.id);
       const updated = await this.service.update(id, req.body);
       res.json({ data: updated });
+    } catch (e) {
+      next(e);
+    }
+  };
+
+  remove = async (req, res, next) => {
+    try {
+      const id = Number(req.params.id);
+      await this.service.remove(id);
+      res.json({ success: true });
     } catch (e) {
       next(e);
     }

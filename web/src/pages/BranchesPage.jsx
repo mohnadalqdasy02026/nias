@@ -47,6 +47,7 @@ function NewsThumb({ item }) {
 
 const TABS = [
   { key: 'dean', label: 'عميد الفرع' },
+  { key: 'colleges', label: 'الكليات' },
   { key: 'news', label: 'الأخبار' },
   { key: 'events', label: 'الفعاليات' },
   { key: 'courses', label: 'الدورات التدريبية' },
@@ -78,6 +79,7 @@ export default function BranchesPage() {
   const [branch, setBranch] = useState(null);
   const [news, setNews] = useState([]);
   const [courses, setCourses] = useState([]);
+  const [colleges, setColleges] = useState([]);
   const [faculty, setFaculty] = useState([]);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('dean');
@@ -99,14 +101,16 @@ export default function BranchesPage() {
     api.get(`/public/branches/${slug}`)
       .then(async (b) => {
         setBranch(b);
-        const [n, c, depts, fm] = await Promise.all([
+        const [n, c, cols, depts, fm] = await Promise.all([
           api.get(`/public/news?branchId=${b.id}&limit=50`).catch(() => []),
           api.get(`/public/training-courses?branchId=${b.id}`).catch(() => []),
+          api.get(`/public/colleges?branchId=${b.id}`).catch(() => []),
           api.get('/public/departments').catch(() => []),
           api.get(`/public/faculty?branchId=${b.id}`).catch(() => []),
         ]);
         setNews(n ?? []);
         setCourses(c ?? []);
+        setColleges(cols ?? []);
         const names = new Map((depts ?? []).map((d) => [String(d.id), d.name_ar]));
         setFaculty((fm ?? []).map((m) => ({
           ...m,
@@ -265,6 +269,72 @@ export default function BranchesPage() {
                     </div>
                   )}
                 </>
+              )}
+
+              {tab === 'colleges' && (
+                <section className="branch-section" aria-labelledby="branch-colleges-title">
+                  <h2 className="section-title" id="branch-colleges-title">كليات {label ?? 'الفرع'}</h2>
+                  {colleges.length > 0 ? (
+                    <div className="branch-colleges-grid">
+                      {colleges.map((college) => {
+                        const collegeDean = college.dean_name_ar ?? college.dean_name_en ?? college.dean_name;
+                        return (
+                          <article key={college.id} className="card branch-college-card">
+                            {college.image ? (
+                              <div className="branch-college-cover">
+                                <img src={college.image} alt={college.name_ar} loading="lazy" />
+                              </div>
+                            ) : (
+                              <div className="branch-college-cover branch-college-cover--placeholder" aria-hidden="true">
+                                <span>{college.name_ar?.slice(0, 1) ?? 'ك'}</span>
+                              </div>
+                            )}
+                            <div className="branch-college-body">
+                              <h3>{college.name_ar}</h3>
+                              {college.name_en && <span className="branch-college-en">{college.name_en}</span>}
+                              {college.about && <p className="branch-college-about">{college.about}</p>}
+                              {collegeDean && college.dean_image && (
+                                <div className="branch-college-dean">
+                                  <div className="branch-college-dean-photo">
+                                    <img src={college.dean_image} alt={`عميد ${college.name_ar}`} loading="lazy" />
+                                  </div>
+                                  <div className="branch-college-dean-info">
+                                    <span className="branch-college-dean-role">عميد الكلية</span>
+                                    <strong>{collegeDean}</strong>
+                                  </div>
+                                </div>
+                              )}
+                              {college.dean_message_ar && (
+                                <div className="branch-college-dean-speech">
+                                  <span>كلمة عميد {college.name_ar}</span>
+                                  <div dangerouslySetInnerHTML={{ __html: decodeEntities(college.dean_message_ar) }} />
+                                </div>
+                              )}
+                              {(college.vision || college.mission) && (
+                                <div className="branch-college-vm">
+                                  {college.vision && (
+                                    <div className="branch-college-vm-item">
+                                      <strong>الرؤية</strong>
+                                      <p>{college.vision}</p>
+                                    </div>
+                                  )}
+                                  {college.mission && (
+                                    <div className="branch-college-vm-item">
+                                      <strong>الرسالة</strong>
+                                      <p>{college.mission}</p>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p className="muted">لا توجد كليات مسجلة لهذا الفرع بعد.</p>
+                  )}
+                </section>
               )}
 
               {tab === 'news' && (

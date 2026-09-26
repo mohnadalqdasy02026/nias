@@ -326,6 +326,13 @@
   flex-wrap: wrap;
 }
 
+.admin-action-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
 .admin-thumb {
   display: block;
   width: 64px;

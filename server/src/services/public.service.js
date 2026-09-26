@@ -37,8 +37,8 @@ export class PublicService {
     return program;
   }
 
-  async listColleges() {
-    return this.publicRepo.listColleges();
+  async listColleges(branchId) {
+    return this.publicRepo.listColleges(branchId ?? null);
   }
 
   async listDepartments(collegeId) {
