@@ -163,7 +163,9 @@ export default function PublicLayout() {
     <>
       <Header />
       <main id="main-content">
-        <Outlet />
+        <div className="page-enter" key={location.pathname}>
+          <Outlet />
+        </div>
       </main>
       {isHome && <Footer />}
     </>

@@ -1,4 +1,4 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/auth.jsx';
 
@@ -57,6 +57,7 @@ export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const location = useLocation();
 
   const handleLogout = async () => {
     await logout();
@@ -139,7 +140,9 @@ export default function AdminLayout() {
         </header>
 
         <main className="admin-content">
-          <Outlet />
+          <div className="page-enter" key={location.pathname}>
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>
