@@ -2808,6 +2808,31 @@ code {
     font-size: 1.05rem;
   }
 
+  .hero-eyebrow {
+    width: auto;
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .hero-actions {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .hero-actions .btn {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 12px 18px;
+  }
+
+  /* Show the whole slide image instead of cropping it on phones */
+  .hero-slide {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+  }
+
   .hero-stats {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
