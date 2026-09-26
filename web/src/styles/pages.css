@@ -2926,10 +2926,19 @@ code {
 }
 
 /* ===== Mobile fixes (site stays fixed, no zoom/resize) ===== */
-html,
-body {
+html {
   max-width: 100%;
-  overflow-x: hidden;
+}
+
+/* Confine horizontal clipping to the app root so body/html stay the
+   document scroller (keeps position:sticky on .site-header working). */
+body,
+#root {
+  max-width: 100%;
+}
+
+#root {
+  overflow-x: clip;
   -webkit-overflow-scrolling: touch;
 }
 
