@@ -185,6 +185,7 @@ export default function Home() {
                       src={c.image && c.image !== 'null' ? c.image : '/uploads/design/site/logo.jpg'}
                       alt={c.name_ar}
                       loading="lazy"
+                      onError={(e) => { e.currentTarget.src = '/uploads/design/site/logo.jpg'; }}
                     />
                   </div>
                   <h3>{c.name_ar}</h3>

@@ -466,20 +466,22 @@
   border-radius: var(--radius-lg);
 }
 
+/* One fixed frame for every college photo: the image fills it edge to edge and
+   is cropped from the centre, so all cards end up exactly the same size. */
 .college-cover {
-  height: 180px;
-  background: #ffffff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 18px;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-nav) 100%);
 }
 
 .college-cover img {
-  width: auto;
+  width: 100%;
   height: 100%;
-  max-width: 100%;
-  object-fit: contain;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
 .college-card h3 {
@@ -2482,11 +2484,19 @@ code {
   flex-direction: column;
   gap: 0;
   overflow: hidden;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
+.branch-college-card:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .branch-college-cover {
   width: 100%;
-  height: 190px;
+  aspect-ratio: 16 / 9;
   flex: 0 0 auto;
   overflow: hidden;
   background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-nav) 100%);
@@ -2496,6 +2506,7 @@ code {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
@@ -2638,6 +2649,196 @@ code {
   line-height: 1.8;
 }
 
+.branch-college-more {
+  margin-top: auto;
+  padding-top: 14px;
+  align-self: flex-start;
+  color: var(--color-primary-deep);
+  font-weight: 700;
+  font-size: 0.92rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.branch-college-more::after {
+  content: '\2190';
+  transition: transform 0.25s ease;
+}
+
+.branch-college-card:hover .branch-college-more::after {
+  transform: translateX(-5px);
+}
+
+/* College data dialog */
+.college-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(4, 26, 21, 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  animation: college-modal-in 0.24s ease;
+}
+
+.college-modal-card {
+  position: relative;
+  width: min(880px, 100%);
+  max-height: min(88vh, 900px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 30px 70px rgba(4, 26, 21, 0.4);
+  animation: college-modal-card-in 0.28s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.college-modal-close {
+  position: absolute;
+  top: 14px;
+  inset-inline-end: 14px;
+  z-index: 2;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.college-modal-close:hover {
+  background: #fff;
+  transform: scale(1.08);
+}
+
+.college-modal-cover {
+  width: 100%;
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-nav) 100%);
+}
+
+.college-modal-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.college-modal-cover-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.college-modal-cover-placeholder span {
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 4rem;
+  font-weight: 900;
+  opacity: 0.85;
+}
+
+.college-modal-body {
+  padding: 26px 30px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.college-modal-body h2 {
+  margin: 0;
+  color: var(--color-primary-deep);
+  font-size: 1.6rem;
+}
+
+.college-modal-body h3 {
+  margin: 0 0 6px;
+  color: var(--color-primary-dark);
+  font-size: 1.02rem;
+}
+
+.college-modal-text {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.9;
+  font-size: 0.97rem;
+}
+
+.college-modal-dean {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  background: rgba(14, 124, 102, 0.07);
+  outline: 1px solid rgba(14, 124, 102, 0.18);
+}
+
+.college-modal-dean-photo {
+  width: 74px;
+  height: 74px;
+  flex: 0 0 74px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  padding: 5px;
+  box-shadow: 0 6px 14px rgba(14, 124, 102, 0.18);
+}
+
+.college-modal-dean-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+.college-modal-dean-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.college-modal-block {
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: rgba(14, 124, 102, 0.05);
+  outline: 1px solid rgba(14, 124, 102, 0.14);
+}
+
+.college-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+@keyframes college-modal-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes college-modal-card-in {
+  from { opacity: 0; transform: translateY(22px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 /* Section headings separation inside branch page */
 .branch-section-spacer {
   margin-top: 34px;
@@ -2651,6 +2852,27 @@ code {
     height: 170px;
   }
   .branch-colleges-grid {
+    grid-template-columns: 1fr;
+  }
+  .college-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .college-modal-card {
+    max-height: 92vh;
+    width: 100%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .college-modal-cover {
+    aspect-ratio: 16 / 9;
+  }
+  .college-modal-body {
+    padding: 20px 18px 26px;
+  }
+  .college-modal-body h2 {
+    font-size: 1.35rem;
+  }
+  .college-modal-grid {
     grid-template-columns: 1fr;
   }
 }
