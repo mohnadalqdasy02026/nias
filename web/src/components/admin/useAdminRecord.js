@@ -24,13 +24,13 @@ export function useAdminRecord({ id, path, url, fallbackFetch, onNotFound }) {
     setLoading(true);
     setError(null);
     (fallbackFetch
-      ? api.get(fallbackFetch).then((rows) => {
+      ? api.get(fallbackFetch, { auth: true }).then((rows) => {
           const list = Array.isArray(rows) ? rows : rows?.items ?? [];
           const found = list.find((r) => String(r.id) === String(id));
           if (!found) throw new Error('العنصر غير موجود');
           return found;
         })
-      : api.get(url ?? `${path}/${id}`)
+      : api.get(url ?? `${path}/${id}`, { auth: true })
     )
       .then((data) => {
         if (alive) setRecord(data);
