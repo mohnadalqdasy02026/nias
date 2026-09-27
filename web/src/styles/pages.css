@@ -92,6 +92,10 @@
   display: none;
 }
 
+.nav-scrim {
+  display: none;
+}
+
 .nav-link {
   color: var(--color-text);
   padding: 10px 14px;
@@ -2938,6 +2942,24 @@ code {
   .nav-close:hover {
     background: #fff;
     transform: scale(1.08);
+  }
+
+  /* Dimmed layer behind the drawer: tapping it closes the menu. */
+  .nav-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(4, 26, 21, 0.42);
+    opacity: 0;
+    visibility: hidden;
+    z-index: 150;
+    transition: opacity 0.34s ease, visibility 0s linear 0.34s;
+  }
+
+  .nav-scrim--open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.34s ease, visibility 0s;
   }
 
   .nav-toggle {

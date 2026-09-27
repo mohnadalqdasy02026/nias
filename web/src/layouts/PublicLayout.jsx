@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
@@ -29,6 +29,8 @@ function Header() {
   const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
   const general = settings?.general ?? {};
+  const navRef = useRef(null);
+  const toggleRef = useRef(null);
 
   useEffect(() => {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
@@ -46,6 +48,40 @@ function Header() {
     }
   };
 
+  const closeMenu = () => {
+    setOpen(false);
+    setBranchOpen(false);
+  };
+
+  // Tapping outside the drawer closes it, and Escape closes it too.
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointerDown = (e) => {
+      if (navRef.current?.contains(e.target)) return;
+      if (toggleRef.current?.contains(e.target)) return;
+      closeMenu();
+    };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') closeMenu();
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open]);
+
+  // Freeze the page behind the drawer so it cannot scroll on touch.
+  useEffect(() => {
+    if (!open) return undefined;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
   return (
     <header className="site-header">
       <a className="skip-link" href="#main-content">تخطى إلى المحتوى</a>
@@ -58,7 +94,7 @@ function Header() {
           </span>
         </Link>
 
-        <nav className={`main-nav${open ? ' main-nav--open' : ''}`} aria-label="التنقل الرئيسي">
+        <nav ref={navRef} className={`main-nav${open ? ' main-nav--open' : ''}`} aria-label="التنقل الرئيسي">
           <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); }}>×</button>
           {navItems.map((item) => (
             <NavLink
@@ -105,6 +141,7 @@ function Header() {
         </nav>
 
         <button
+          ref={toggleRef}
           type="button"
           className={`nav-toggle${open ? ' nav-toggle--open' : ''}`}
           aria-label={open ? 'إغلاق القائمة' : 'فتح القائمة'}
@@ -116,6 +153,12 @@ function Header() {
           <span />
         </button>
       </div>
+
+      <div
+        className={`nav-scrim${open ? ' nav-scrim--open' : ''}`}
+        onClick={closeMenu}
+        aria-hidden="true"
+      />
     </header>
   );
 }
