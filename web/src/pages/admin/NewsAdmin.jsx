@@ -1,30 +1,23 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../contexts/auth.jsx';
 import { branchLabel } from '../../lib/branch.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
-
-const MAX_IMAGE_WIDTH = 1280;
-const IMAGE_QUALITY = 0.82;
+import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
+import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
+import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 
 const statusLabel = { draft: 'مسودة', published: 'منشور', archived: 'مؤرشف' };
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
 
 export default function NewsAdmin() {
-  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [categories, setCategories] = useState([]);
-  const [branches, setBranches] = useState([]);
   const [status, setStatus] = useState('');
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(null);
-  const [imageBusy, setImageBusy] = useState(false);
-  const imageFileRef = useRef(null);
   const perPage = 20;
 
   const load = useCallback(async (fstatus = status, p = page) => {
@@ -35,8 +28,8 @@ export default function NewsAdmin() {
       if (p > 1) params.set('page', p);
       params.set('limit', perPage);
       const data = await api.get(`/admin/content/news?${params.toString()}`, { auth: true });
-      setItems(data.items ?? data);
-      setTotal(data.total ?? items.length);
+      setItems(data?.items ?? data ?? []);
+      setTotal(data?.total ?? items.length);
       setPage(p);
     } catch (e) {
       setError(e.message);
@@ -45,114 +38,8 @@ export default function NewsAdmin() {
 
   useEffect(() => {
     load();
-    api.get('/admin/content/news-categories', { auth: true }).then(setCategories).catch(() => {});
-    api.get('/public/branches').then(setBranches).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const startEdit = (item) => {
-    setEditingId(item?.id ?? null);
-    setShowForm(true);
-    setForm({
-      category_id: item?.category_id ?? '',
-      content_type: item?.content_type ?? 'news',
-      branch_id: item?.branch_id ?? user?.branchId ?? '',
-      title_ar: item?.title_ar ?? '',
-      title_en: item?.title_en ?? '',
-      summary_ar: item?.summary_ar ?? '',
-      body_ar: item?.body_ar ?? '',
-      cover_image: item?.cover_image ?? '',
-      is_featured: item?.is_featured ?? false,
-      status: item?.status ?? 'draft',
-    });
-  };
-
-  const cancel = () => {
-    setShowForm(false);
-    setEditingId(null);
-    setForm(null);
-  };
-
-  const compressAndUpload = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setError('الرجاء اختيار ملف صورة.');
-      return;
-    }
-    setImageBusy(true);
-    setError(null);
-    try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result ?? ''));
-        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
-        reader.readAsDataURL(file);
-      });
-
-      const img = await new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
-        image.src = dataUrl;
-      });
-
-      const scale = Math.min(1, MAX_IMAGE_WIDTH / img.width);
-      const width = Math.max(1, Math.round(img.width * scale));
-      const height = Math.max(1, Math.round(img.height * scale));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, width, height);
-
-      const isPng = file.type === 'image/png';
-      const outType = isPng ? 'image/webp' : 'image/jpeg';
-      const compressed = canvas.toDataURL(outType, IMAGE_QUALITY);
-      const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'news';
-
-      const saved = await api.post(
-        '/admin/media',
-        { file_name: `${form.title_ar ?? baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: form.title_ar ?? baseName },
-        { auth: true },
-      );
-      setForm((f) => ({ ...f, cover_image: saved.url }));
-      if (imageFileRef.current) imageFileRef.current.value = '';
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setImageBusy(false);
-    }
-  };
-
-  const removeCover = () => {
-    setForm((f) => ({ ...f, cover_image: '' }));
-    if (imageFileRef.current) imageFileRef.current.value = '';
-  };
-
-  const save = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setBusy('save');
-    const body = {
-      ...form,
-      category_id: form.category_id === '' ? null : Number(form.category_id),
-      branch_id: form.branch_id === '' ? null : Number(form.branch_id),
-    };
-    try {
-      if (editingId) await api.patch(`/admin/content/news/${editingId}`, body, { auth: true });
-      else await api.post('/admin/content/news', body, { auth: true });
-      cancel();
-      await load();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(null);
-    }
-  };
 
   const toggleStatus = async (item) => {
     setBusy(item.id);
@@ -186,9 +73,146 @@ export default function NewsAdmin() {
 
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
-      {showForm && (
-        <form className="card admin-form" onSubmit={save}>
-          <h3>{editingId ? 'تعديل خبر' : 'خبر جديد'}</h3>
+      <div className="admin-toolbar">
+        <select value={status} onChange={(e) => { setStatus(e.target.value); load(e.target.value, 1); }}>
+          <option value="">كل الحالات</option>
+          <option value="draft">مسودة</option>
+          <option value="published">منشور</option>
+          <option value="archived">مؤرشف</option>
+        </select>
+        <Link to="new" className="btn btn-primary">+ خبر جديد</Link>
+      </div>
+
+      <div className="admin-table-wrap">
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>العنوان</th>
+              <th>الفرع</th>
+              <th>التصنيف</th>
+              <th>الحالة</th>
+              <th>المنشور في</th>
+              <th>إجراءات</th>
+            </tr>
+          </thead>
+          <tbody>
+            {items.map((n) => (
+              <tr key={n.id}>
+                <td data-label="العنوان">{n.title_ar}{n.is_featured ? ' ★' : ''}</td>
+                <td data-label="الفرع">{n.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(n.branch_name_ar)}</span> : '—'}</td>
+                <td data-label="التصنيف">{n.category_name ?? '—'}</td>
+                <td data-label="الحالة">
+                  <button type="button" className={`badge-msg badge-${n.status}`} disabled={busy === n.id} onClick={() => toggleStatus(n)}>
+                    {statusLabel[n.status]}
+                  </button>
+                </td>
+                <td data-label="المنشور في">{n.published_at ? new Date(n.published_at).toLocaleString('ar-YE') : '—'}</td>
+                <td data-label="إجراءات" className="table-actions">
+                  <div className="admin-action-row">
+                    <Link to={String(n.id)} className="btn btn-sm btn-soft">تعديل</Link>
+                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === n.id} onClick={() => remove(n)}>حذف</button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {items.length === 0 && <p className="muted admin-empty">لا توجد عناصر.</p>}
+      </div>
+
+      {total > perPage && (
+        <div className="admin-pagination">
+          <button type="button" className="btn btn-sm btn-soft" disabled={page === 1} onClick={() => { const np = page - 1; load(status, np); }}>السابق</button>
+          <span>صفحة {page} من {Math.max(1, Math.ceil(total / perPage))}</span>
+          <button type="button" className="btn btn-sm btn-soft" disabled={page >= Math.ceil(total / perPage)} onClick={() => { const np = page + 1; load(status, np); }}>التالي</button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export function NewsForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEdit = Boolean(id);
+  const { user } = useAuth();
+  const { record, loading } = useAdminRecord({ id, path: '/admin/content/news' });
+  const [categories, setCategories] = useState([]);
+  const [branches, setBranches] = useState([]);
+  const [form, setForm] = useState({
+    category_id: '',
+    content_type: 'news',
+    branch_id: user?.branchId ?? '',
+    title_ar: '',
+    title_en: '',
+    summary_ar: '',
+    body_ar: '',
+    cover_image: '',
+    is_featured: false,
+    status: 'draft',
+  });
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api.get('/admin/content/news-categories', { auth: true }).then(setCategories).catch(() => {});
+    api.get('/public/branches').then(setBranches).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!record) return;
+    setForm({
+      category_id: record.category_id ?? '',
+      content_type: record.content_type ?? 'news',
+      branch_id: record.branch_id ?? '',
+      title_ar: record.title_ar ?? '',
+      title_en: record.title_en ?? '',
+      summary_ar: record.summary_ar ?? '',
+      body_ar: record.body_ar ?? '',
+      cover_image: record.cover_image ?? '',
+      is_featured: record.is_featured ?? false,
+      status: record.status ?? 'draft',
+    });
+  }, [record]);
+
+  const upload = useImageUpload({
+    onUploaded: (_key, url) => setForm((f) => ({ ...f, cover_image: url })),
+    onError: setError,
+    altText: () => form.title_ar || 'خبر',
+  });
+
+  const save = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    const body = {
+      ...form,
+      category_id: form.category_id === '' ? null : Number(form.category_id),
+      branch_id: form.branch_id === '' ? null : Number(form.branch_id),
+    };
+    try {
+      if (isEdit) await api.patch(`/admin/content/news/${id}`, body, { auth: true });
+      else await api.post('/admin/content/news', body, { auth: true });
+      navigate('/admin/content/news');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (isEdit && loading) return <p className="admin-form-loading">جارٍ تحميل بيانات الخبر…</p>;
+
+  return (
+    <AdminFormPage
+      title={isEdit ? `تعديل خبر: ${form.title_ar || ''}` : 'خبر جديد'}
+      subtitle="إدارة المحتوى الإخباري والنشر."
+      backTo="/admin/content/news"
+    >
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
+      <form className="card admin-form" onSubmit={save}>
+        <AdminFormSection title="العنوان والتصنيف">
           <div className="form-grid">
             <div className="form-field form-field--full">
               <label>العنوان (عربي) *</label>
@@ -232,6 +256,11 @@ export default function NewsAdmin() {
                 خبر مميز
               </label>
             </div>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection title="المحتوى">
+          <div className="form-grid">
             <div className="form-field form-field--full">
               <label>الملخص</label>
               <textarea rows={2} value={form.summary_ar ?? ''} onChange={(e) => setForm({ ...form, summary_ar: e.target.value })} />
@@ -240,97 +269,23 @@ export default function NewsAdmin() {
               <label>النص الكامل</label>
               <RichEditor value={form.body_ar ?? ''} onChange={(html) => setForm({ ...form, body_ar: html })} rows={8} />
             </div>
-            <div className="form-field form-field--full">
-              <label>صورة الغلاف (cover)</label>
-              <div className="course-image-picker">
-                {form.cover_image ? (
-                  <div className="course-image-preview">
-                    <img src={form.cover_image} alt="" />
-                  </div>
-                ) : null}
-                <div className="course-image-actions">
-                  <button
-                    type="button"
-                    className="btn btn-soft"
-                    disabled={imageBusy}
-                    onClick={() => imageFileRef.current?.click()}
-                  >
-                    {imageBusy ? 'جارٍ التجهيز والضغط...' : form.cover_image ? 'استبدال الصورة' : 'اختيار صورة من الجهاز'}
-                  </button>
-                  {form.cover_image ? (
-                    <button type="button" className="btn btn-sm btn-danger-soft" onClick={removeCover}>إزالة</button>
-                  ) : null}
-                </div>
-              </div>
-              <input
-                ref={imageFileRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => compressAndUpload(e.target.files?.[0])}
-              />
-              <p className="muted admin-field-hint">تُضغط الصورة تلقائيًا (عرض أقصى 1280px بجودة موفرة) فلا تبطئ الموقع أو محركات البحث.</p>
-            </div>
+            <ImageField
+              label="صورة الغلاف (cover)"
+              value={form.cover_image}
+              onChange={(url) => setForm({ ...form, cover_image: url })}
+              upload={upload}
+              fieldKey="cover_image"
+              shape="wide"
+              hint="تُضغط الصورة تلقائيًا (عرض أقصى 1280px بجودة موفرة) فلا تبطئ الموقع أو محركات البحث."
+            />
           </div>
-          <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'save'}>{editingId ? 'حفظ' : 'إنشاء'}</button>
-            <button type="button" className="btn btn-soft" onClick={cancel}>إلغاء</button>
-          </div>
-        </form>
-      )}
+        </AdminFormSection>
 
-      <div className="admin-toolbar">
-        <select value={status} onChange={(e) => { setStatus(e.target.value); load(e.target.value, 1); }}>
-          <option value="">كل الحالات</option>
-          <option value="draft">مسودة</option>
-          <option value="published">منشور</option>
-          <option value="archived">مؤرشف</option>
-        </select>
-        <button type="button" className="btn btn-primary" onClick={() => startEdit(null)}>+ خبر جديد</button>
-      </div>
-
-      <div className="admin-table-wrap">
-        <table className="admin-table">
-          <thead>
-            <tr>
-              <th>العنوان</th>
-              <th>الفرع</th>
-              <th>التصنيف</th>
-              <th>الحالة</th>
-              <th>المنشور في</th>
-              <th>إجراءات</th>
-            </tr>
-          </thead>
-          <tbody>
-            {items.map((n) => (
-              <tr key={n.id}>
-                <td data-label="العنوان">{n.title_ar}{n.is_featured ? ' ★' : ''}</td>
-                <td data-label="الفرع">{n.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(n.branch_name_ar)}</span> : '—'}</td>
-                <td data-label="التصنيف">{n.category_name ?? '—'}</td>
-                <td data-label="الحالة">
-                  <button type="button" className={`badge-msg badge-${n.status}`} disabled={busy === n.id} onClick={() => toggleStatus(n)}>
-                    {statusLabel[n.status]}
-                  </button>
-                </td>
-                <td data-label="المنشور في">{n.published_at ? new Date(n.published_at).toLocaleString('ar-YE') : '—'}</td>
-                <td data-label="إجراءات" className="table-actions">
-                  <button type="button" className="btn btn-sm btn-soft" disabled={busy === n.id} onClick={() => startEdit(n)}>تعديل</button>
-                  <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === n.id} onClick={() => remove(n)}>حذف</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-        {items.length === 0 && <p className="muted admin-empty">لا توجد عناصر.</p>}
-      </div>
-
-      {total > perPage && (
-        <div className="admin-pagination">
-          <button type="button" className="btn btn-sm btn-soft" disabled={page === 1} onClick={() => { const np = page - 1; load(status, np); }}>السابق</button>
-          <span>صفحة {page} من {Math.max(1, Math.ceil(total / perPage))}</span>
-          <button type="button" className="btn btn-sm btn-soft" disabled={page >= Math.ceil(total / perPage)} onClick={() => { const np = page + 1; load(status, np); }}>التالي</button>
+        <div className="admin-form-actions">
+          <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'جارٍ الحفظ…' : isEdit ? 'حفظ' : 'إنشاء'}</button>
+          <Link to="/admin/content/news" className="btn btn-soft">إلغاء</Link>
         </div>
-      )}
-    </section>
+      </form>
+    </AdminFormPage>
   );
 }

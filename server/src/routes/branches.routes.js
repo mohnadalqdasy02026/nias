@@ -10,6 +10,12 @@ const branchesController = new BranchesController();
 router.use(requireAuth);
 
 router.get('/', requirePermission('branches.read'), branchesController.list);
+router.get(
+  '/:id',
+  validate(branchIdParamsSchema),
+  requirePermission('branches.read'),
+  branchesController.get,
+);
 router.patch(
   '/:id',
   validate(branchIdParamsSchema),

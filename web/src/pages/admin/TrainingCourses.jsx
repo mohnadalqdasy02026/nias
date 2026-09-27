@@ -1,11 +1,13 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import { useAuth } from '../../contexts/auth.jsx';
 import { branchLabel } from '../../lib/branch.js';
+import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
+import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
+import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 
 const statusLabel = { draft: 'مسودة', open: 'مفتوحة', closed: 'مغلقة', completed: 'مكتملة' };
-const MAX_IMAGE_WIDTH = 1280;
-const IMAGE_QUALITY = 0.82;
 
 const emptyForm = {
   title: '',
@@ -22,7 +24,6 @@ const emptyForm = {
 };
 
 export default function TrainingCourses() {
-  const { user } = useAuth();
   const [items, setItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -31,11 +32,6 @@ export default function TrainingCourses() {
   const [branches, setBranches] = useState([]);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState(null);
-  const [imageBusy, setImageBusy] = useState(false);
-  const imageFileRef = useRef(null);
   const perPage = 20;
 
   const load = useCallback(async (fstatus = status, fbranch = branchFilter, p = page) => {
@@ -47,8 +43,8 @@ export default function TrainingCourses() {
       if (p > 1) params.set('page', p);
       params.set('limit', perPage);
       const data = await api.get(`/admin/training/courses?${params.toString()}`, { auth: true });
-      setItems(data.items ?? data);
-      setTotal(data.total ?? items.length);
+      setItems(data?.items ?? data ?? []);
+      setTotal(data?.total ?? items.length);
       setPage(p);
     } catch (e) {
       setError(e.message);
@@ -60,110 +56,6 @@ export default function TrainingCourses() {
     api.get('/public/branches').then(setBranches).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const startEdit = (c) => {
-    setEditingId(c?.id ?? null);
-    setShowForm(true);
-    setForm({
-      title: c?.title ?? '',
-      branch_id: c?.branch_id ?? user?.branchId ?? '',
-      description: c?.description ?? '',
-      fees: c?.fees ?? '',
-      start_date: c?.start_date ?? '',
-      end_date: c?.end_date ?? '',
-      location: c?.location ?? '',
-      capacity: c?.capacity ?? '',
-      trainer: c?.trainer ?? '',
-      image_url: c?.image_url ?? '',
-      status: c?.status ?? 'draft',
-    });
-  };
-
-  const cancel = () => { setShowForm(false); setEditingId(null); setForm(null); };
-
-  const compressAndUpload = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setError('الرجاء اختيار ملف صورة.');
-      return;
-    }
-    setImageBusy(true);
-    setError(null);
-    try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result ?? ''));
-        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
-        reader.readAsDataURL(file);
-      });
-
-      const img = await new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
-        image.src = dataUrl;
-      });
-
-      const scale = Math.min(1, MAX_IMAGE_WIDTH / img.width);
-      const width = Math.max(1, Math.round(img.width * scale));
-      const height = Math.max(1, Math.round(img.height * scale));
-
-      const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, width, height);
-
-      const isPng = file.type === 'image/png';
-      const outType = isPng ? 'image/webp' : 'image/jpeg';
-      const compressed = canvas.toDataURL(outType, IMAGE_QUALITY);
-      const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'course';
-
-      const saved = await api.post(
-        '/admin/media',
-        { file_name: `${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: form?.title ?? baseName },
-        { auth: true },
-      );
-      setForm((f) => ({ ...f, image_url: saved.url }));
-      if (imageFileRef.current) imageFileRef.current.value = '';
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setImageBusy(false);
-    }
-  };
-
-  const removeImage = () => {
-    setForm((f) => ({ ...f, image_url: '' }));
-    if (imageFileRef.current) imageFileRef.current.value = '';
-  };
-
-  const save = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setBusy('save');
-    const body = {
-      ...form,
-      branch_id: form.branch_id === '' ? null : Number(form.branch_id),
-      fees: form.fees === '' ? null : Number(form.fees),
-      capacity: form.capacity === '' ? null : Number(form.capacity),
-      start_date: form.start_date || null,
-      end_date: form.end_date || null,
-    };
-    try {
-      if (editingId) await api.patch(`/admin/training/courses/${editingId}`, body, { auth: true });
-      else await api.post('/admin/training/courses', body, { auth: true });
-      cancel();
-      await load();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(null);
-    }
-  };
 
   const remove = async (c) => {
     if (!window.confirm(`حذف الدورة "${c.title}" نهائيًا؟`)) return;
@@ -185,97 +77,6 @@ export default function TrainingCourses() {
 
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
-      {showForm && (
-        <form className="card admin-form" onSubmit={save}>
-          <h3>{editingId ? 'تعديل دورة' : 'دورة جديدة'}</h3>
-          <div className="form-grid">
-            <div className="form-field form-field--full">
-              <label>عنوان الدورة *</label>
-              <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
-            </div>
-            <div className="form-field">
-              <label>الفرع *</label>
-              <select value={form.branch_id} onChange={(e) => setForm({ ...form, branch_id: e.target.value })} required>
-                <option value="">اختر الفرع</option>
-                {branches.map((b) => <option key={b.id} value={b.id}>{branchLabel(b.name_ar) ?? b.name_ar}</option>)}
-              </select>
-            </div>
-            <div className="form-field form-field--full">
-              <label>الوصف</label>
-              <textarea rows={3} value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-            </div>
-            <div className="form-field">
-              <label>الرسوم</label>
-              <input type="number" min="0" value={form.fees} onChange={(e) => setForm({ ...form, fees: e.target.value })} dir="ltr" />
-            </div>
-            <div className="form-field">
-              <label>المقاعد (capacity)</label>
-              <input type="number" min="1" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} dir="ltr" />
-            </div>
-            <div className="form-field">
-              <label>تاريخ البداية</label>
-              <input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} dir="ltr" />
-            </div>
-            <div className="form-field">
-              <label>تاريخ النهاية</label>
-              <input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} dir="ltr" />
-            </div>
-            <div className="form-field">
-              <label>الموقع</label>
-              <input value={form.location ?? ''} onChange={(e) => setForm({ ...form, location: e.target.value })} />
-            </div>
-            <div className="form-field">
-              <label>المدرب</label>
-              <input value={form.trainer ?? ''} onChange={(e) => setForm({ ...form, trainer: e.target.value })} />
-            </div>
-            <div className="form-field form-field--full">
-              <label>صورة الدورة</label>
-              <div className="course-image-picker">
-                {(form.image_url || (editingId && form.image_url)) ? (
-                  <div className="course-image-preview">
-                    <img src={form.image_url} alt="" />
-                  </div>
-                ) : null}
-                <div className="course-image-actions">
-                  <button
-                    type="button"
-                    className="btn btn-soft"
-                    disabled={imageBusy}
-                    onClick={() => imageFileRef.current?.click()}
-                  >
-                    {imageBusy ? 'جارٍ التجهيز والضغط...' : form.image_url ? 'استبدال الصورة' : 'اختيار صورة من الجهاز'}
-                  </button>
-                  {form.image_url ? (
-                    <button type="button" className="btn btn-sm btn-danger-soft" onClick={removeImage}>إزالة</button>
-                  ) : null}
-                </div>
-              </div>
-              <input
-                ref={imageFileRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={(e) => compressAndUpload(e.target.files?.[0])}
-              />
-              <p className="muted admin-field-hint">تُضغط الصورة تلقائيًا (عرض أقصى 1280px بجودة موفرة) فلا تبطئ الموقع أو محركات البحث.</p>
-            </div>
-            <div className="form-field">
-              <label>الحالة</label>
-              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                <option value="draft">مسودة</option>
-                <option value="open">مفتوحة</option>
-                <option value="closed">مغلقة</option>
-                <option value="completed">مكتملة</option>
-              </select>
-            </div>
-          </div>
-          <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'save'}>{editingId ? 'حفظ' : 'إنشاء'}</button>
-            <button type="button" className="btn btn-soft" onClick={cancel}>إلغاء</button>
-          </div>
-        </form>
-      )}
-
       <div className="admin-toolbar">
         <select value={status} onChange={(e) => { setStatus(e.target.value); load(e.target.value, branchFilter, 1); }}>
           <option value="">كل الحالات</option>
@@ -288,7 +89,7 @@ export default function TrainingCourses() {
           <option value="">كل الفروع</option>
           {branches.map((b) => <option key={b.id} value={b.id}>{branchLabel(b.name_ar) ?? b.name_ar}</option>)}
         </select>
-        <button type="button" className="btn btn-primary" onClick={() => startEdit(null)}>+ دورة جديدة</button>
+        <Link to="new" className="btn btn-primary">+ دورة جديدة</Link>
       </div>
 
       <div className="admin-table-wrap">
@@ -322,8 +123,10 @@ export default function TrainingCourses() {
                 <td data-label="الرسوم">{c.fees != null ? c.fees : '—'}</td>
                 <td data-label="المدرب">{c.trainer ?? '—'}</td>
                 <td data-label="إجراءات" className="table-actions">
-                  <button type="button" className="btn btn-sm btn-soft" disabled={busy === c.id} onClick={() => startEdit(c)}>تعديل</button>
-                  <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button>
+                  <div className="admin-action-row">
+                    <Link to={String(c.id)} className="btn btn-sm btn-soft">تعديل</Link>
+                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -340,5 +143,153 @@ export default function TrainingCourses() {
         </div>
       )}
     </section>
+  );
+}
+
+export function CourseForm() {
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const isEdit = Boolean(id);
+  const { user } = useAuth();
+  const { record, loading } = useAdminRecord({ id, path: '/admin/training/courses' });
+  const [branches, setBranches] = useState([]);
+  const [form, setForm] = useState({ ...emptyForm, branch_id: user?.branchId ?? '' });
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    api.get('/public/branches').then(setBranches).catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!record) return;
+    setForm({
+      title: record.title ?? '',
+      branch_id: record.branch_id ?? '',
+      description: record.description ?? '',
+      fees: record.fees ?? '',
+      start_date: record.start_date ?? '',
+      end_date: record.end_date ?? '',
+      location: record.location ?? '',
+      capacity: record.capacity ?? '',
+      trainer: record.trainer ?? '',
+      image_url: record.image_url ?? '',
+      status: record.status ?? 'draft',
+    });
+  }, [record]);
+
+  const upload = useImageUpload({
+    onUploaded: (_key, url) => setForm((f) => ({ ...f, image_url: url })),
+    onError: setError,
+    altText: () => form.title || 'دورة',
+  });
+
+  const save = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setBusy(true);
+    const body = {
+      ...form,
+      branch_id: form.branch_id === '' ? null : Number(form.branch_id),
+      fees: form.fees === '' ? null : Number(form.fees),
+      capacity: form.capacity === '' ? null : Number(form.capacity),
+      start_date: form.start_date || null,
+      end_date: form.end_date || null,
+    };
+    try {
+      if (isEdit) await api.patch(`/admin/training/courses/${id}`, body, { auth: true });
+      else await api.post('/admin/training/courses', body, { auth: true });
+      navigate('/admin/training/courses');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  if (isEdit && loading) return <p className="admin-form-loading">جارٍ تحميل بيانات الدورة…</p>;
+
+  return (
+    <AdminFormPage
+      title={isEdit ? `تعديل دورة: ${form.title || ''}` : 'دورة جديدة'}
+      subtitle="إنشاء وإدارة الدورات وحالة فتح التسجيل فيها."
+      backTo="/admin/training/courses"
+    >
+      {error && <div className="alert alert-danger" role="alert">{error}</div>}
+
+      <form className="card admin-form" onSubmit={save}>
+        <AdminFormSection title="بيانات الدورة">
+          <div className="form-grid">
+            <div className="form-field form-field--full">
+              <label>عنوان الدورة *</label>
+              <input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+            </div>
+            <div className="form-field">
+              <label>الفرع *</label>
+              <select value={form.branch_id} onChange={(e) => setForm({ ...form, branch_id: e.target.value })} required>
+                <option value="">اختر الفرع</option>
+                {branches.map((b) => <option key={b.id} value={b.id}>{branchLabel(b.name_ar) ?? b.name_ar}</option>)}
+              </select>
+            </div>
+            <div className="form-field">
+              <label>الحالة</label>
+              <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                <option value="draft">مسودة</option>
+                <option value="open">مفتوحة</option>
+                <option value="closed">مغلقة</option>
+                <option value="completed">مكتملة</option>
+              </select>
+            </div>
+            <div className="form-field form-field--full">
+              <label>الوصف</label>
+              <textarea rows={3} value={form.description ?? ''} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="form-field">
+              <label>المدرب</label>
+              <input value={form.trainer ?? ''} onChange={(e) => setForm({ ...form, trainer: e.target.value })} />
+            </div>
+            <div className="form-field">
+              <label>الموقع</label>
+              <input value={form.location ?? ''} onChange={(e) => setForm({ ...form, location: e.target.value })} />
+            </div>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection title="التواريخ والتسجيل">
+          <div className="form-grid">
+            <div className="form-field">
+              <label>تاريخ البداية</label>
+              <input type="date" value={form.start_date} onChange={(e) => setForm({ ...form, start_date: e.target.value })} dir="ltr" />
+            </div>
+            <div className="form-field">
+              <label>تاريخ النهاية</label>
+              <input type="date" value={form.end_date} onChange={(e) => setForm({ ...form, end_date: e.target.value })} dir="ltr" />
+            </div>
+            <div className="form-field">
+              <label>الرسوم</label>
+              <input type="number" min="0" value={form.fees} onChange={(e) => setForm({ ...form, fees: e.target.value })} dir="ltr" />
+            </div>
+            <div className="form-field">
+              <label>المقاعد (capacity)</label>
+              <input type="number" min="1" value={form.capacity} onChange={(e) => setForm({ ...form, capacity: e.target.value })} dir="ltr" />
+            </div>
+            <ImageField
+              label="صورة الدورة"
+              value={form.image_url}
+              onChange={(url) => setForm({ ...form, image_url: url })}
+              upload={upload}
+              fieldKey="image_url"
+              shape="wide"
+              hint="تُضغط الصورة تلقائيًا (عرض أقصى 1280px بجودة موفرة) فلا تبطئ الموقع أو محركات البحث."
+            />
+          </div>
+        </AdminFormSection>
+
+        <div className="admin-form-actions">
+          <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'جارٍ الحفظ…' : isEdit ? 'حفظ' : 'إنشاء'}</button>
+          <Link to="/admin/training/courses" className="btn btn-soft">إلغاء</Link>
+        </div>
+      </form>
+    </AdminFormPage>
   );
 }

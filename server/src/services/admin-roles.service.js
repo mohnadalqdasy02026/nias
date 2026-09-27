@@ -20,6 +20,13 @@ export class AdminRolesService {
     return this.rolesRepo.getRolePermissionCodes(id);
   }
 
+  /** Role record plus its permission codes, for the role edit screen. */
+  async getWithPermissions(id) {
+    const role = await this.rolesRepo.findById(id);
+    if (!role) throw AppError.notFound('Role not found');
+    return { ...role, permissions: await this.rolesRepo.getRolePermissionCodes(id) };
+  }
+
   async create(data) {
     if (await this.rolesRepo.findByName(data.name)) {
       throw AppError.conflict('Role name already exists');

@@ -13,6 +13,14 @@ export class CollegesController {
     }
   };
 
+  get = async (req, res, next) => {
+    try {
+      res.json({ data: await this.service.get(Number(req.params.id)) });
+    } catch (e) {
+      next(e);
+    }
+  };
+
   create = async (req, res, next) => {
     try {
       res.status(201).json({ data: await this.service.create(req.body) });

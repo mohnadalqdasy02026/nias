@@ -15,6 +15,7 @@ export class AdminUsersController {
   listRoles = asyncHandler(async (_req, res) => success(res, await this.rolesService.list()));
   listPermissions = asyncHandler(async (_req, res) => success(res, await this.rolesService.permissions()));
   getRolePermissions = asyncHandler(async (req, res) => success(res, await this.rolesService.getRolePermissions(req.params.id)));
+  getRole = asyncHandler(async (req, res) => success(res, await this.rolesService.getWithPermissions(req.params.id)));
   createRole = asyncHandler(async (req, res) => success(res, await this.rolesService.create(req.body), 201));
   updateRole = asyncHandler(async (req, res) => success(res, await this.rolesService.update(req.params.id, req.body)));
   upsertRolePermissions = asyncHandler(async (req, res) =>

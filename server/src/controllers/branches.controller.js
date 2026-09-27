@@ -13,6 +13,14 @@ export class BranchesController {
     }
   };
 
+  get = async (req, res, next) => {
+    try {
+      res.json({ data: await this.service.get(Number(req.params.id)) });
+    } catch (e) {
+      next(e);
+    }
+  };
+
   update = async (req, res, next) => {
     try {
       const id = Number(req.params.id);

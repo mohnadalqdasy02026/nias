@@ -22,17 +22,17 @@ import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import AdminDashboard from './pages/admin/Dashboard.jsx';
 import AdminSettings from './pages/admin/Settings.jsx';
-import AdminNews from './pages/admin/NewsAdmin.jsx';
-import AdminPages from './pages/admin/PagesAdmin.jsx';
-import AdminTrainingCourses from './pages/admin/TrainingCourses.jsx';
+import AdminNews, { NewsForm } from './pages/admin/NewsAdmin.jsx';
+import AdminPages, { PageForm } from './pages/admin/PagesAdmin.jsx';
+import AdminTrainingCourses, { CourseForm } from './pages/admin/TrainingCourses.jsx';
 import AdminTrainingEnrollments from './pages/admin/TrainingEnrollments.jsx';
-import ProgramsAdmin from './pages/admin/ProgramsAdmin.jsx';
-import UsersAdmin from './pages/admin/UsersAdmin.jsx';
-import RolesAdmin from './pages/admin/RolesAdmin.jsx';
+import ProgramsAdmin, { ProgramForm } from './pages/admin/ProgramsAdmin.jsx';
+import UsersAdmin, { UserForm } from './pages/admin/UsersAdmin.jsx';
+import RolesAdmin, { RoleForm } from './pages/admin/RolesAdmin.jsx';
 import ContactMessages from './pages/admin/ContactMessages.jsx';
-import BranchesAdmin from './pages/admin/BranchesAdmin.jsx';
-import CollegesAdmin from './pages/admin/CollegesAdmin.jsx';
-import FacultyAdmin from './pages/admin/FacultyAdmin.jsx';
+import BranchesAdmin, { BranchForm } from './pages/admin/BranchesAdmin.jsx';
+import CollegesAdmin, { CollegeForm } from './pages/admin/CollegesAdmin.jsx';
+import FacultyAdmin, { FacultyForm } from './pages/admin/FacultyAdmin.jsx';
 
 export default function App() {
   return (
@@ -89,6 +89,22 @@ export default function App() {
               }
             />
             <Route
+              path="content/news/new"
+              element={
+                <ProtectedRoute permission="news.create">
+                  <NewsForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="content/news/:id"
+              element={
+                <ProtectedRoute permission="news.update">
+                  <NewsForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="content/pages"
               element={
                 <ProtectedRoute permission="site_pages.read">
@@ -97,10 +113,42 @@ export default function App() {
               }
             />
             <Route
+              path="content/pages/new"
+              element={
+                <ProtectedRoute permission="site_pages.create">
+                  <PageForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="content/pages/:id"
+              element={
+                <ProtectedRoute permission="site_pages.update">
+                  <PageForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="training/courses"
               element={
                 <ProtectedRoute permission="training_courses.read">
                   <AdminTrainingCourses />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="training/courses/new"
+              element={
+                <ProtectedRoute permission="training_courses.create">
+                  <CourseForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="training/courses/:id"
+              element={
+                <ProtectedRoute permission="training_courses.update">
+                  <CourseForm />
                 </ProtectedRoute>
               }
             />
@@ -121,10 +169,42 @@ export default function App() {
               }
             />
             <Route
+              path="programs/new"
+              element={
+                <ProtectedRoute permission="academic_programs.create">
+                  <ProgramForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="programs/:id"
+              element={
+                <ProtectedRoute permission="academic_programs.update">
+                  <ProgramForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="users"
               element={
                 <ProtectedRoute permission="users.view">
                   <UsersAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users/new"
+              element={
+                <ProtectedRoute permission="users.manage">
+                  <UserForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="users/:id"
+              element={
+                <ProtectedRoute permission="users.manage">
+                  <UserForm />
                 </ProtectedRoute>
               }
             />
@@ -137,10 +217,34 @@ export default function App() {
               }
             />
             <Route
+              path="roles/new"
+              element={
+                <ProtectedRoute permission="roles.manage">
+                  <RoleForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="roles/:id"
+              element={
+                <ProtectedRoute permission="roles.manage">
+                  <RoleForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="branches"
               element={
                 <ProtectedRoute permission="branches.read">
                   <BranchesAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="branches/:id"
+              element={
+                <ProtectedRoute permission="branches.manage">
+                  <BranchForm />
                 </ProtectedRoute>
               }
             />
@@ -161,10 +265,42 @@ export default function App() {
               }
             />
             <Route
+              path="colleges/new"
+              element={
+                <ProtectedRoute permission="colleges.manage">
+                  <CollegeForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="colleges/:id"
+              element={
+                <ProtectedRoute permission="colleges.manage">
+                  <CollegeForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
               path="faculty"
               element={
                 <ProtectedRoute permission="faculty_members.read">
                   <FacultyAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="faculty/new"
+              element={
+                <ProtectedRoute permission="faculty_members.create">
+                  <FacultyForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="faculty/:id"
+              element={
+                <ProtectedRoute permission="faculty_members.update">
+                  <FacultyForm />
                 </ProtectedRoute>
               }
             />

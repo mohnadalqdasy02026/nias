@@ -10,6 +10,12 @@ export class CollegesService {
     return this.repo.list();
   }
 
+  async get(id) {
+    const college = await this.repo.findById(id);
+    if (!college) throw AppError.notFound('الكلية غير موجودة.');
+    return college;
+  }
+
   async create(data) {
     if (data.branch_id && !(await this.repo.branchExists(data.branch_id))) {
       throw AppError.badRequest('الفرع المحدد غير موجود.');

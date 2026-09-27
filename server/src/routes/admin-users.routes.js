@@ -36,6 +36,7 @@ rolesRouter.use(requireAuth);
 
 rolesRouter.get('/all', requirePermission('roles.manage'), controller.listRoles);
 rolesRouter.get('/permissions', requirePermission('roles.manage'), controller.listPermissions);
+rolesRouter.get('/:id/record', validate(roleIdParamsSchema), requirePermission('roles.manage'), controller.getRole);
 rolesRouter.get('/:id', validate(roleIdParamsSchema), requirePermission('roles.manage'), controller.getRolePermissions);
 rolesRouter.post('/', validate(createRoleSchema), requirePermission('roles.manage'), controller.createRole);
 rolesRouter.patch('/:id', validate(updateRoleSchema), requirePermission('roles.manage'), controller.updateRole);

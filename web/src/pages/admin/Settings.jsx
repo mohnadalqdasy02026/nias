@@ -1,6 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { bustSiteSettings } from '../../hooks/useSiteSettings.js';
+import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
+import { useImageUpload } from '../../components/admin/ImageField.jsx';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -30,28 +32,31 @@ const emptyStats = {
   students_female: '',
 };
 
+const TABS = [
+  { key: 'general', label: 'إعدادات عامة' },
+  { key: 'home', label: 'الصفحة الرئيسية' },
+  { key: 'stats', label: 'عدادات الإحصائيات' },
+];
+
 function field(name, value, onChange, label, as = 'input', dir, rows) {
   return (
     <div className="form-field">
       <label>{label}</label>
       {as === 'textarea'
-        ? <textarea rows={rows ?? 3} dir={dir} value={value} onChange={(e) => onChange(name, e.target.value)} />
-        : <input dir={dir} value={value} onChange={(e) => onChange(name, e.target.value)} />}
+        ? <textarea rows={rows ?? 3} dir={dir} value={value ?? ''} onChange={(e) => onChange(name, e.target.value)} />
+        : <input dir={dir} value={value ?? ''} onChange={(e) => onChange(name, e.target.value)} />}
     </div>
   );
 }
 
 export default function Settings() {
+  const [tab, setTab] = useState('general');
   const [general, setGeneral] = useState(emptyGeneral);
   const [home, setHome] = useState(emptyHome);
   const [stats, setStats] = useState(emptyStats);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
-  const [logoBusy, setLogoBusy] = useState(false);
-  const [heroBusy, setHeroBusy] = useState(false);
-  const logoRef = useRef(null);
-  const heroRef = useRef(null);
 
   useEffect(() => {
     api.get('/public/settings', { auth: true })
@@ -75,107 +80,26 @@ export default function Settings() {
   const setH = (k, v) => setHome((p) => ({ ...p, [k]: v }));
   const setS = (k, v) => setStats((p) => ({ ...p, [k]: v }));
 
-  const compressAndUploadLogo = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setError('الرجاء اختيار ملف صورة.');
-      return;
-    }
-    setLogoBusy(true);
-    setError(null);
-    try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result ?? ''));
-        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
-        reader.readAsDataURL(file);
-      });
-      const img = await new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
-        image.src = dataUrl;
-      });
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const isPng = file.type === 'image/png';
-      const outType = isPng ? 'image/webp' : 'image/jpeg';
-      const compressed = canvas.toDataURL(outType, 0.9);
-      const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'logo';
-      const savedMedia = await api.post(
-        '/admin/media',
-        { file_name: `logo-${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: 'شعار الموقع' },
-        { auth: true },
-      );
-      setG('logo', savedMedia.url);
-      if (logoRef.current) logoRef.current.value = '';
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setLogoBusy(false);
-    }
-  };
+  const logoUpload = useImageUpload({
+    onUploaded: (_key, url) => setG('logo', url),
+    onError: setError,
+    altText: () => 'شعار الموقع',
+  });
 
-  const compressAndUploadHero = async (file) => {
-    if (!file) return;
-    if (!file.type.startsWith('image/')) {
-      setError('الرجاء اختيار ملف صورة.');
-      return;
-    }
-    setHeroBusy(true);
-    setError(null);
-    try {
-      const dataUrl = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(String(reader.result ?? ''));
-        reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
-        reader.readAsDataURL(file);
-      });
-      const img = await new Promise((resolve, reject) => {
-        const image = new Image();
-        image.onload = () => resolve(image);
-        image.onerror = () => reject(new Error('تعذر فتح الصورة'));
-        image.src = dataUrl;
-      });
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const isPng = file.type === 'image/png';
-      const outType = isPng ? 'image/webp' : 'image/jpeg';
-      const compressed = canvas.toDataURL(outType, 0.85);
-      const base64 = compressed.slice(compressed.indexOf(',') + 1);
-      const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'hero';
-      const savedMedia = await api.post(
-        '/admin/media',
-        { file_name: `hero-${baseName}.${isPng ? 'webp' : 'jpg'}`, mime_type: outType, data_base64: base64, alt_text: 'صورة خلفية الهيرو' },
-        { auth: true },
-      );
-      setHome((p) => ({ ...p, hero_images: [...(p.hero_images ?? []), savedMedia.url] }));
-      if (heroRef.current) heroRef.current.value = '';
-    } catch (e) {
-      setError(e.message);
-    } finally {
-      setHeroBusy(false);
-    }
-  };
+  const heroUpload = useImageUpload({
+    onUploaded: (_key, url) => setHome((p) => ({ ...p, hero_images: [...(p.hero_images ?? []), url] })),
+    onError: setError,
+    altText: () => home.hero_title || 'صورة خلفية الهيرو',
+  });
 
   const removeHeroImage = (index) => {
     setHome((p) => ({ ...p, hero_images: (p.hero_images ?? []).filter((_, i) => i !== index) }));
   };
 
-  const notifySaved = () => {
+  const notifySaved = (message) => {
     bustSiteSettings();
     window.dispatchEvent(new Event('nias:settings-updated'));
+    setSaved(message);
   };
 
   const saveGeneral = async (e) => {
@@ -185,8 +109,7 @@ export default function Settings() {
     setSaved(null);
     try {
       await api.patch('/admin/settings/general', general, { auth: true });
-      notifySaved();
-      setSaved('تم حفظ الإعدادات العامة.');
+      notifySaved('تم حفظ الإعدادات العامة.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -201,8 +124,7 @@ export default function Settings() {
     setSaved(null);
     try {
       await api.patch('/admin/settings/home', home, { auth: true });
-      notifySaved();
-      setSaved('تم حفظ إعدادات الصفحة الرئيسية.');
+      notifySaved('تم حفظ إعدادات الصفحة الرئيسية.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -217,8 +139,7 @@ export default function Settings() {
     setSaved(null);
     try {
       await api.patch('/admin/settings/stats', stats, { auth: true });
-      notifySaved();
-      setSaved('تم حفظ عدادات الإحصائيات.');
+      notifySaved('تم حفظ عدادات الإحصائيات.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -234,97 +155,161 @@ export default function Settings() {
   };
 
   return (
-    <section>
-      <h1 className="admin-page-title">إعدادات الموقع</h1>
-      <p className="muted">تعديل الشعار، الاسم، الألوان، ومحتوى الصفحة الرئيسية. تُطبق مباشرة على الموقع العام.</p>
+    <AdminFormPage
+      title="إعدادات الموقع"
+      subtitle="تعديل الشعار، الاسم، الألوان، ومحتوى الصفحة الرئيسية. تُطبق مباشرة على الموقع العام."
+    >
+      <div className="admin-subtabs" role="tablist" aria-label="أقسام الإعدادات">
+        {TABS.map((t) => (
+          <button
+            key={t.key}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.key}
+            className={`admin-subtab${tab === t.key ? ' admin-subtab--active' : ''}`}
+            onClick={() => { setTab(t.key); setSaved(null); setError(null); }}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
 
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
       {saved && <div className="alert alert-success" role="alert">{saved}</div>}
 
-      <div className="settings-stack">
+      {tab === 'general' && (
         <form className="card admin-form" onSubmit={saveGeneral}>
-          <h3>إعدادات عامة</h3>
-          <div className="form-grid">
-            {field('site_name_ar', general.site_name_ar, (k, v) => setG(k, v), 'اسم الموقع (عربي)')}
-            {field('site_name_en', general.site_name_en, (k, v) => setG(k, v), 'اسم الموقع (إنجليزي)', 'input', 'ltr')}
-            <div className="form-field">
-              <label>اللون الرئيسي للموقع</label>
-              <div className="settings-color-row">
-                <input type="color" value={general.primary_color} onChange={(e) => setG('primary_color', e.target.value)} />
-                <input type="text" dir="ltr" value={general.primary_color} onChange={(e) => setG('primary_color', e.target.value)} />
+          <AdminFormSection title="الهوية">
+            <div className="form-grid">
+              {field('site_name_ar', general.site_name_ar, setG, 'اسم الموقع (عربي)')}
+              {field('site_name_en', general.site_name_en, setG, 'اسم الموقع (إنجليزي)', 'input', 'ltr')}
+              <div className="form-field">
+                <label>اللون الرئيسي للموقع</label>
+                <div className="settings-color-row">
+                  <input type="color" value={general.primary_color} onChange={(e) => setG('primary_color', e.target.value)} />
+                  <input type="text" dir="ltr" value={general.primary_color} onChange={(e) => setG('primary_color', e.target.value)} />
+                </div>
+              </div>
+              <div className="form-field">
+                <label>شعار الموقع</label>
+                <div className="settings-logo-row">
+                  {general.logo && <img src={general.logo} alt="الشعار الحالي" className="settings-logo-preview" />}
+                  <button
+                    type="button"
+                    className="btn btn-outline btn-sm"
+                    disabled={logoUpload.busyKey === 'logo'}
+                    onClick={logoUpload.pick('logo')}
+                  >
+                    {logoUpload.busyKey === 'logo' ? 'جارٍ الرفع…' : general.logo ? 'تغيير الشعار' : 'رفع شعار'}
+                  </button>
+                </div>
+                {general.logo && <small className="muted" dir="ltr">{general.logo}</small>}
+                <input
+                  ref={logoUpload.registerInput('logo')}
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    e.target.value = '';
+                    logoUpload.compressAndUpload(file, 'logo');
+                  }}
+                />
               </div>
             </div>
-            <div className="form-field">
-              <label>شعار الموقع</label>
-              <div className="settings-logo-row">
-                {general.logo && <img src={general.logo} alt="الشعار الحالي" className="settings-logo-preview" />}
-                <input type="file" accept="image/*" ref={logoRef} onChange={(e) => compressAndUploadLogo(e.target.files[0])} />
-              </div>
-              {general.logo && <small className="muted" dir="ltr">{general.logo}</small>}
-            </div>
-          </div>
+          </AdminFormSection>
+
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'general' || logoBusy}>
-              {busy === 'general' ? 'حفظ...' : 'حفظ الإعدادات العامة'}
+            <button type="submit" className="btn btn-primary" disabled={busy === 'general' || logoUpload.busyKey === 'logo'}>
+              {busy === 'general' ? 'جارٍ الحفظ…' : 'حفظ الإعدادات العامة'}
             </button>
           </div>
         </form>
+      )}
 
+      {tab === 'home' && (
         <form className="card admin-form" onSubmit={saveHome}>
-          <h3>الصفحة الرئيسية</h3>
-          <div className="form-grid">
-            {field('hero_eyebrow', home.hero_eyebrow, setH, 'نص البانر الصغير')}
-            {field('hero_title', home.hero_title, setH, 'العنوان الرئيسي')}
-            {field('hero_subtitle', home.hero_subtitle, setH, 'الوصف تحت العنوان', 'textarea', undefined, 3)}
-            {field('cta_title', home.cta_title, setH, 'عنوان الدعوة السفلية')}
-            {field('cta_text', home.cta_text, setH, 'نص الدعوة السفلية', 'textarea', undefined, 2)}
-          </div>
+          <AdminFormSection title="الهيرو">
+            <div className="form-grid">
+              {field('hero_eyebrow', home.hero_eyebrow, setH, 'نص البانر الصغير')}
+              {field('hero_title', home.hero_title, setH, 'العنوان الرئيسي')}
+              {field('hero_subtitle', home.hero_subtitle, setH, 'الوصف تحت العنوان', 'textarea', undefined, 3)}
+              {field('cta_title', home.cta_title, setH, 'عنوان الدعوة السفلية')}
+              {field('cta_text', home.cta_text, setH, 'نص الدعوة السفلية', 'textarea', undefined, 2)}
+            </div>
+          </AdminFormSection>
 
-          <h4 className="admin-settings-subtitle">صور خلفية الهيرو (تتبدل كل 5 ثوانٍ)</h4>
-          <p className="muted">اضف صورة واحدة أو أكثر؛ تُعرض كخلفية متحركة في أعلى الصفحة الرئيسية. أول صورة هي الافتراضية إن لم تتوفر صور.</p>
-          <div className="settings-hero-row">
-            {(home.hero_images ?? []).map((url, i) => (
-              <div key={`${url}-${i}`} className="settings-hero-thumb">
-                <img src={url} alt={`صورة الهيرو ${i + 1}`} />
-                <button type="button" className="btn btn-sm btn-danger-soft" onClick={() => removeHeroImage(i)}>إزالة</button>
+          <AdminFormSection title="صور خلفية الهيرو (تتبدل كل 5 ثوانٍ)">
+            <p className="muted">اضف صورة واحدة أو أكثر؛ تُعرض كخلفية متحركة في أعلى الصفحة الرئيسية. أول صورة هي الافتراضية إن لم تتوفر صور.</p>
+            <div className="settings-hero-row">
+              {(home.hero_images ?? []).map((url, i) => (
+                <div key={`${url}-${i}`} className="settings-hero-thumb">
+                  <img src={url} alt={`صورة الهيرو ${i + 1}`} />
+                  <button type="button" className="btn btn-sm btn-danger-soft" onClick={() => removeHeroImage(i)}>إزالة</button>
+                </div>
+              ))}
+            </div>
+            <div className="settings-hero-upload">
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                disabled={heroUpload.busyKey === 'hero'}
+                onClick={heroUpload.pick('hero')}
+              >
+                {heroUpload.busyKey === 'hero' ? 'جارٍ الرفع…' : 'إضافة صورة'}
+              </button>
+              <span className="muted">تُضغط الصور تلقائيًا وتُخزَّن بشكل دائم.</span>
+            </div>
+            <input
+              ref={heroUpload.registerInput('hero')}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                e.target.value = '';
+                heroUpload.compressAndUpload(file, 'hero');
+              }}
+            />
+          </AdminFormSection>
+
+          <AdminFormSection title="المميزات (بطاقات تحت العنوان)">
+            {home.features.map((f, i) => (
+              <div key={i} className="settings-feature-row">
+                {field(`f${i}icon`, f.icon, (k, v) => setFeature(i, 'icon', v), `ميزة ${i + 1} — أيقونة (رمز)`, 'input', 'ltr')}
+                {field(`f${i}title`, f.title, (k, v) => setFeature(i, 'title', v), `ميزة ${i + 1} — العنوان`)}
+                {field(`f${i}text`, f.text, (k, v) => setFeature(i, 'text', v), `ميزة ${i + 1} — النص`, 'textarea', undefined, 2)}
               </div>
             ))}
-          </div>
-          <div className="settings-hero-upload">
-            <input type="file" accept="image/*" ref={heroRef} onChange={(e) => compressAndUploadHero(e.target.files[0])} disabled={heroBusy} />
-            <span className="muted">{heroBusy ? 'جارٍ التجهيز والرفع...' : 'تُضغط الصور تلقائيًا وتُخزَّن بشكل دائم.'}</span>
-          </div>
-
-          <h4 className="admin-settings-subtitle">المميزات (بطاقات تحت العنوان)</h4>
-          {home.features.map((f, i) => (
-            <div key={i} className="settings-feature-row">
-              {field(`f${i}icon`, f.icon, (k, v) => setFeature(i, 'icon', v), `ميزة ${i + 1} — أيقونة (رمز)`, 'input', 'ltr')}
-              {field(`f${i}title`, f.title, (k, v) => setFeature(i, 'title', v), `ميزة ${i + 1} — العنوان`)}
-              {field(`f${i}text`, f.text, (k, v) => setFeature(i, 'text', v), `ميزة ${i + 1} — النص`, 'textarea', undefined, 2)}
-            </div>
-          ))}
+          </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'home'}>
-              {busy === 'home' ? 'حفظ...' : 'حفظ إعدادات الصفحة الرئيسية'}
+            <button type="submit" className="btn btn-primary" disabled={busy === 'home' || heroUpload.busyKey === 'hero'}>
+              {busy === 'home' ? 'جارٍ الحفظ…' : 'حفظ إعدادات الصفحة الرئيسية'}
             </button>
           </div>
         </form>
+      )}
 
+      {tab === 'stats' && (
         <form className="card admin-form" onSubmit={saveStats}>
-          <h3>عدادات الإحصائيات</h3>
-          <p className="muted">عدد الطلاب والطالبات يظهر في أعلى الصفحة الرئيسية ضمن عدادات المعهد. اترك الحقل فارغًا لاعتماد العدد المسجّل في النظام.</p>
-          <div className="form-grid">
-            {field('students_male', stats.students_male, setS, 'عدد الطلاب', 'input', 'ltr')}
-            {field('students_female', stats.students_female, setS, 'عدد الطالبات', 'input', 'ltr')}
-          </div>
+          <AdminFormSection
+            title="عدادات الإحصائيات"
+            hint="عدد الطلاب والطالبات يظهر في أعلى الصفحة الرئيسية ضمن عدادات المعهد. اترك الحقل فارغًا لاعتماد العدد المسجّل في النظام."
+          >
+            <div className="form-grid">
+              {field('students_male', stats.students_male, setS, 'عدد الطلاب', 'input', 'ltr')}
+              {field('students_female', stats.students_female, setS, 'عدد الطالبات', 'input', 'ltr')}
+            </div>
+          </AdminFormSection>
+
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
-              {busy === 'stats' ? 'حفظ...' : 'حفظ عدادات الإحصائيات'}
+              {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
             </button>
           </div>
         </form>
-      </div>
-    </section>
+      )}
+    </AdminFormPage>
   );
 }

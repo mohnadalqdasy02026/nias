@@ -4,14 +4,14 @@ const TOOLBAR = [
   { id: 'bold', label: 'عريض', hint: 'ctrl+b', exec: ['bold'] },
   { id: 'italic', label: 'مائل', hint: 'ctrl+i', exec: ['italic'] },
   { id: 'underline', label: 'تحته خط', hint: 'ctrl+u', exec: ['underline'] },
-  { id: 'sep' },
+  { id: 'sep1' },
   { id: 'h2', label: 'عنوان', exec: ['formatBlock', 'H2'] },
   { id: 'h3', label: 'عنوان فرعي', exec: ['formatBlock', 'H3'] },
   { id: 'p', label: 'فقرة', exec: ['formatBlock', 'P'] },
-  { id: 'sep' },
+  { id: 'sep2' },
   { id: 'ul', label: 'قائمة نقاط', exec: ['insertUnorderedList'] },
   { id: 'ol', label: 'قائمة مرقّمة', exec: ['insertOrderedList'] },
-  { id: 'sep' },
+  { id: 'sep3' },
   { id: 'link', label: 'رابط', exec: ['link'] },
   { id: 'clear', label: 'مسح التنسيق', exec: ['removeFormat'] },
 ];
@@ -50,8 +50,8 @@ export default function RichEditor({ value = '', onChange, rows = 10, minHeight 
     <div className="rich-editor">
       <div className="rich-editor-toolbar">
         {TOOLBAR.map((b) =>
-          b.id === 'sep' ? (
-            <span key={b.label ?? b.id} className="rich-editor-sep" />
+          b.id.startsWith('sep') ? (
+            <span key={b.id} className="rich-editor-sep" />
           ) : (
             <button
               key={b.id}

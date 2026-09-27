@@ -14,6 +14,12 @@ const collegesController = new CollegesController();
 router.use(requireAuth);
 
 router.get('/', requirePermission('colleges.read'), collegesController.list);
+router.get(
+  '/:id',
+  validate(collegeIdParamsSchema),
+  requirePermission('colleges.read'),
+  collegesController.get,
+);
 router.post('/', validate(createCollegeSchema), requirePermission('colleges.manage'), collegesController.create);
 router.patch(
   '/:id',
