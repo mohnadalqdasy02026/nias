@@ -3016,9 +3016,9 @@ code {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: min(64vw, 262px);
+    width: min(52vw, 214px);
     margin: 0;
-    padding: 20px 14px 32px;
+    padding: 20px 10px 32px;
     background: rgba(255, 255, 255, 0.93);
     backdrop-filter: blur(26px) saturate(180%);
     -webkit-backdrop-filter: blur(26px) saturate(180%);
@@ -3037,9 +3037,9 @@ code {
   .nav-link {
     width: 100%;
     text-align: right;
-    padding: 13px 16px;
+    padding: 12px 12px;
     border-radius: var(--radius-md);
-    font-size: 1rem;
+    font-size: 0.95rem;
     color: var(--color-text);
   }
 
