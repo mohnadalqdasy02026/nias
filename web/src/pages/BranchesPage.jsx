@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
@@ -74,81 +73,6 @@ function TabBar({ tabs, active, onSelect }) {
   );
 }
 
-function CollegeDialog({ college, onClose }) {
-  if (!college) return null;
-  const dean = college.dean_name_ar ?? college.dean_name_en ?? college.dean_name;
-  // Rendered through a portal: the page wrapper (.page-enter) carries a
-  // transform, which would trap a fixed dialog inside it and drop it under
-  // the sticky header.
-  return createPortal(
-    <div className="college-modal" role="dialog" aria-modal="true" aria-labelledby="college-modal-title" onClick={onClose}>
-      <div className="college-modal-card" onClick={(e) => e.stopPropagation()}>
-        <button type="button" className="college-modal-close" onClick={onClose} aria-label="إغلاق">×</button>
-
-        <div className="college-modal-cover">
-          {college.image ? (
-            <img
-              src={college.image}
-              alt={college.name_ar}
-              onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
-            />
-          ) : (
-            <div className="college-modal-cover-placeholder" aria-hidden="true">
-              <span>{college.name_ar?.slice(0, 1) ?? 'ك'}</span>
-            </div>
-          )}
-        </div>
-
-        <div className="college-modal-body">
-          <h2 id="college-modal-title">{college.name_ar}</h2>
-          {college.name_en && <span className="branch-college-en">{college.name_en}</span>}
-
-          {college.about && <p className="college-modal-text">{college.about}</p>}
-
-          {dean && (
-            <div className="college-modal-dean">
-              {college.dean_image && (
-                <span className="college-modal-dean-photo">
-                  <img src={college.dean_image} alt={`عميد ${college.name_ar}`} />
-                </span>
-              )}
-              <span className="college-modal-dean-info">
-                <span className="branch-college-dean-role">عميد الكلية</span>
-                <strong>{dean}</strong>
-              </span>
-            </div>
-          )}
-
-          {college.dean_message_ar && (
-            <div className="college-modal-block">
-              <h3>كلمة عميد {college.name_ar}</h3>
-              <div className="college-modal-text" dangerouslySetInnerHTML={{ __html: decodeEntities(college.dean_message_ar) }} />
-            </div>
-          )}
-
-          {(college.vision || college.mission) && (
-            <div className="college-modal-grid">
-              {college.vision && (
-                <div className="college-modal-block">
-                  <h3>الرؤية</h3>
-                  <p className="college-modal-text">{college.vision}</p>
-                </div>
-              )}
-              {college.mission && (
-                <div className="college-modal-block">
-                  <h3>الرسالة</h3>
-                  <p className="college-modal-text">{college.mission}</p>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>,
-    document.body,
-  );
-}
-
 export default function BranchesPage() {
   const { slug } = useParams();
   const [branches, setBranches] = useState([]);
@@ -160,24 +84,8 @@ export default function BranchesPage() {
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('dean');
   const [facultyFilter, setFacultyFilter] = useState('all');
-  const [activeCollege, setActiveCollege] = useState(null);
   const settings = useSiteSettings();
   const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
-
-  // College dialog: Escape closes it and the page behind cannot scroll.
-  useEffect(() => {
-    if (!activeCollege) return undefined;
-    const onKeyDown = (e) => {
-      if (e.key === 'Escape') setActiveCollege(null);
-    };
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.body.style.overflow = prev;
-      window.removeEventListener('keydown', onKeyDown);
-    };
-  }, [activeCollege]);
 
   usePageMeta(
     slug ? `فرع المعهد — ${branchLabel(branch?.name_ar) ?? ''}` : 'فروع المعهد',
@@ -371,12 +279,11 @@ export default function BranchesPage() {
                       {colleges.map((college) => {
                         const collegeDean = college.dean_name_ar ?? college.dean_name_en ?? college.dean_name;
                         return (
-                          <button
+                          <Link
                             key={college.id}
-                            type="button"
+                            to={`/colleges/${college.id}`}
                             className="card branch-college-card"
-                            onClick={() => setActiveCollege(college)}
-                            aria-label={`عرض بيانات ${college.name_ar}`}
+                            aria-label={`عرض صفحة ${college.name_ar}`}
                           >
                             {college.image ? (
                               <div className="branch-college-cover">
@@ -429,9 +336,9 @@ export default function BranchesPage() {
                                   )}
                                 </div>
                               )}
-                              <span className="branch-college-more">عرض بيانات الكلية</span>
+                              <span className="branch-college-more">عرض صفحة الكلية</span>
                             </div>
-                          </button>
+                          </Link>
                         );
                       })}
                     </div>
@@ -580,8 +487,6 @@ export default function BranchesPage() {
           )}
         </div>
       </section>
-
-      <CollegeDialog college={activeCollege} onClose={() => setActiveCollege(null)} />
     </>
   );
 }

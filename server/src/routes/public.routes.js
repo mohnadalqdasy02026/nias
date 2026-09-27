@@ -10,6 +10,7 @@ import {
   getProgramParams,
   getCourseParams,
   getBranchParams,
+  getCollegeParams,
   getPageParams,
   searchSchema,
   contactSchema,
@@ -31,6 +32,7 @@ router.get('/news/:id', validate({ params: getNewsParams.params }), publicContro
 router.get('/programs', validate(listProgramsSchema), publicController.listPrograms);
 router.get('/programs/:id', validate(getProgramParams), publicController.getProgram);
 router.get('/colleges', publicController.listColleges);
+router.get('/colleges/:id', validate(getCollegeParams), publicController.getCollege);
 router.get('/departments', publicController.listDepartments);
 router.get('/faculty', publicController.listFaculty);
 router.get('/branches', publicController.listBranches);

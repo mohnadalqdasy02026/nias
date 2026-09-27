@@ -118,11 +118,11 @@ export default function Home() {
   );
 
   useEffect(() => {
-    api.get('/public/stats').then(setStats).catch(() => setStats({}));
-    api.get('/public/programs').then(setPrograms).catch(() => {});
-    api.get('/public/training-courses').then(setCourses).catch(() => {});
+    api.get('/public/stats').then((d) => setStats(d ?? {})).catch(() => setStats({}));
+    api.get('/public/programs').then((d) => setPrograms(d ?? [])).catch(() => {});
+    api.get('/public/training-courses').then((d) => setCourses(d ?? [])).catch(() => {});
     api.get('/public/news?limit=3').then((d) => setNews(d ?? [])).catch(() => {});
-    api.get('/public/colleges').then(setColleges).catch(() => {});
+    api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
   }, []);
 
   const heroImages = heroImagesFrom(home);

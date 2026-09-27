@@ -105,6 +105,22 @@ p.name_ar, p.name_en, p.program_type,
     return rows;
   }
 
+  async getCollegeById(id) {
+    const { rows } = await pool.query(
+      `SELECT c.id, c.branch_id,
+              b.name_ar AS branch_name_ar, b.slug AS branch_slug,
+              c.name_ar, c.name_en, c.vision, c.mission, c.about,
+              c.dean_name, c.dean_name_ar, c.dean_name_en,
+              c.dean_message_ar, c.dean_message_en,
+              c.image, c.dean_image
+         FROM colleges c
+         LEFT JOIN institute_branches b ON b.id = c.branch_id
+        WHERE c.id = $1 AND c.status = 'active'`,
+      [id],
+    );
+    return rows[0] ?? null;
+  }
+
   async listDepartments(collegeId = null) {
     const params = [];
     let where = 'TRUE';

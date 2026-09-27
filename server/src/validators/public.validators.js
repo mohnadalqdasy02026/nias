@@ -19,6 +19,10 @@ export const getBranchParams = {
   params: z.object({ slug: z.string().min(1).max(190) }),
 };
 
+export const getCollegeParams = {
+  params: z.object({ id: z.coerce.number().int().positive() }),
+};
+
 export const listProgramsSchema = {
   query: z.object({
     open: z.enum(['true', 'false']).optional(),

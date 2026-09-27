@@ -41,6 +41,12 @@ export class PublicService {
     return this.publicRepo.listColleges(branchId ?? null);
   }
 
+  async getCollege(id) {
+    const college = await this.publicRepo.getCollegeById(id);
+    if (!college) throw AppError.notFound('College not found');
+    return college;
+  }
+
   async listDepartments(collegeId) {
     return this.publicRepo.listDepartments(collegeId ?? null);
   }
