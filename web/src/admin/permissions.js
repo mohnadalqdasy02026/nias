@@ -165,7 +165,7 @@ export const TEMPLATES = [
   {
     key: 'branches',
     name: 'قسم الفروع',
-    desc: 'إدارة بيانات فروع المعهد (العميد، العنوان، الهاتف).',
+    desc: 'إدارة بيانات فروع المعهد (المدير/العميد، العنوان، الهاتف).',
     codes: [
       'dashboard.access',
       'branches.read', 'branches.manage',

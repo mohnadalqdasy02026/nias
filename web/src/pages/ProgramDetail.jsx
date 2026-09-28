@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
-import { branchLabel } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 
 const typeMeta = {
   bachelor: { label: 'بكالوريوس', plural: 'برامج البكالوريوس' },
@@ -89,7 +89,7 @@ export default function ProgramDetail() {
     { icon: 'grad', label: 'الدرجة العلمية', value: type.plural ?? type.label },
     { icon: 'book', label: 'الكلية', value: college },
     { icon: 'list', label: 'القسم', value: department ?? '—' },
-    { icon: 'locations', label: 'الفرع', value: program.branch_name_ar ? branchLabel(program.branch_name_ar) : '—' },
+    { icon: 'locations', label: 'الفرع', value: program.branch_name_ar ? branchTitle(program.branch_name_ar) : '—' },
   ];
 
   return (
@@ -105,7 +105,7 @@ export default function ProgramDetail() {
                 {' '}
                 <Link to={`/branches/${program.branch_slug}`} className="program-branch-badge">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M15 9h4a2 2 0 0 1 2 2v10M9 7h2M9 11h2M9 15h2" /></svg>
-                  {branchLabel(program.branch_name_ar)}
+                  {branchTitle(program.branch_name_ar)}
                 </Link>
               </>
             ) : null}

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-import { branchLabel, isHeadquartersName } from '../lib/branch.js';
+import { branchLabel, branchTitle, branchHeadRole, isHqBranch } from '../lib/branch.js';
 
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
 const decodeEntities = (s) =>
@@ -33,9 +33,9 @@ function NewsThumb({ item }) {
       <div className="branch-news-body">
         <span className={`news-type-badge news-type--${item.content_type}`}>{typeLabel[item.content_type] ?? 'خبر'}</span>
         {item.branch_name_ar && (
-          <span className={`news-branch-tag${isHeadquartersName(branchLabel(item.branch_name_ar)) ? ' is-hq' : ''}`}>
+          <span className={`news-branch-tag${isHqBranch(item.branch_name_ar) ? ' is-hq' : ''}`}>
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
-            {branchLabel(item.branch_name_ar)}
+            {branchTitle(item.branch_name_ar)}
           </span>
         )}
         <h3>{item.title_ar ?? item.title_en}</h3>
@@ -46,7 +46,7 @@ function NewsThumb({ item }) {
 }
 
 const TABS = [
-  { key: 'dean', label: 'عميد الفرع' },
+  { key: 'dean', label: 'المسؤول' },
   { key: 'colleges', label: 'الكليات' },
   { key: 'news', label: 'الأخبار' },
   { key: 'events', label: 'الفعاليات' },
@@ -88,7 +88,7 @@ export default function BranchesPage() {
   const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
-    slug ? `فرع المعهد — ${branchLabel(branch?.name_ar) ?? ''}` : 'فروع المعهد',
+    slug ? (branchTitle(branch) ?? 'الفرع') : 'فروع المعهد',
     'فروع المعهد الوطني للعلوم الإدارية وأخبارها وفعالياتها ودوراتها التدريبية.',
   );
 
@@ -123,6 +123,14 @@ export default function BranchesPage() {
 
   const hq = branch?.is_headquarters;
   const label = branchLabel(branch?.name_ar);
+  const title = branchTitle(branch);
+  const headRole = branchHeadRole(branch);
+  const headAlt = `${headRole} — ${title ?? 'المعهد'}`;
+  const headSignature = hq ? headRole : `مدير ${title ?? 'الفرع'}`;
+  const headBio = hq
+    ? 'يقوم عميد الفروع على الإشراف العام على كليات المعهد وعماداتها ومتابعة أدائها في المحافظات.'
+    : 'يقوم مدير الفرع على إدارة شؤون الفرع الأكاديمية والإدارية وتحقيق رسالة المعهد في المحافظة.';
+  const tabs = TABS.map((t) => (t.key === 'dean' ? { ...t, label: headRole } : t));
   const newsItems = news.filter((n) => n.content_type === 'news');
   const eventItems = news.filter((n) => n.content_type === 'event' || n.content_type === 'activity');
 
@@ -130,11 +138,13 @@ export default function BranchesPage() {
     <>
       <section className={`subpage-hero${slug ? ' subpage-hero--branch' : ''}`}>
         <div className="container subpage-hero-inner">
-          <p className="subpage-eyebrow">شبكة الفروع</p>
-          <h1>{slug ? (label ?? 'الفرع') : 'فروع المعهد'}</h1>
+          <p className="subpage-eyebrow">{slug && hq ? 'الديوان — المقر الرئيسي' : 'شبكة الفروع'}</p>
+          <h1>{slug ? (title ?? 'الفرع') : 'فروع المعهد'}</h1>
           <p className="subpage-sub">
             {slug
-              ? 'عميد الفرع وأخباره وفعالياته والدورات التدريبية المعتمدة فيه.'
+              ? (hq
+                ? 'عميد الفروع وأخبار الديوان وفعاليات المعهد وكلياته ودورات التدريب المعتمدة فيه.'
+                : 'مدير الفرع وأخبار الفرع وفعالياته والدورات التدريبية المعتمدة فيه.')
               : `يمتد المعهد الوطني للعلوم الإدارية عبر ${branches.length} فروع في محافظات الجمهورية، ليكون قربًا من طلابنا ومتدربينا أينما كانوا.`}
           </p>
         </div>
@@ -215,7 +225,7 @@ export default function BranchesPage() {
 
               <div className="branches-tabs-wrap">
                 <TabBar
-                  tabs={TABS.filter((t) => t.key !== 'dean' || branch.dean_name_ar || branch.dean_name_en)}
+                  tabs={tabs.filter((t) => t.key !== 'dean' || branch.dean_name_ar || branch.dean_name_en)}
                   active={tab}
                   onSelect={setTab}
                 />
@@ -228,14 +238,14 @@ export default function BranchesPage() {
                       <div className="branch-dean-speech-head">
                         <div className="branch-dean-speech-avatar">
                     {branch.dean_image ? (
-                      <img src={branch.dean_image} alt={`عميد فرع ${label ?? 'المعهد'}`} />
+                      <img src={branch.dean_image} alt={headAlt} />
                     ) : (
                       <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
                     )}
                   </div>
                         <div>
-                          <span className="branch-dean-role">كلمة عميد فرع {label ?? 'المعهد'}</span>
-                          <h2 className="branch-dean-speech-title">كلمة العميد</h2>
+                          <span className="branch-dean-role">{headRole}</span>
+                          <h2 className="branch-dean-speech-title">كلمة {headRole}</h2>
                         </div>
                       </div>
                       <div className="branch-dean-speech-body">
@@ -246,7 +256,7 @@ export default function BranchesPage() {
                           <div className="branch-dean-speech-line" />
                           <div className="branch-dean-speech-name">
                             {branch.dean_name_ar ?? branch.dean_name_en}
-                            <span>عميد فرع {label ?? 'المعهد'}</span>
+                            <span>{headSignature}</span>
                           </div>
                         </div>
                       )}
@@ -256,16 +266,14 @@ export default function BranchesPage() {
                     <div className="card branch-dean-card">
 <div className="branch-dean-avatar" aria-hidden="true">
                         {branch.dean_image ? (
-                          <img src={branch.dean_image} alt={`عميد فرع ${label ?? 'المعهد'}`} />
+                          <img src={branch.dean_image} alt={headAlt} />
                         ) : (
                           <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
                         )}
                       </div>
-                      <div className="branch-dean-role">عميد فرع {label ?? 'المعهد'}</div>
+                      <div className="branch-dean-role">{headSignature}</div>
                       <h3 className="branch-dean-name">{branch.dean_name_ar ?? branch.dean_name_en}</h3>
-                      <p className="branch-dean-bio">
-                        يقوم عميد الفرع على إدارة شؤون الفرع الأكاديمية والإدارية وتحقيق رسالة المعهد في المحافظة.
-                      </p>
+                      <p className="branch-dean-bio">{headBio}</p>
                     </div>
                   )}
                 </>
@@ -350,33 +358,33 @@ export default function BranchesPage() {
 
               {tab === 'news' && (
                 <section className="branch-section" aria-labelledby="branch-news-title">
-                  <h2 className="section-title" id="branch-news-title">أخبار الفرع</h2>
+                  <h2 className="section-title" id="branch-news-title">أخبار {label ?? 'الفرع'}</h2>
                   {newsItems.length > 0 ? (
                     <div className="news-grid">
                       {newsItems.slice(0, 6).map((item) => <NewsThumb key={item.id} item={item} />)}
                     </div>
                   ) : (
-                    <p className="muted">لا توجد أخبار منشورة لهذا الفرع بعد.</p>
+                    <p className="muted">لا توجد أخبار منشورة في {label ?? 'الفرع'} بعد.</p>
                   )}
                 </section>
               )}
 
               {tab === 'events' && (
                 <section className="branch-section" aria-labelledby="branch-events-title">
-                  <h2 className="section-title" id="branch-events-title">فعاليات الفرع</h2>
+                  <h2 className="section-title" id="branch-events-title">فعاليات {label ?? 'الفرع'}</h2>
                   {eventItems.length > 0 ? (
                     <div className="news-grid">
                       {eventItems.slice(0, 6).map((item) => <NewsThumb key={item.id} item={item} />)}
                     </div>
                   ) : (
-                    <p className="muted">لا توجد فعاليات مسجلة لهذا الفرع حاليًا.</p>
+                    <p className="muted">لا توجد فعاليات مسجلة في {label ?? 'الفرع'} حاليًا.</p>
                   )}
                 </section>
               )}
 
               {tab === 'courses' && (
                 <section className="branch-section" aria-labelledby="branch-courses-title">
-                  <h2 className="section-title" id="branch-courses-title">دورات الفرع التدريبية</h2>
+                  <h2 className="section-title" id="branch-courses-title">دورات {label ?? 'الفرع'} التدريبية</h2>
                   {courses.length > 0 ? (
                     <div className="courses-grid">
                       {courses.map((c) => (
@@ -395,21 +403,21 @@ export default function BranchesPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="muted">لا توجد دورات مفتوحة لهذا الفرع حاليًا.</p>
+                    <p className="muted">لا توجد دورات مفتوحة في {label ?? 'الفرع'} حاليًا.</p>
                   )}
                 </section>
               )}
 
               {tab === 'faculty' && (
                 <section className="branch-section" aria-labelledby="branch-faculty-title">
-                  <h2 className="section-title" id="branch-faculty-title">الكادر الأكاديمي للفرع</h2>
+                  <h2 className="section-title" id="branch-faculty-title">الكادر الأكاديمي في {label ?? 'الفرع'}</h2>
                   {faculty.length > 0 ? (
                     <>
                       {(() => {
                         const titles = Array.from(new Set(faculty.map((m) => m.title).filter(Boolean).map((t) => t.trim())))
                           .sort((a, b) => a.localeCompare(b, 'ar'));
                         return titles.length > 0 ? (
-                          <div className="faculty-filters" role="tablist" aria-label="فلترة كادر الفرع حسب الرتبة">
+                          <div className="faculty-filters" role="tablist" aria-label={`فلترة كادر ${label ?? 'الفرع'} حسب الرتبة`}>
                             <button
                               type="button"
                               role="tab"

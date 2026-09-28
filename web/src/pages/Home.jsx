@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-import { branchLabel } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
@@ -295,7 +295,7 @@ export default function Home() {
                   {item.branch_name_ar && (
                     <Link to={`/branches/${item.branch_slug}`} className="news-branch-tag">
                       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
-                      {branchLabel(item.branch_name_ar)}
+                      {branchTitle(item.branch_name_ar)}
                     </Link>
                   )}
                   <h3>{item.title_ar ?? item.title_en}</h3>

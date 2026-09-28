@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
-import { branchLabel } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 
 const iconPaths = {
   clock: 'M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM12 6v6l4 2',
@@ -66,7 +66,7 @@ export default function TrainingDetail() {
   }
 
   const cover = course.image_url || fallbackCover;
-  const branch = course.branch_name_ar ? branchLabel(course.branch_name_ar) : null;
+  const branch = course.branch_name_ar ? branchTitle(course.branch_name_ar) : null;
 
   const facts = [
     { icon: 'locations', label: 'الفرع', value: branch ?? '—' },

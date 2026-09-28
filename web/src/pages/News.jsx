@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
-import { branchLabel, isHeadquartersName } from '../lib/branch.js';
+import { branchTitle, isHqBranch } from '../lib/branch.js';
 
 const typeLabel = {
   news: 'خبر',
@@ -13,14 +13,13 @@ const typeLabel = {
 
 function BranchTag({ item }) {
   if (!item.branch_name_ar) return null;
-  const label = branchLabel(item.branch_name_ar);
   return (
     <Link
       to={`/branches/${item.branch_slug}`}
-      className={`news-branch-tag${isHeadquartersName(label) ? ' is-hq' : ''}`}
+      className={`news-branch-tag${isHqBranch(item.branch_name_ar) ? ' is-hq' : ''}`}
     >
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
-      {label}
+      {branchTitle(item.branch_name_ar)}
     </Link>
   );
 }

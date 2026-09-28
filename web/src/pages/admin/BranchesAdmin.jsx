@@ -21,7 +21,7 @@ const emptyForm = {
   dean_message_en: '',
 };
 
-const SUBTITLE = 'بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة العميد، موقع الخريطة، العميد وكلمة العميد. تنعكس مباشرة على قائمة الموقع وصفحة كل فرع.';
+const SUBTITLE = 'بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة المسؤول، موقع الخريطة، الاسم والكلمة. المسؤول في الديوان «عميد الفروع» وفي باقي الفروع «مدير الفرع»، وينعكس ذلك مباشرة على صفحة كل فرع في الموقع.';
 
 export default function BranchesAdmin() {
   const [items, setItems] = useState([]);
@@ -56,37 +56,40 @@ export default function BranchesAdmin() {
           <thead>
             <tr>
               <th>الفرع</th>
-              <th>صورة العميد</th>
-              <th>العميد</th>
-              <th>كلمة العميد</th>
+              <th>الصورة</th>
+              <th>المسؤول</th>
+              <th>كلمته</th>
               <th>العنوان</th>
               <th>الهاتف</th>
               <th>إجراءات</th>
             </tr>
           </thead>
           <tbody>
-            {items.map((b) => (
+            {items.map((b) => {
+              const head = b.is_headquarters ? 'العميد' : 'مدير الفرع';
+              return (
               <tr key={b.id}>
                 <td data-label="الفرع">
                   <strong>{b.name_ar}</strong>
                   <div className="muted">{b.is_headquarters ? 'المقر الرئيسي — ' : ''}{b.slug}</div>
                 </td>
-                <td data-label="صورة العميد">
+                <td data-label={`صورة ${head}`}>
                   {b.dean_image ? (
                     <img src={b.dean_image} alt="" className="table-thumb table-thumb--round" />
                   ) : (
                     <span className="table-muted">—</span>
                   )}
                 </td>
-                <td data-label="العميد">{b.dean_name_ar ? <span className="badge-msg badge-success">{b.dean_name_ar}</span> : '—'}</td>
-                <td data-label="كلمة العميد" className="table-muted">{b.dean_message_ar ? 'منشورة' : '—'}</td>
+                <td data-label={head}>{b.dean_name_ar ? <span className="badge-msg badge-success">{b.dean_name_ar}</span> : '—'}</td>
+                <td data-label={`كلمة ${head}`} className="table-muted">{b.dean_message_ar ? 'منشورة' : '—'}</td>
                 <td data-label="العنوان">{b.address ?? '—'}</td>
                 <td data-label="الهاتف" dir="ltr">{b.phone ?? '—'}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <Link to={String(b.id)} className="btn btn-sm btn-soft">تعديل</Link>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
         {items.length === 0 && !error && <p className="muted admin-empty">لا توجد فروع.</p>}
@@ -124,7 +127,7 @@ export function BranchForm() {
   const upload = useImageUpload({
     onUploaded: (_key, url) => setForm((f) => ({ ...f, dean_image: url })),
     onError: setError,
-    altText: () => form.name_ar || 'عميد فرع المعهد',
+    altText: () => (form.is_headquarters ? 'عميد الفروع' : `مدير ${form.name_ar || 'الفرع'}`),
   });
 
   const save = async (e) => {
@@ -200,18 +203,18 @@ export function BranchForm() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="عميد الفرع">
+        <AdminFormSection title={form.is_headquarters ? 'عميد الفروع' : 'مدير الفرع'}>
           <div className="form-grid">
             <div className="form-field">
-              <label>عميد الفرع (عربي)</label>
+              <label>{form.is_headquarters ? 'عميد الفروع (عربي)' : 'مدير الفرع (عربي)'}</label>
               <input value={form.dean_name_ar} onChange={(e) => setForm({ ...form, dean_name_ar: e.target.value })} />
             </div>
             <div className="form-field">
-              <label>عميد الفرع (إنجليزي)</label>
+              <label>{form.is_headquarters ? 'عميد الفروع (إنجليزي)' : 'مدير الفرع (إنجليزي)'}</label>
               <input value={form.dean_name_en} onChange={(e) => setForm({ ...form, dean_name_en: e.target.value })} dir="ltr" />
             </div>
             <ImageField
-              label="صورة عميد الفرع"
+              label={form.is_headquarters ? 'صورة العميد' : 'صورة مدير الفرع'}
               value={form.dean_image}
               onChange={(url) => setForm({ ...form, dean_image: url })}
               upload={upload}
@@ -220,11 +223,11 @@ export function BranchForm() {
               hint="تُضغط الصورة تلقائيًا (عرض أقصى 1280px بجودة موفرة)."
             />
             <div className="form-field form-field--full">
-              <label>كلمة العميد (عربي)</label>
+              <label>{form.is_headquarters ? 'كلمة العميد (عربي)' : 'كلمة المدير (عربي)'}</label>
               <RichEditor value={form.dean_message_ar} onChange={(html) => setForm({ ...form, dean_message_ar: html })} rows={6} />
             </div>
             <div className="form-field form-field--full">
-              <label>كلمة العميد (إنجليزي)</label>
+              <label>{form.is_headquarters ? 'كلمة العميد (إنجليزي)' : 'كلمة المدير (إنجليزي)'}</label>
               <RichEditor value={form.dean_message_en} onChange={(html) => setForm({ ...form, dean_message_en: html })} rows={6} />
             </div>
           </div>

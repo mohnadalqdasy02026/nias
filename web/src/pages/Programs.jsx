@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
-import { branchLabel, isHeadquartersName } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 
 const typeMeta = {
   bachelor: { label: 'بكالوريوس', plural: 'برامج البكالوريوس' },
@@ -48,7 +48,7 @@ function ProgramCard({ program }) {
   const type = typeMeta[program.program_type] ?? { label: program.program_type };
   const college = program.college_name_ar ?? 'المعهد الوطني للعلوم الإدارية';
   const cover = program.image_url || coverByType[program.program_type];
-  const branch = branchLabel(program.branch_name_ar);
+  const branch = branchTitle(program.branch_name_ar);
   return (
     <article className={`program-card program-card--${program.program_type}`}>
       <div className="program-card-cover">
@@ -63,7 +63,7 @@ function ProgramCard({ program }) {
         {branch && (
           <span className="program-chip program-chip--branch">
             <Icon name="locations" size={14} />
-            {isHeadquartersName(branch) ? branch : (String(branch).includes('فرع') ? branch : `فرع ${branch}`)}
+            {branch}
           </span>
         )}
         <h3>{program.name_ar ?? program.name_en}</h3>

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
-import { branchLabel, isHeadquartersName } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const navItems = [
@@ -36,10 +36,7 @@ function Header() {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
   }, []);
 
-  const navBranchLabel = (b) => {
-    const label = branchLabel(b.name_ar) ?? 'فرع';
-    return isHeadquartersName(label) ? label : (label.includes('فرع') ? label : `فرع ${label}`);
-  };
+  const navBranchLabel = (b) => branchTitle(b) ?? 'فرع';
 
   const handleBrandClick = (e) => {
     if (location.pathname === '/') {

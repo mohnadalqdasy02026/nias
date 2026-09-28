@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-import { branchLabel } from '../lib/branch.js';
+import { branchTitle } from '../lib/branch.js';
 
 const decodeEntities = (s) =>
   s
@@ -65,7 +65,7 @@ export default function CollegeDetail() {
             {college.branch_slug && (
               <>
                 <span aria-hidden="true">/</span>
-                <Link to={backTo}>{branchLabel(college.branch_name_ar) ?? college.branch_name_ar}</Link>
+                <Link to={backTo}>{branchTitle(college.branch_name_ar) ?? college.branch_name_ar}</Link>
               </>
             )}
             <span aria-hidden="true">/</span>
@@ -95,7 +95,7 @@ export default function CollegeDetail() {
             {college.name_en && <span className="college-page-en" dir="ltr">{college.name_en}</span>}
             {college.branch_name_ar && (
               <Link to={backTo} className="college-page-branch">
-                {branchLabel(college.branch_name_ar) ?? college.branch_name_ar}
+                {branchTitle(college.branch_name_ar) ?? college.branch_name_ar}
               </Link>
             )}
           </header>
