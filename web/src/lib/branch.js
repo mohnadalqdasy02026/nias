@@ -1,4 +1,4 @@
-export function branchLabel(nameAr) {
+﻿export function branchLabel(nameAr) {
   if (!nameAr) return null;
   let s = String(nameAr)
     .replace(/^المعهد الوطني للعلوم الإدارية\s*[—-]\s*/i, '')
@@ -30,7 +30,7 @@ export function branchTitle(branch) {
   return label.includes('فرع') ? label : `فرع ${label}`;
 }
 
-// «عميد كل الفروع» في الديوان و«مدير الفرع» في باقي الفروع
+// «عميد المعهد الوطني» في الديوان و«مدير الفرع» في باقي الفروع
 export function branchHeadRole(branch) {
-  return isHqBranch(branch) ? 'عميد كل الفروع' : 'مدير الفرع';
+  return isHqBranch(branch) ? 'عميد المعهد الوطني' : 'مدير الفرع';
 }

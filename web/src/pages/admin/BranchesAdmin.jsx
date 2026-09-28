@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
@@ -21,7 +21,7 @@ const emptyForm = {
   dean_message_en: '',
 };
 
-const SUBTITLE = 'بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة المسؤول، موقع الخريطة، الاسم والكلمة. المسؤول في الديوان «عميد الفروع» وفي باقي الفروع «مدير الفرع»، وينعكس ذلك مباشرة على صفحة كل فرع في الموقع.';
+const SUBTITLE = 'بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة المسؤول، موقع الخريطة، الاسم والكلمة. المسؤول في الديوان «عميد المعهد الوطني» وفي باقي الفروع «مدير الفرع»، وينعكس ذلك مباشرة على صفحة كل فرع في الموقع.';
 
 export default function BranchesAdmin() {
   const [items, setItems] = useState([]);
@@ -127,7 +127,7 @@ export function BranchForm() {
   const upload = useImageUpload({
     onUploaded: (_key, url) => setForm((f) => ({ ...f, dean_image: url })),
     onError: setError,
-    altText: () => (form.is_headquarters ? 'عميد الفروع' : `مدير ${form.name_ar || 'الفرع'}`),
+    altText: () => (form.is_headquarters ? 'عميد المعهد الوطني' : `مدير ${form.name_ar || 'الفرع'}`),
   });
 
   const save = async (e) => {
@@ -203,14 +203,14 @@ export function BranchForm() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title={form.is_headquarters ? 'عميد الفروع' : 'مدير الفرع'}>
+        <AdminFormSection title={form.is_headquarters ? 'عميد المعهد الوطني' : 'مدير الفرع'}>
           <div className="form-grid">
             <div className="form-field">
-              <label>{form.is_headquarters ? 'عميد الفروع (عربي)' : 'مدير الفرع (عربي)'}</label>
+              <label>{form.is_headquarters ? 'عميد المعهد الوطني (عربي)' : 'مدير الفرع (عربي)'}</label>
               <input value={form.dean_name_ar} onChange={(e) => setForm({ ...form, dean_name_ar: e.target.value })} />
             </div>
             <div className="form-field">
-              <label>{form.is_headquarters ? 'عميد الفروع (إنجليزي)' : 'مدير الفرع (إنجليزي)'}</label>
+              <label>{form.is_headquarters ? 'عميد المعهد الوطني (إنجليزي)' : 'مدير الفرع (إنجليزي)'}</label>
               <input value={form.dean_name_en} onChange={(e) => setForm({ ...form, dean_name_en: e.target.value })} dir="ltr" />
             </div>
             <ImageField
