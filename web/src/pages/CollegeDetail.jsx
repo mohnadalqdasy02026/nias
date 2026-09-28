@@ -21,7 +21,7 @@ export default function CollegeDetail() {
   const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
-    college?.name_ar ? `كلية ${college.name_ar}` : 'الكلية',
+    college?.name_ar ? (/^(كلية|مركز|معهد|أكاديمية|كليات)\b/.test(college.name_ar) ? college.name_ar : `كلية ${college.name_ar}`) : 'الكلية',
     college?.about ?? 'صفحة كلية من كليات المعهد الوطني للعلوم الإدارية.',
   );
 
