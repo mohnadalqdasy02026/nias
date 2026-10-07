@@ -17,6 +17,7 @@ const decodeEntities = (s) =>
 export default function CollegeDetail() {
   const { id } = useParams();
   const [college, setCollege] = useState(null);
+  const [depts, setDepts] = useState([]);
   const [error, setError] = useState(null);
   const settings = useSiteSettings();
   const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
@@ -30,6 +31,9 @@ export default function CollegeDetail() {
     setError(null);
     setCollege(null);
     api.get(`/public/colleges/${id}`).then(setCollege).catch((e) => setError(e.message));
+    api.get(`/public/departments?collegeId=${id}`)
+      .then((rows) => setDepts(rows ?? []))
+      .catch(() => setDepts([]));
   }, [id]);
 
   if (error) {
@@ -158,6 +162,29 @@ export default function CollegeDetail() {
                     </>
                   )}
                 </div>
+              </div>
+            </section>
+          )}
+
+          {depts.length > 0 && (
+            <section className="card college-page-depts" aria-labelledby="college-depts-title">
+              <h2 id="college-depts-title">الأقسام العلمية</h2>
+              <p className="college-page-depts-sub">
+                تضم {college.name_ar} {depts.length === 1 ? 'قسمًا أكاديميًا واحدًا يعمل بكفاءة' : `${depts.length} أقسام أكاديمية`}. اضغط على أي قسم لاستعراض نبذته وبرامجه ورئيسه.
+              </p>
+              <div className="college-depts-grid">
+                {depts.map((d) => (
+                  <Link key={d.id} to={`/departments/${d.id}`} className="college-dept-card">
+                    <h3>{d.name_ar.replace(/^قسم\s+/, '')}</h3>
+                    {d.head_name_ar && <span className="college-dept-head">{d.head_name_ar}{d.head_title ? ` · ${d.head_title}` : ''}</span>}
+                    {d.description && (
+                      <p>{d.description.length > 150 ? `${d.description.slice(0, 150)}…` : d.description}</p>
+                    )}
+                    <span className="college-dept-more">
+                      {d.programs_count ? `${d.programs_count} برنامج` : 'مزيد من التفاصيل'} ←
+                    </span>
+                  </Link>
+                ))}
               </div>
             </section>
           )}

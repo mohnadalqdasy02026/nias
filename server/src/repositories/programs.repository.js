@@ -163,4 +163,47 @@ export class ProgramRepository {
     );
     return rows[0] ?? null;
   }
+
+  async listCourses(programId) {
+    const { rows } = await pool.query(
+      `SELECT id, program_id, level_no, semester_no, course_code, name_ar, name_en, credit_hours, is_optional
+         FROM program_courses
+        WHERE program_id = $1
+        ORDER BY level_no, semester_no, course_code`,
+      [programId],
+    );
+    return rows;
+  }
+
+  async replaceCourses(programId, courses) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query('DELETE FROM program_courses WHERE program_id = $1', [programId]);
+      for (const c of courses) {
+        await client.query(
+          `INSERT INTO program_courses
+             (program_id, level_no, semester_no, course_code, name_ar, name_en, credit_hours, is_optional)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+          [
+            programId,
+            c.level_no,
+            c.semester_no,
+            c.course_code || null,
+            c.name_ar,
+            c.name_en || null,
+            c.credit_hours ?? 3,
+            c.is_optional ?? false,
+          ],
+        );
+      }
+      await client.query('COMMIT');
+    } catch (e) {
+      await client.query('ROLLBACK');
+      throw e;
+    } finally {
+      client.release();
+    }
+    return this.listCourses(programId);
+  }
 }

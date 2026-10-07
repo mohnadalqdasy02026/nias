@@ -11,6 +11,7 @@ import {
   getCourseParams,
   getBranchParams,
   getCollegeParams,
+  getDepartmentParams,
   getPageParams,
   searchSchema,
   contactSchema,
@@ -34,6 +35,7 @@ router.get('/programs/:id', validate(getProgramParams), publicController.getProg
 router.get('/colleges', publicController.listColleges);
 router.get('/colleges/:id', validate(getCollegeParams), publicController.getCollege);
 router.get('/departments', publicController.listDepartments);
+router.get('/departments/:id', validate(getDepartmentParams), publicController.getDepartment);
 router.get('/faculty', publicController.listFaculty);
 router.get('/branches', publicController.listBranches);
 router.get('/branches/:slug', validate(getBranchParams), publicController.getBranch);

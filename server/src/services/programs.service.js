@@ -60,4 +60,14 @@ export class ProgramService {
     if (!program) throw AppError.notFound('Program not found');
     return { deleted: true, id };
   }
+
+  async getCourses(id) {
+    await this.getById(id);
+    return this.repository.listCourses(id);
+  }
+
+  async replaceCourses(id, courses) {
+    await this.getById(id);
+    return this.repository.replaceCourses(id, courses);
+  }
 }

@@ -1586,3 +1586,79 @@
   border: 1px solid var(--color-border);
   display: block;
 }
+
+/* Study plan editor (admin) */
+.admin-courses-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 22px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: rgba(14, 124, 102, 0.03);
+}
+
+.admin-courses-title {
+  margin: 0 0 4px;
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 0.98rem;
+}
+
+.admin-course-rows {
+  display: grid;
+  grid-template-columns: 96px 1fr 1fr 84px 92px 64px;
+  gap: 8px;
+  align-items: center;
+}
+
+.admin-course-rows > input {
+  min-width: 0;
+}
+
+.admin-course-code,
+.admin-course-hours {
+  text-align: center;
+}
+
+.admin-course-optional {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: var(--color-text-muted, #5c6b66);
+  white-space: nowrap;
+}
+
+.admin-courses-addsem {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: rgba(14, 124, 102, 0.05);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.admin-courses-addsem .admin-course-hours {
+  width: 70px;
+}
+
+@media (max-width: 900px) {
+  .admin-course-rows {
+    grid-template-columns: 1fr 1fr;
+  }
+  .admin-course-code {
+    text-align: right;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-course-rows {
+    grid-template-columns: 1fr;
+  }
+}

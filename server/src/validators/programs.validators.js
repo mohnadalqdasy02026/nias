@@ -40,3 +40,20 @@ export const updateProgramSchema = {
     .partial()
     .refine((b) => Object.keys(b).length > 0, { message: 'Nothing to update' }),
 };
+
+export const replaceCoursesSchema = {
+  params: z.object({ id: z.coerce.number().int().positive() }),
+  body: z
+    .array(
+      z.object({
+        level_no: z.coerce.number().int().min(1).max(10),
+        semester_no: z.coerce.number().int().min(1).max(10),
+        course_code: z.string().trim().max(30).optional().nullable(),
+        name_ar: z.string().trim().min(1).max(255),
+        name_en: z.string().trim().max(255).optional().nullable(),
+        credit_hours: z.coerce.number().min(0.5).max(20).default(3),
+        is_optional: z.boolean().optional().default(false),
+      }),
+    )
+    .max(400),
+};

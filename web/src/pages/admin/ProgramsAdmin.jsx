@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import StudyPlanEditor from './StudyPlanEditor.jsx';
 
 const PROGRAM_TYPES = ['bachelor', 'diploma', 'master_executive', 'master_academic'];
 
@@ -298,6 +299,8 @@ export function ProgramForm() {
             </div>
           </div>
         </AdminFormSection>
+
+        {isEdit && <StudyPlanEditor programId={id} />}
 
         <div className="admin-form-actions">
           <button type="submit" className="btn btn-primary" disabled={busy}>{busy ? 'جارٍ الحفظ…' : isEdit ? 'حفظ' : 'إنشاء'}</button>

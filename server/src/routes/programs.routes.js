@@ -11,6 +11,7 @@ import {
   programParamsSchema,
   createProgramSchema,
   updateProgramSchema,
+  replaceCoursesSchema,
 } from '../validators/programs.validators.js';
 
 const router = Router();
@@ -47,6 +48,20 @@ router.get(
   validate(programParamsSchema),
   requirePermission('academic_programs.read'),
   programController.getById,
+);
+
+router.get(
+  '/:id/courses',
+  validate(programParamsSchema),
+  requirePermission('academic_programs.read'),
+  programController.listCourses,
+);
+
+router.put(
+  '/:id/courses',
+  validate(replaceCoursesSchema),
+  requirePermission('academic_programs.update'),
+  programController.replaceCourses,
 );
 
 router.post(

@@ -4039,3 +4039,538 @@ button,
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============ College page: departments ============ */
+.college-page-depts {
+  padding: 26px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.college-page-depts > h2 {
+  margin: 0;
+  color: var(--color-primary-deep);
+  font-size: 1.4rem;
+}
+
+.college-page-depts-sub {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 1.9;
+  font-size: 0.96rem;
+}
+
+.college-depts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.college-dept-card {
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: rgba(14, 124, 102, 0.05);
+  outline: 1px solid rgba(14, 124, 102, 0.14);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.college-dept-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg, 0 14px 34px rgba(4, 26, 21, 0.16));
+  outline-color: var(--color-primary, #0e7c66);
+}
+
+.college-dept-card h3 {
+  margin: 0;
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 1.1rem;
+}
+
+.college-dept-head {
+  color: var(--color-primary, #0e7c66);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.college-dept-card p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.92rem;
+  line-height: 1.8;
+}
+
+.college-dept-more {
+  margin-top: auto;
+  padding-top: 6px;
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+/* ============ Department page ============ */
+.department-page-hero {
+  padding: 84px 0 60px;
+  margin-bottom: 0;
+  background:
+    radial-gradient(1200px 500px at 85% -20%, rgba(255, 255, 255, 0.12), transparent 60%),
+    linear-gradient(135deg, var(--color-primary-deep, #08483b) 0%, var(--color-nav, #0e4f42) 55%, var(--color-primary, #0e7c66) 100%);
+  color: #fff;
+}
+
+.department-page-eyebrow {
+  margin: 26px 0 0;
+  display: inline-block;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #eafff8;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.department-page-hero h1 {
+  margin: 12px 0 6px;
+  color: #fff;
+  font-size: 2.3rem;
+}
+
+.department-page-sub {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1rem;
+}
+
+.department-page-sub a {
+  color: #fff;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.department-page-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.department-page-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.department-page {
+  padding-bottom: 46px;
+}
+
+.department-page-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 22px;
+  align-items: start;
+}
+
+.department-page-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+}
+
+.department-page-card {
+  padding: 24px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.department-page-card > h2 {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-primary-deep);
+  font-size: 1.25rem;
+}
+
+.department-page-card > h2 svg {
+  color: var(--color-primary, #0e7c66);
+}
+
+.department-page-card > p {
+  margin: 0;
+  color: var(--color-text);
+  line-height: 2;
+  font-size: 0.98rem;
+}
+
+.department-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
+.department-program-card {
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: rgba(14, 124, 102, 0.05);
+  outline: 1px solid rgba(14, 124, 102, 0.14);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.department-program-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg, 0 14px 34px rgba(4, 26, 21, 0.16));
+}
+
+.department-program-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.department-program-type {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(14, 124, 102, 0.12);
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.department-program-card h3 {
+  margin: 0;
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 1.05rem;
+}
+
+.department-program-card p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+
+.department-program-more {
+  margin-top: auto;
+  padding-top: 4px;
+  color: var(--color-primary, #0e7c66);
+  font-size: 0.84rem;
+  font-weight: 800;
+}
+
+.department-faculty-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.department-faculty-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(14, 124, 102, 0.04);
+  outline: 1px solid rgba(14, 124, 102, 0.1);
+}
+
+.department-faculty-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--color-primary, #0e7c66);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.department-faculty-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.department-faculty-item > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.department-faculty-item strong {
+  color: var(--color-text);
+  font-size: 0.94rem;
+}
+
+.department-faculty-item span,
+.department-faculty-item small {
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.82rem;
+}
+
+.department-page-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.department-page-head-card {
+  padding: 24px 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.department-page-head-card > h2 {
+  margin: 0;
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 1.15rem;
+}
+
+.department-page-head-inner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.department-page-head-photo {
+  width: 92px;
+  height: 92px;
+  flex: 0 0 92px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(14, 124, 102, 0.25);
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(14, 124, 102, 0.16);
+}
+
+.department-page-head-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.department-page-head-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.department-page-head-info strong {
+  color: var(--color-text);
+  font-size: 1.08rem;
+}
+
+.department-page-head-rank {
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.department-page-side-card {
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.department-page-side-card h3 {
+  margin: 0;
+  color: var(--color-primary-deep);
+  font-size: 1rem;
+}
+
+.department-side-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.department-side-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.department-side-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(14, 124, 102, 0.1);
+  color: var(--color-primary, #0e7c66);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.department-side-list li > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.department-side-list small {
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.78rem;
+}
+
+.department-side-list strong {
+  color: var(--color-text);
+  font-size: 0.94rem;
+  font-weight: 800;
+}
+
+.department-page-back {
+  justify-content: center;
+}
+
+.department-page-empty {
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+@media (max-width: 960px) {
+  .department-page-grid {
+    grid-template-columns: 1fr;
+  }
+  .department-page-hero h1 {
+    font-size: 1.8rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .department-page-hero {
+    padding: 56px 0 40px;
+  }
+  .college-depts-grid,
+  .department-programs-grid,
+  .department-faculty-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ============ Program detail: study plan ============ */
+.program-detail-plan-intro {
+  color: var(--color-primary-dark, var(--color-primary)) !important;
+  font-weight: 700;
+}
+
+.program-plan {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.program-plan-sem {
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.program-plan-sem > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 12px 16px;
+  font-weight: 800;
+  color: var(--color-primary-deep);
+  background: rgba(14, 124, 102, 0.06);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.program-plan-sem > summary::-webkit-details-marker {
+  display: none;
+}
+
+.program-plan-sem > summary::before {
+  content: '▸';
+  color: var(--color-primary, #0e7c66);
+  transition: transform 0.15s ease;
+}
+
+.program-plan-sem[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.program-plan-table-wrap {
+  overflow-x: auto;
+}
+
+.program-plan-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+
+.program-plan-table th,
+.program-plan-table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: right;
+}
+
+.program-plan-table th {
+  background: rgba(14, 124, 102, 0.04);
+  color: var(--color-text);
+  font-weight: 800;
+  font-size: 0.82rem;
+}
+
+.program-plan-table td:first-child,
+.program-plan-table td:last-child {
+  color: var(--color-text-muted, #5c6b66);
+}
+
+.program-plan-name {
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.program-plan-optional {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: rgba(14, 124, 102, 0.1);
+  color: var(--color-primary-dark, var(--color-primary));
+  font-size: 0.76rem;
+  font-weight: 700;
+}

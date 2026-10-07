@@ -34,7 +34,17 @@ export class PublicService {
   async getProgram(id) {
     const program = await this.publicRepo.getProgramById(id);
     if (!program) throw AppError.notFound('Program not found');
-    return program;
+    const courses = await this.publicRepo.listCoursesByProgram(id);
+    const totalHours = courses.reduce((sum, c) => sum + Number(c.credit_hours || 0), 0);
+    const levels = [...new Set(courses.map((c) => c.level_no))].sort((a, b) => a - b);
+    return {
+      ...program,
+      studyPlan: {
+        levels,
+        totalHours,
+        courses,
+      },
+    };
   }
 
   async listColleges(branchId) {
@@ -49,6 +59,27 @@ export class PublicService {
 
   async listDepartments(collegeId) {
     return this.publicRepo.listDepartments(collegeId ?? null);
+  }
+
+  async getDepartment(id) {
+    const department = await this.publicRepo.getDepartmentById(id);
+    if (!department) throw AppError.notFound('Department not found');
+    const programs = await this.publicRepo.listDepartmentPrograms(id);
+    const faculty = await this.publicRepo.listDepartmentFaculty(id);
+    const head = faculty.find((f) => f.is_dept_head) ?? null;
+    return {
+      ...department,
+      programs,
+      faculty,
+      head:
+        head ??
+        (department.head_name_ar
+          ? {
+              name_ar: department.head_name_ar,
+              title: department.head_title,
+            }
+          : null),
+    };
   }
 
   async listFaculty(branchId) {

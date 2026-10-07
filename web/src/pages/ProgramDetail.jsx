@@ -85,11 +85,25 @@ export default function ProgramDetail() {
   const department = program.department_name_ar ?? null;
   const cover = program.image_url || coverByType[program.program_type];
 
+  const studyPlan = program.studyPlan ?? null;
+  const planCourses = studyPlan?.courses ?? [];
+  const planFacts = [];
+  if (studyPlan && planCourses.length > 0) {
+    const maxLevel = Math.max(...studyPlan.levels);
+    const semesterCount = new Set(planCourses.map((c) => `${c.level_no}|${c.semester_no}`)).size;
+    const durationLabel = { 4: 'أربع سنوات', 3: 'ثلاث سنوات', 2: 'سنتان', 1: 'سنة واحدة' }[maxLevel] ?? `${maxLevel} مستويات`;
+    planFacts.push(
+      { icon: 'clock', label: 'مدة الدراسة', value: durationLabel },
+      { icon: 'book', label: 'الساعات المعتمدة', value: `${studyPlan.totalHours} ساعة` },
+    );
+  }
+
   const facts = [
     { icon: 'grad', label: 'الدرجة العلمية', value: type.plural ?? type.label },
     { icon: 'book', label: 'الكلية', value: college },
     { icon: 'list', label: 'القسم', value: department ?? '—' },
     { icon: 'locations', label: 'الفرع', value: program.branch_name_ar ? branchTitle(program.branch_name_ar) : '—' },
+    ...planFacts,
   ];
 
   return (
@@ -153,6 +167,60 @@ export default function ProgramDetail() {
                 والتعليم والبحث العلمي.
               </p>
             </div>
+
+            {(() => {
+              if (!studyPlan || planCourses.length === 0) return null;
+              const groups = new Map();
+              planCourses.forEach((c, i) => {
+                const key = `${c.level_no}|${c.semester_no}`;
+                if (!groups.has(key)) groups.set(key, { level_no: c.level_no, semester_no: c.semester_no, items: [] });
+                groups.get(key).items.push({ ...c, _i: i });
+              });
+              const sorted = [...groups.values()].sort(
+                (a, b) => a.level_no - b.level_no || a.semester_no - b.semester_no,
+              );
+              const semesterCount = new Set(planCourses.map((c) => `${c.level_no}|${c.semester_no}`)).size;
+              return (
+                <div className="card program-detail-card">
+                  <h2>الخطة الدراسية</h2>
+                  <p className="program-detail-text program-detail-plan-intro">
+                    تمتد الدراسة على {semesterCount === 1 ? 'فصل دراسي واحد' : `${semesterCount} فصول دراسية`}
+                    {' '}وبإجمالي {studyPlan.totalHours} ساعة معتمدة.
+                  </p>
+                  <div className="program-plan">
+                    {sorted.map((g) => (
+                      <details key={`${g.level_no}|${g.semester_no}`} className="program-plan-sem" open={g.level_no === 1 && g.semester_no === 1}>
+                        <summary>المستوى {g.level_no} — الفصل {g.semester_no}</summary>
+                        <div className="program-plan-table-wrap">
+                          <table className="program-plan-table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>الرمز</th>
+                                <th>المقرر</th>
+                                <th>الساعات</th>
+                                <th>النوع</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {g.items.map((c) => (
+                                <tr key={c._i}>
+                                  <td>{c._i + 1}</td>
+                                  <td dir="ltr">{c.course_code ?? '—'}</td>
+                                  <td className="program-plan-name">{c.name_ar}</td>
+                                  <td>{c.credit_hours}</td>
+                                  <td>{c.is_optional ? <span className="program-plan-optional">اختياري</span> : 'إجباري'}</td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
 
             <div className="card admission-cta admission-cta--bottom">
               <div>

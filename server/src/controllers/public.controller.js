@@ -19,6 +19,7 @@ export class PublicController {
   listColleges = asyncHandler(async (req, res) => success(res, await this.publicService.listColleges(req.query.branchId)));
   getCollege = asyncHandler(async (req, res) => success(res, await this.publicService.getCollege(req.params.id)));
   listDepartments = asyncHandler(async (req, res) => success(res, await this.publicService.listDepartments(req.query.collegeId)));
+  getDepartment = asyncHandler(async (req, res) => success(res, await this.publicService.getDepartment(req.params.id)));
   listFaculty = asyncHandler(async (req, res) => success(res, await this.publicService.listFaculty(req.query.branchId)));
   listBranches = asyncHandler(async (_req, res) => success(res, await this.publicService.listBranches()));
   getBranch = asyncHandler(async (req, res) => success(res, await this.publicService.getBranch(req.params.slug)));

@@ -37,4 +37,42 @@ export class CollegesService {
     if (!college) throw AppError.notFound('الكلية غير موجودة.');
     return this.repo.remove(id);
   }
+
+  async listDepartments(collegeId) {
+    return this.repo.listDepartments(collegeId ?? null);
+  }
+
+  async getDepartment(id) {
+    const department = await this.repo.findDepartmentById(id);
+    if (!department) throw AppError.notFound('القسم غير موجود.');
+    return department;
+  }
+
+  async createDepartment(data) {
+    if (!(await this.repo.findById(data.college_id))) {
+      throw AppError.badRequest('الكلية المحددة غير موجودة.');
+    }
+    return this.repo.createDepartment(data);
+  }
+
+  async updateDepartment(id, data) {
+    const department = await this.repo.findDepartmentById(id);
+    if (!department) throw AppError.notFound('القسم غير موجود.');
+    if (data.college_id && !(await this.repo.findById(data.college_id))) {
+      throw AppError.badRequest('الكلية المحددة غير موجودة.');
+    }
+    return this.repo.updateDepartment(id, data);
+  }
+
+  async removeDepartment(id) {
+    const department = await this.repo.findDepartmentById(id);
+    if (!department) throw AppError.notFound('القسم غير موجود.');
+    const usage = await this.repo.departmentUsage(id);
+    if (usage.programs_count > 0 || usage.faculty_count > 0) {
+      throw AppError.badRequest(
+        `لا يمكن حذف القسم لأنه مرتبط بـ ${usage.programs_count} برنامجاً و ${usage.faculty_count} عضو هيئة تدريس.`,
+      );
+    }
+    return this.repo.removeDepartment(id);
+  }
 }

@@ -126,11 +126,76 @@ p.name_ar, p.name_en, p.program_type,
     let where = 'TRUE';
     if (collegeId) {
       params.push(collegeId);
-      where = `college_id = $1`;
+      where = `d.college_id = $1`;
     }
     const { rows } = await pool.query(
-      `SELECT id, college_id, name_ar, name_en FROM departments WHERE ${where} ORDER BY id`,
+      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description,
+              d.head_name_ar, d.head_title, d.head_photo, d.image,
+              c.name_ar AS college_name_ar, c.name_en AS college_name_en,
+              c.branch_id,
+              b.name_ar AS branch_name_ar, b.slug AS branch_slug,
+              (SELECT count(*)::int FROM academic_programs p
+                WHERE p.department_id = d.id AND p.status = 'active' AND p.deleted_at IS NULL) AS programs_count,
+              (SELECT count(*)::int FROM faculty_members f
+                WHERE f.department_id = d.id AND f.status = 'active' AND f.deleted_at IS NULL) AS faculty_count
+         FROM departments d
+         LEFT JOIN colleges c ON c.id = d.college_id
+         LEFT JOIN institute_branches b ON b.id = c.branch_id
+        WHERE ${where} ORDER BY d.id`,
       params,
+    );
+    return rows;
+  }
+
+  async getDepartmentById(id) {
+    const { rows } = await pool.query(
+      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description,
+              d.head_name_ar, d.head_title, d.head_photo, d.image,
+              c.name_ar AS college_name_ar, c.name_en AS college_name_en,
+              c.about AS college_about, c.vision AS college_vision, c.mission AS college_mission,
+              c.dean_name, c.dean_name_ar, c.dean_name_en, c.image AS college_image,
+              c.branch_id,
+              b.name_ar AS branch_name_ar, b.slug AS branch_slug
+         FROM departments d
+         LEFT JOIN colleges c ON c.id = d.college_id
+         LEFT JOIN institute_branches b ON b.id = c.branch_id
+        WHERE d.id = $1`,
+      [id],
+    );
+    return rows[0] ?? null;
+  }
+
+  async listDepartmentPrograms(departmentId) {
+    const { rows } = await pool.query(
+      `SELECT p.id, p.department_id, p.branch_id, p.program_type,
+              p.name_ar, p.name_en, p.description, p.admission_open, p.image_url
+         FROM academic_programs p
+        WHERE p.department_id = $1 AND p.status = 'active' AND p.deleted_at IS NULL
+        ORDER BY p.id`,
+      [departmentId],
+    );
+    return rows;
+  }
+
+  async listDepartmentFaculty(departmentId) {
+    const { rows } = await pool.query(
+      `SELECT id, branch_id, department_id, name_ar, name_en, title, specialization, email, phone, photo,
+              is_dept_head
+         FROM faculty_members
+        WHERE department_id = $1 AND status = 'active' AND deleted_at IS NULL
+        ORDER BY is_dept_head DESC, id`,
+      [departmentId],
+    );
+    return rows;
+  }
+
+  async listCoursesByProgram(programId) {
+    const { rows } = await pool.query(
+      `SELECT id, program_id, level_no, semester_no, course_code, name_ar, name_en, credit_hours, is_optional
+         FROM program_courses
+        WHERE program_id = $1
+        ORDER BY level_no, semester_no, course_code`,
+      [programId],
     );
     return rows;
   }

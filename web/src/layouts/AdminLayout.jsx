@@ -34,6 +34,7 @@ const navSections = [
     items: [
       { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.read' },
       { to: '/admin/colleges', label: 'الكليات', perm: 'colleges.read' },
+      { to: '/admin/departments', label: 'الأقسام العلمية', perm: 'colleges.read' },
       { to: '/admin/faculty', label: 'الكادر الأكاديمي', perm: 'faculty_members.read' },
     ],
   },

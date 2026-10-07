@@ -18,6 +18,7 @@ import DownloadsPage from './pages/DownloadsPage.jsx';
 import FacultyPage from './pages/FacultyPage.jsx';
 import CollegeDetail from './pages/CollegeDetail.jsx';
 import CollegesList from './pages/CollegesList.jsx';
+import DepartmentDetail from './pages/DepartmentDetail.jsx';
 import BranchesPage from './pages/BranchesPage.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
@@ -34,6 +35,7 @@ import RolesAdmin, { RoleForm } from './pages/admin/RolesAdmin.jsx';
 import ContactMessages from './pages/admin/ContactMessages.jsx';
 import BranchesAdmin, { BranchForm } from './pages/admin/BranchesAdmin.jsx';
 import CollegesAdmin, { CollegeForm } from './pages/admin/CollegesAdmin.jsx';
+import DepartmentsAdmin, { DepartmentForm } from './pages/admin/DepartmentsAdmin.jsx';
 import FacultyAdmin, { FacultyForm } from './pages/admin/FacultyAdmin.jsx';
 
 export default function App() {
@@ -69,6 +71,7 @@ export default function App() {
             <Route path="branches/:slug" element={<BranchesPage />} />
             <Route path="colleges" element={<CollegesList />} />
             <Route path="colleges/:id" element={<CollegeDetail />} />
+            <Route path="departments/:id" element={<DepartmentDetail />} />
             <Route path="contact" element={<Contact />} />
             <Route path="login" element={<Login />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
@@ -281,6 +284,30 @@ export default function App() {
               element={
                 <ProtectedRoute permission="colleges.manage">
                   <CollegeForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="departments"
+              element={
+                <ProtectedRoute permission="colleges.read">
+                  <DepartmentsAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="departments/new"
+              element={
+                <ProtectedRoute permission="colleges.manage">
+                  <DepartmentForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="departments/:id"
+              element={
+                <ProtectedRoute permission="colleges.manage">
+                  <DepartmentForm />
                 </ProtectedRoute>
               }
             />

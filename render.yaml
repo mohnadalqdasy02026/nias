@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     buildCommand: npm install --include=dev && npm run build --workspace web
-    startCommand: node server/src/scripts/migrate.js up && node server/src/scripts/seed-demo-passwords.js && node server/src/server.js
+    startCommand: node server/src/scripts/migrate.js up && node server/src/scripts/seed-demo-passwords.js && node server/src/scripts/seed-academic-content.js && node server/src/server.js
     healthCheckPath: /healthz
     envVars:
       - key: NODE_ENV
