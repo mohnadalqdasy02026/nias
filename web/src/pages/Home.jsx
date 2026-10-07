@@ -297,7 +297,7 @@ export default function Home() {
               <article key={c.id} className="card course-card">
                 <div className="card-cover">
                   <img src={courseCovers[ci % courseCovers.length]} alt="" loading="lazy" />
-                  {c.category && <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>}
+                  <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
                 </div>
                 <div className="card-body">
                   <h3>{c.title}</h3>
