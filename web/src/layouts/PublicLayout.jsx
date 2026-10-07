@@ -9,6 +9,7 @@ const navItems = [
   { to: '/', label: 'الرئيسية' },
   { to: '/about', label: 'عن المعهد' },
   { to: '/programs', label: 'البرامج الأكاديمية' },
+  { to: '/colleges', label: 'الكليات والأقسام' },
   { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/training', label: 'التدريب' },
 ];
@@ -161,6 +162,14 @@ function Header() {
 }
 
 function Footer() {
+  const settings = useSiteSettings();
+  const general = settings?.general ?? {};
+  const ministryLinks = [
+    { label: 'بوابة التسجيل والتنسيق الإلكتروني', href: general.ministry_admission_url || 'https://oasyemen.net' },
+    ...(general.ministry_results_url
+      ? [{ label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url }]
+      : []),
+  ];
   const socials = [
     { label: 'تليجرام', href: 'https://t.me/nias_academy', path: 'M21 9.3a23.4 23.4 0 0 0-11.2 3.9L9 15.8l-3.9.9a.8.8 0 0 1-.6-.1l-2.3-1.1a.8.8 0 0 1-.2-1.4l3.9-3.6h.6l1.9 1.1M11.8 15.8l.9 2.9c0 .4.5.6.9.3l1-2.2' },
     { label: 'فيسبوك', href: 'https://www.facebook.com/nias.academy', path: 'M14 8h2V5h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8z' },
@@ -183,6 +192,9 @@ function Footer() {
             ))}
           </div>
           <div className="footer-legal">
+            {ministryLinks.map((m) => (
+              <a key={m.label} href={m.href} target="_blank" rel="noopener noreferrer">{m.label}</a>
+            ))}
             <Link to="/terms">الشروط والأحكام</Link>
           </div>
         </div>

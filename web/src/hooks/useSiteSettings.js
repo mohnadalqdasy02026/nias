@@ -8,6 +8,8 @@ const DEFAULTS = {
     logo: '/uploads/design/site/logo.jpg',
     favicon: '/uploads/design/site/logo.ico',
     primary_color: '#0e7c66',
+    ministry_admission_url: 'https://oasyemen.net',
+    ministry_results_url: '',
   },
   home: {},
 };

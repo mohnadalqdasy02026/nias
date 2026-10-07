@@ -18,7 +18,7 @@ export class TrainingRepository {
     const [{ rows }, { rows: countRows }] = await Promise.all([
       pool.query(
         `SELECT c.id, c.title, c.description, c.fees, c.start_date, c.end_date,
-                c.location, c.capacity, c.trainer, c.status, c.image_url, c.created_at, c.updated_at, c.branch_id,
+                c.location, c.capacity, c.trainer, c.status, c.category, c.image_url, c.created_at, c.updated_at, c.branch_id,
                 b.name_ar AS branch_name_ar,
                 (SELECT count(*)::int FROM training_enrollments e
                   WHERE e.course_id = c.id AND e.status <> 'cancelled') AS enrollments_count
@@ -47,11 +47,11 @@ export class TrainingRepository {
 
   async createCourse(data) {
     const { rows } = await pool.query(
-      `INSERT INTO training_courses (title, description, fees, start_date, end_date, location, capacity, trainer, status, image_url, branch_id)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) RETURNING id`,
+      `INSERT INTO training_courses (title, description, fees, start_date, end_date, location, capacity, trainer, category, status, image_url, branch_id)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
       [data.title, data.description ?? null, data.fees ?? null, data.start_date ?? null,
        data.end_date ?? null, data.location ?? null, data.capacity ?? null,
-       data.trainer ?? null, data.status ?? 'draft', data.image_url ?? null, data.branch_id ?? null],
+       data.trainer ?? null, data.category ?? 'course', data.status ?? 'draft', data.image_url ?? null, data.branch_id ?? null],
     );
     return this.getCourse(rows[0].id);
   }
@@ -63,7 +63,7 @@ export class TrainingRepository {
       args.push(value);
       sets.push(`${col} = $${args.length}`);
     };
-    const fields = ['title', 'description', 'fees', 'start_date', 'end_date', 'location', 'capacity', 'trainer', 'status', 'image_url', 'branch_id'];
+    const fields = ['title', 'description', 'fees', 'start_date', 'end_date', 'location', 'capacity', 'trainer', 'category', 'status', 'image_url', 'branch_id'];
     for (const f of fields) {
       if (data[f] !== undefined) push(f, data[f] ?? null);
     }

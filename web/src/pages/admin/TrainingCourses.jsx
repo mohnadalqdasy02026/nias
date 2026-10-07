@@ -6,6 +6,7 @@ import { branchLabel } from '../../lib/branch.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import { TRAINING_CATEGORY_LABELS } from '../../lib/training.js';
 
 const statusLabel = { draft: 'مسودة', open: 'مفتوحة', closed: 'مغلقة', completed: 'مكتملة' };
 
@@ -19,6 +20,7 @@ const emptyForm = {
   location: '',
   capacity: '',
   trainer: '',
+  category: 'course',
   image_url: '',
   status: 'draft',
 };
@@ -98,6 +100,7 @@ export default function TrainingCourses() {
             <tr>
               <th></th>
               <th>العنوان</th>
+              <th>التصنيف</th>
               <th>الفرع</th>
               <th>الحالة</th>
               <th>التسجيلات</th>
@@ -116,6 +119,7 @@ export default function TrainingCourses() {
                     : <span className="admin-thumb admin-thumb--empty">—</span>}
                 </td>
                 <td data-label="العنوان">{c.title}</td>
+                <td data-label="التصنيف">{TRAINING_CATEGORY_LABELS[c.category] ?? TRAINING_CATEGORY_LABELS.course}</td>
                 <td data-label="الفرع">{c.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(c.branch_name_ar)}</span> : '—'}</td>
                 <td data-label="الحالة"><span className={`badge-msg badge-${c.status === 'open' ? 'success' : 'draft'}`}>{statusLabel[c.status]}</span></td>
                 <td data-label="التسجيلات">{c.enrollments_count}</td>
@@ -173,6 +177,7 @@ export function CourseForm() {
       location: record.location ?? '',
       capacity: record.capacity ?? '',
       trainer: record.trainer ?? '',
+      category: record.category ?? 'course',
       image_url: record.image_url ?? '',
       status: record.status ?? 'draft',
     });
@@ -229,6 +234,14 @@ export function CourseForm() {
               <select value={form.branch_id} onChange={(e) => setForm({ ...form, branch_id: e.target.value })} required>
                 <option value="">اختر الفرع</option>
                 {branches.map((b) => <option key={b.id} value={b.id}>{branchLabel(b.name_ar) ?? b.name_ar}</option>)}
+              </select>
+            </div>
+            <div className="form-field">
+              <label>التصنيف</label>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                {Object.entries(TRAINING_CATEGORY_LABELS).map(([key, label]) => (
+                  <option key={key} value={key}>{label}</option>
+                ))}
               </select>
             </div>
             <div className="form-field">

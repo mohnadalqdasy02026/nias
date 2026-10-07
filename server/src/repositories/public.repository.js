@@ -224,12 +224,16 @@ p.name_ar, p.name_en, p.program_type,
     return rows;
   }
 
-  async listTrainingCourses({ branchId = null } = {}) {
+  async listTrainingCourses({ branchId = null, category = null } = {}) {
     const params = [];
     let where = "c.status = 'open'";
     if (branchId) {
       params.push(branchId);
       where += ` AND c.branch_id = $${params.length}`;
+    }
+    if (category) {
+      params.push(category);
+      where += ` AND COALESCE(c.category, 'course') = $${params.length}`;
     }
     const { rows } = await pool.query(
       `SELECT c.id, c.title, c.description, c.fees, c.start_date, c.end_date, c.location,

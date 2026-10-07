@@ -1,4 +1,4 @@
-﻿/* Header */
+/* Header */
 .site-header {
   background: rgba(255, 255, 255, 0.82);
   color: var(--color-text);
@@ -346,12 +346,12 @@
 }
 
 .hero-btn {
-  background: var(--color-accent);
-  color: #13201c;
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .hero-btn:hover {
-  background: var(--color-accent-dark);
+  background: var(--color-primary-dark);
   color: #fff;
 }
 
@@ -490,6 +490,15 @@
   font-weight: 800;
   padding: 0 20px;
   margin-top: 6px;
+}
+
+.college-card h3 a {
+  color: inherit;
+}
+
+.college-card h3 a:hover {
+  color: var(--color-primary);
+  text-decoration: underline;
 }
 
 .college-dean {
@@ -972,6 +981,19 @@
   border-bottom-color: var(--color-primary);
 }
 
+.course-cat {
+  display: inline-block;
+  align-self: flex-start;
+  background: rgba(14, 124, 102, 0.1);
+  border: 1px solid rgba(14, 124, 102, 0.22);
+  color: var(--color-primary-dark);
+  padding: 3px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
 .news-branch-tag {
   display: inline-flex;
   align-items: center;
@@ -1000,8 +1022,8 @@
 }
 
 .news-branch-tag.is-hq:hover {
-  background: var(--color-accent);
-  color: #13201c;
+  background: var(--color-primary);
+  color: #fff;
 }
 
 .badge-open {
@@ -1218,6 +1240,364 @@
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(14, 124, 102, 0.14);
+}
+
+/* Intro content blocks — الرؤية والرسالة والأهداف والمسيرة */
+.intro-blocks {
+  margin-top: 34px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.intro-blocks-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 22px;
+}
+
+.intro-block {
+  padding: 24px 26px;
+}
+
+.intro-block h2 {
+  margin: 0 0 12px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--color-primary-deep);
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(14, 124, 102, 0.18);
+}
+
+.intro-block-body {
+  color: var(--color-text);
+  font-size: 0.98rem;
+  line-height: 1.9;
+}
+
+.intro-block-body p {
+  margin: 0 0 10px;
+}
+
+.intro-block-body ul,
+.intro-block-body ol {
+  margin: 0 0 10px;
+  padding-inline-start: 22px;
+}
+
+.intro-block-body li {
+  margin-bottom: 6px;
+}
+
+.intro-block-image {
+  display: block;
+  width: 100%;
+  max-height: 320px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-top: 14px;
+}
+
+/* Ministry of Education links band (home + shared) */
+.ministry-links {
+  background: #f3f8f6;
+  border-block: 1px solid var(--color-border);
+  padding: 34px 0;
+}
+
+.ministry-links-title {
+  margin: 0 0 18px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primary-deep);
+  text-align: center;
+}
+
+.ministry-links-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+.ministry-link-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  text-align: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ministry-link-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--color-primary);
+  box-shadow: 0 12px 28px rgba(6, 43, 36, 0.12);
+}
+
+.ministry-link-name {
+  font-weight: 800;
+  color: var(--color-primary-deep);
+  font-size: 1.02rem;
+}
+
+.ministry-link-desc {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ministry-link-go {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.88rem;
+  margin-top: 4px;
+}
+
+/* Colleges listing page — /colleges */
+.colleges-hero .programs-hero-strip {
+  justify-content: center;
+}
+
+.colleges-list-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  margin-bottom: 44px;
+}
+
+.college-list-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.college-list-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(6, 43, 36, 0.16);
+}
+
+.college-list-card-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgba(14, 124, 102, 0.12), rgba(14, 124, 102, 0.04));
+}
+
+.college-list-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.college-list-card-letter {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: var(--color-primary);
+  opacity: 0.7;
+}
+
+.college-list-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px;
+  flex: 1;
+}
+
+.college-list-card-name {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
+.college-list-card-name a {
+  color: var(--color-primary-deep);
+}
+
+.college-list-card-name a:hover {
+  color: var(--color-primary);
+}
+
+.college-list-card-en {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.college-list-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  font-size: 0.85rem;
+}
+
+.college-list-card-dean {
+  color: var(--color-primary-dark);
+  font-weight: 700;
+}
+
+.college-list-card-branch {
+  color: var(--color-text-muted);
+}
+
+.college-list-card-about {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  flex: 1;
+}
+
+.college-list-card-cta {
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.colleges-depts {
+  margin-top: 12px;
+}
+
+.colleges-depts-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 22px;
+}
+
+.colleges-depts-group {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+}
+
+.colleges-depts-title {
+  margin: 0 0 14px;
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.colleges-depts-title a {
+  color: var(--color-primary-deep);
+}
+
+.colleges-depts-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.colleges-depts-chips li {
+  background: rgba(14, 124, 102, 0.08);
+  border: 1px solid rgba(14, 124, 102, 0.18);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+/* Programs page — hierarchical tiers (دراسات عليا ← بكالوريوس ← دبلوم) */
+.programs-tier {
+  margin-bottom: 44px;
+}
+
+.programs-tier-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-bottom: 14px;
+  margin-bottom: 22px;
+  border-bottom: 2px solid var(--color-border);
+}
+
+.programs-tier-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: var(--radius-md);
+  background: rgba(14, 124, 102, 0.1);
+  color: var(--color-primary-dark);
+}
+
+.programs-tier-title {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: var(--color-primary-deep);
+}
+
+.programs-tier-desc {
+  margin: 6px 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.programs-tier-link {
+  margin-inline-start: auto;
+  flex: none;
+  color: var(--color-primary);
+  font-weight: 700;
+  font-size: 0.92rem;
+  white-space: nowrap;
+  align-self: center;
+}
+
+.programs-tier-link:hover {
+  text-decoration: underline;
+}
+
+.programs-tier-groups {
+  display: block;
+}
+
+.programs-tier-group + .programs-tier-group {
+  margin-top: 30px;
+}
+
+.programs-tier-group-title {
+  margin: 0 0 16px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--color-primary-dark);
+}
+
+.programs-tier-group-title::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-inline-end: 8px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  vertical-align: middle;
+}
+
+.program-card-dept {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
 }
 
 /* Programs page — result cards */
@@ -1839,8 +2219,8 @@ code {
 }
 
 .footer-social-link:hover {
-  background: var(--color-accent);
-  border-color: var(--color-accent);
+  background: var(--color-primary);
+  border-color: var(--color-primary);
   color: #fff;
 }
 
@@ -1858,7 +2238,7 @@ code {
 }
 
 .footer-legal a:hover {
-  color: var(--color-accent);
+  color: var(--color-primary);
 }
 
 .footer-grid--single .footer-contact {
@@ -3363,6 +3743,20 @@ code {
 
   .programs-search input {
     width: 100%;
+  }
+
+  .programs-tier-head {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .programs-tier-link {
+    margin-inline-start: 58px;
+    align-self: flex-start;
+  }
+
+  .programs-tier-title {
+    font-size: 1.25rem;
   }
 
   /* Branches dropdown within the mobile drawer: open it as an inline

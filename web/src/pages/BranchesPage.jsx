@@ -4,6 +4,7 @@ import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchLabel, branchTitle, branchHeadRole, isHqBranch } from '../lib/branch.js';
+import { collegeHeadNoun, collegeHeadRole, collegeHeadWord } from '../lib/college.js';
 
 const typeLabel = { news: 'خبر', event: 'فعالية', activity: 'نشاط', course: 'دورة' };
 const decodeEntities = (s) =>
@@ -50,7 +51,7 @@ const TABS = [
   { key: 'colleges', label: 'الكليات' },
   { key: 'news', label: 'الأخبار' },
   { key: 'events', label: 'الفعاليات' },
-  { key: 'courses', label: 'الدورات التدريبية' },
+  { key: 'courses', label: 'البرامج التدريبية' },
   { key: 'faculty', label: 'الكادر الأكاديمي' },
 ];
 
@@ -143,8 +144,8 @@ export default function BranchesPage() {
           <p className="subpage-sub">
             {slug
               ? (hq
-                ? 'عميد المعهد الوطني، وأخبار الديوان وفعاليات المعهد وكلياته ودورات التدريب المعتمدة فيه.'
-                : 'مدير الفرع وأخبار الفرع وفعالياته والدورات التدريبية المعتمدة فيه.')
+                ? 'عميد المعهد الوطني، وأخبار الديوان وفعاليات المعهد وكلياته والبرامج التدريبية المعتمدة فيه.'
+                : 'مدير الفرع وأخبار الفرع وفعالياته والبرامج التدريبية المعتمدة فيه.')
               : `يمتد المعهد الوطني للعلوم الإدارية عبر ${branches.length} فروع في محافظات الجمهورية، ليكون قربًا من طلابنا ومتدربينا أينما كانوا.`}
           </p>
         </div>
@@ -314,17 +315,17 @@ export default function BranchesPage() {
                               {collegeDean && college.dean_image && (
                                 <div className="branch-college-dean">
                                   <div className="branch-college-dean-photo">
-                                    <img src={college.dean_image} alt={`عميد ${college.name_ar}`} loading="lazy" />
+                                    <img src={college.dean_image} alt={collegeHeadRole(college.name_ar)} loading="lazy" />
                                   </div>
                                   <div className="branch-college-dean-info">
-                                    <span className="branch-college-dean-role">عميد الكلية</span>
+                                    <span className="branch-college-dean-role">{collegeHeadWord(college.name_ar)} {collegeHeadNoun(college.name_ar)}</span>
                                     <strong>{collegeDean}</strong>
                                   </div>
                                 </div>
                               )}
                               {college.dean_message_ar && (
                                 <div className="branch-college-dean-speech">
-                                  <span>كلمة عميد {college.name_ar}</span>
+                                  <span>كلمة {collegeHeadRole(college.name_ar)}</span>
                                   <div dangerouslySetInnerHTML={{ __html: decodeEntities(college.dean_message_ar) }} />
                                 </div>
                               )}

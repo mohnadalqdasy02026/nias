@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
 
 const typeMeta = {
@@ -11,7 +12,34 @@ const typeMeta = {
   diploma: { label: 'دبلوم متوسط', plural: 'الدبلوم المتوسط' },
 };
 
-const typeOrder = ['bachelor', 'master_academic', 'master_executive', 'diploma'];
+// التسلسل الهرمي المعتمد من العميد:
+// 1) كلية الدراسات العليا  2) كلية البكالوريوس  3) مراكز وأقسام الدبلوم
+const TIERS = [
+  {
+    key: 'graduate',
+    tab: 'دراسات عليا',
+    title: 'كلية الدراسات العليا',
+    desc: 'برامج الماجستير الأكاديمي والتنفيذي، وهي أعلى درجات التخصص في المعهد.',
+    types: ['master_academic', 'master_executive'],
+    icon: 'grad',
+  },
+  {
+    key: 'bachelor',
+    tab: 'بكالوريوس',
+    title: 'كلية البكالوريوس',
+    desc: 'كليات المعهد والتخصصات المتاحة لنيل درجة البكالوريوس.',
+    types: ['bachelor'],
+    icon: 'buildings',
+  },
+  {
+    key: 'diploma',
+    tab: 'دبلوم متوسط',
+    title: 'مراكز وأقسام الدبلوم',
+    desc: 'برامج الدبلوم المتوسطة وتقدمها مراكز المعهد وأقسامه.',
+    types: ['diploma'],
+    icon: 'book',
+  },
+];
 
 const coverByType = {
   bachelor: '/uploads/design/site/main_1786788776_852.jpg',
@@ -60,6 +88,12 @@ function ProgramCard({ program }) {
           <Icon name={collegeIcon[college] ?? 'book'} size={16} />
           {college}
         </span>
+        {program.department_name_ar && (
+          <span className="program-card-dept">
+            <Icon name="book" size={14} />
+            {program.department_name_ar}
+          </span>
+        )}
         {branch && (
           <span className="program-chip program-chip--branch">
             <Icon name="locations" size={14} />
@@ -84,40 +118,91 @@ function ProgramCard({ program }) {
   );
 }
 
+function groupByCollege(list) {
+  const map = new Map();
+  for (const p of list) {
+    const key = p.college_name_ar ?? 'المعهد الوطني للعلوم الإدارية';
+    if (!map.has(key)) map.set(key, { name: key, collegeId: p.college_id ?? null, items: [] });
+    map.get(key).items.push(p);
+  }
+  return [...map.values()];
+}
+
+function TierSection({ tier, programs, compact }) {
+  if (programs.length === 0) return null;
+  const colleges = groupByCollege(programs);
+  const collegeId = colleges.length === 1 ? colleges[0].collegeId : null;
+  return (
+    <section className="programs-tier" aria-labelledby={`tier-${tier.key}`}>
+      <div className="programs-tier-head">
+        <span className="programs-tier-icon" aria-hidden="true"><Icon name={tier.icon} size={22} /></span>
+        <div>
+          <h2 className="programs-tier-title" id={`tier-${tier.key}`}>{tier.title}</h2>
+          {!compact && <p className="programs-tier-desc">{tier.desc}</p>}
+        </div>
+        {collegeId && (
+          <Link to={`/colleges/${collegeId}`} className="programs-tier-link">استعراض الكلية ←</Link>
+        )}
+      </div>
+      <div className="programs-tier-groups">
+        {colleges.map((g) => (
+          <div key={g.name} className="programs-tier-group">
+            {colleges.length > 1 && <h3 className="programs-tier-group-title">{g.name}</h3>}
+            <div className="programs-results">
+              {g.items.map((p) => <ProgramCard key={p.id} program={p} />)}
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 export default function Programs() {
   const [programs, setPrograms] = useState([]);
   const [active, setActive] = useState('all');
   const [search, setSearch] = useState('');
+  const settings = useSiteSettings();
+  const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
 
-  usePageMeta('البرامج الأكاديمية', 'استعرض برامج المعهد الوطني للعلوم الإدارية: بكالوريوس، ماجستير أكاديمي وتنفيذي، ودبلوم متوسط.');
+  usePageMeta('البرامج الأكاديمية', 'برامج المعهد الوطني للعلوم الإدارية بالترتيب: كلية الدراسات العليا، ثم البكالوريوس، ثم مراكز وأقسام الدبلوم.');
 
   useEffect(() => {
     api.get('/public/programs').then(setPrograms).catch(() => {});
   }, []);
 
-  const groups = useMemo(() => {
+  const tierOf = useMemo(() => {
+    const m = new Map();
+    for (const t of TIERS) for (const type of t.types) m.set(type, t);
+    return m;
+  }, []);
+
+  const byTier = useMemo(() => {
     const g = {};
-    for (const t of typeOrder) g[t] = programs.filter((p) => p.program_type === t);
+    for (const t of TIERS) g[t.key] = programs.filter((p) => tierOf.get(p.program_type) === t);
     return g;
-  }, [programs]);
+  }, [programs, tierOf]);
 
   const counts = useMemo(() => {
     const c = { all: programs.length };
-    for (const t of typeOrder) c[t] = groups[t].length;
+    for (const t of TIERS) c[t.key] = byTier[t.key].length;
     return c;
-  }, [programs, groups]);
+  }, [programs, byTier]);
 
-  const visible = active !== 'all' ? (groups[active] ?? []) : programs;
-  const results = search.trim()
-    ? visible.filter((p) => (p.name_ar ?? '').includes(search.trim()) || (p.description ?? '').includes(search.trim()))
-    : visible;
+  const searching = search.trim().length > 0;
+  const searchResults = searching
+    ? programs.filter((p) => (p.name_ar ?? '').includes(search.trim()) || (p.description ?? '').includes(search.trim()))
+    : [];
 
   const tabs = [
-    { key: 'all', label: 'الكل', icon: 'book' },
-    ...typeOrder.filter((t) => counts[t] > 0).map((t) => ({ key: t, label: typeMeta[t].label, icon: 'grad' })),
+    { key: 'all', label: 'الكل' },
+    ...TIERS.filter((t) => counts[t.key] > 0).map((t) => ({ key: t.key, label: t.tab })),
   ];
 
-  const mastersCount = (counts.master_academic ?? 0) + (counts.master_executive ?? 0);
+  const activeTier = TIERS.find((t) => t.key === active);
+  const shownTiers = activeTier ? [activeTier] : TIERS;
+
+  const stats = TIERS.map((t) => ({ key: t.key, label: t.title.replace('كلية ', '').replace('مراكز وأقسام ', ''), value: counts[t.key] ?? 0 }));
 
   return (
     <>
@@ -126,22 +211,16 @@ export default function Programs() {
           <p className="programs-hero-eyebrow">{programs.length} برنامجًا أكاديميًا معتمدًا — التسجيل عبر بوابة التنسيق</p>
           <h1>برامجنا الأكاديمية</h1>
           <p className="programs-hero-sub">
-            برامج بكالوريوس وماجستير ودبلوم متوسط، تقدمها كليات المعهد الوطني للعلوم الإدارية
-            وفق أعلى معايير الجودة الأكاديمية، لإعداد كوادر مؤهلة لسوق العمل.
+            تُقدَّم برامجنا وفق تسلسل هرمي واضح: كلية الدراسات العليا، ثم كلية البكالوريوس، ثم مراكز وأقسام الدبلوم،
+            وفق أعلى معايير الجودة الأكاديمية المعتمدة.
           </p>
           <div className="programs-hero-strip">
-            <div className="ph-stat">
-              <span className="ph-stat-num">{counts.bachelor ?? 0}</span>
-              <span className="ph-stat-label">بكالوريوس</span>
-            </div>
-            <div className="ph-stat">
-              <span className="ph-stat-num">{mastersCount}</span>
-              <span className="ph-stat-label">ماجستير</span>
-            </div>
-            <div className="ph-stat">
-              <span className="ph-stat-num">{counts.diploma ?? 0}</span>
-              <span className="ph-stat-label">دبلوم متوسط</span>
-            </div>
+            {stats.map((s) => (
+              <div className="ph-stat" key={s.key}>
+                <span className="ph-stat-num">{s.value}</span>
+                <span className="ph-stat-label">{s.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -149,7 +228,7 @@ export default function Programs() {
       <section className="section">
         <div className="container">
           <div className="programs-toolbar">
-            <div className="programs-tabs" role="tablist" aria-label="تصفية حسب الدرجة العلمية">
+            <div className="programs-tabs" role="tablist" aria-label="تصفية حسب المستوى الدراسي">
               {tabs.map((tab) => (
                 <button
                   key={tab.key}
@@ -175,10 +254,16 @@ export default function Programs() {
             </div>
           </div>
 
-          <div className="programs-results">
-            {results.length === 0 && <p className="muted">لا توجد برامج مطابقة.</p>}
-            {results.map((p) => <ProgramCard key={p.id} program={p} />)}
-          </div>
+          {searching ? (
+            <div className="programs-results">
+              {searchResults.length === 0 && <p className="muted">لا توجد برامج مطابقة.</p>}
+              {searchResults.map((p) => <ProgramCard key={p.id} program={p} />)}
+            </div>
+          ) : (
+            shownTiers.map((t) => <TierSection key={t.key} tier={t} programs={byTier[t.key]} />)
+          )}
+
+          {!searching && programs.length === 0 && <p className="muted">لا توجد برامج منشورة حاليًا.</p>}
 
           <div className="card admission-cta admission-cta--bottom">
             <div>
@@ -187,7 +272,7 @@ export default function Programs() {
             </div>
             <a
               className="btn btn-primary"
-              href="https://oasyemen.net/"
+              href={admissionUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="الانتقال إلى بوابة التنسيق الموحد للجامعات اليمنية (رابط خارجي)"

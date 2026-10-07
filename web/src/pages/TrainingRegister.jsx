@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { trainingCategoryLabel } from '../lib/training.js';
 
 const emptyForm = {
   first_name: '',
@@ -26,7 +27,7 @@ export default function TrainingRegister() {
   const [searchParams] = useSearchParams();
   const preselectedCourseId = searchParams.get('course');
 
-  usePageMeta('التسجيل في الدورات التدريبية', 'سجّل في الدورات التدريبية المفتوحة في المعهد الوطني للعلوم الإدارية.');
+  usePageMeta('التسجيل في البرامج التدريبية', 'سجّل في البرامج التدريبية المفتوحة في المعهد الوطني للعلوم الإدارية.');
 
   useEffect(() => {
     api.get('/public/branches').then(setBranches).catch(() => {});
@@ -81,11 +82,11 @@ export default function TrainingRegister() {
             تم استلام طلب تسجيلك بنجاح.
           </div>
           <p>
-            رقم التسجيل: <code>{done.enrollmentId}</code> — الدورة: <strong>{done.courseTitle}</strong>
+            رقم التسجيل: <code>{done.enrollmentId}</code> — البرنامج: <strong>{done.courseTitle}</strong>
             <br />
             الحالة الحالية: <strong>قيد المراجعة</strong>. سيتواصل معك فرع المعهد لتأكيد التسجيل.
           </p>
-          <Link to="/training" className="btn btn-outline back-link">← عرض الدورات</Link>
+          <Link to="/training" className="btn btn-outline back-link">← العودة إلى التدريب</Link>
         </div>
       </section>
     );
@@ -94,8 +95,8 @@ export default function TrainingRegister() {
   return (
     <section className="section">
       <div className="container page-content">
-        <h1 className="section-title">التسجيل في الدورات التدريبية</h1>
-        <p className="section-subtitle">املأ البيانات الأربعة (الأسماء) ورقم الجوال واختر الفرع والدورة.</p>
+        <h1 className="section-title">التسجيل في البرامج التدريبية</h1>
+        <p className="section-subtitle">املأ البيانات الأربعة (الأسماء) ورقم الجوال واختر الفرع والبرنامج.</p>
 
         {error && (
           <div className="alert alert-danger" role="alert">
@@ -140,10 +141,10 @@ export default function TrainingRegister() {
               </select>
             </div>
             <div className="form-field form-field--full">
-              <label>الدورة التدريبية *</label>
+              <label>البرنامج التدريبى *</label>
               <select value={form.course_id} onChange={set('course_id')} required>
-                <option value="">اختر الدورة</option>
-                {courses.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+                <option value="">اختر البرنامج</option>
+                {courses.map((c) => <option key={c.id} value={c.id}>{trainingCategoryLabel(c.category)}: {c.title}</option>)}
               </select>
             </div>
 
@@ -177,7 +178,7 @@ export default function TrainingRegister() {
 
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-register" disabled={submitting || !agreed}>
-              {submitting ? 'جارٍ الإرسال...' : 'تسجيل الدورة'}
+              {submitting ? 'جارٍ الإرسال...' : 'إرسال طلب التسجيل'}
             </button>
           </div>
         </form>

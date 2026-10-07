@@ -10,6 +10,8 @@ const emptyGeneral = {
   logo: '',
   favicon: '',
   primary_color: '#0e7c66',
+  ministry_admission_url: 'https://oasyemen.net',
+  ministry_results_url: '',
 };
 
 const emptyHome = {
@@ -216,6 +218,16 @@ export default function Settings() {
                   }}
                 />
               </div>
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="روابط وزارة التربية والتعليم والبحث العلمي">
+            <div className="form-grid">
+              {field('ministry_admission_url', general.ministry_admission_url, setG, 'بوابة التسجيل والتنسيق الإلكتروني', 'input', 'ltr')}
+              {field('ministry_results_url', general.ministry_results_url, setG, 'بوابة الاستعلام عن النتائج (اختياري)', 'input', 'ltr')}
+              <p className="muted form-field--full">
+                تظهر هذان الروابط في الرئيسية وصفحة البرامج والتذييل. يُخفى رابط الاستعلام عن النتائج من الموقع ما لم يُدخل.
+              </p>
             </div>
           </AdminFormSection>
 

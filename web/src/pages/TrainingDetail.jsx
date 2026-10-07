@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { branchTitle } from '../lib/branch.js';
+import { trainingCategoryLabel, trainingCategoryNoun } from '../lib/training.js';
 
 const iconPaths = {
   clock: 'M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM12 6v6l4 2',
@@ -33,7 +34,10 @@ export default function TrainingDetail() {
   const [course, setCourse] = useState(null);
   const [error, setError] = useState(null);
 
-  usePageMeta(course?.title ? `دورة ${course.title}` : 'الدورة التدريبية', 'تفاصيل الدورة التدريبية في المعهد الوطني للعلوم الإدارية.');
+  usePageMeta(
+    course?.title ? `${trainingCategoryLabel(course.category)}: ${course.title}` : 'البرامج التدريبية',
+    'تفاصيل البرنامج التدريبى في المعهد الوطني للعلوم الإدارية.',
+  );
 
   useEffect(() => {
     setError(null);
@@ -48,9 +52,9 @@ export default function TrainingDetail() {
       <section className="section">
         <div className="container">
           <div className="card program-detail-empty">
-            <h2>الدورة غير موجودة</h2>
-            <p className="muted">تعذر العثور على هذه الدورة أو أنها غير مفتوحة حاليًا.</p>
-            <Link to="/training" className="btn btn-primary">العودة إلى الدورات</Link>
+            <h2>البرنامج غير موجود</h2>
+            <p className="muted">تعذر العثور على هذا البرنامج أو أنه غير مفتوح حاليًا.</p>
+            <Link to="/training" className="btn btn-primary">العودة إلى التدريب</Link>
           </div>
         </div>
       </section>
@@ -67,6 +71,7 @@ export default function TrainingDetail() {
 
   const cover = course.image_url || fallbackCover;
   const branch = course.branch_name_ar ? branchTitle(course.branch_name_ar) : null;
+  const noun = trainingCategoryNoun(course.category);
 
   const facts = [
     { icon: 'locations', label: 'الفرع', value: branch ?? '—' },
@@ -81,10 +86,10 @@ export default function TrainingDetail() {
     <>
       <section className="program-detail-hero">
         <div className="container program-detail-hero-inner">
-          <p className="programs-hero-eyebrow">الدورات التدريبية — التفاصيل</p>
+          <p className="programs-hero-eyebrow">{trainingCategoryLabel(course.category)} — التفاصيل</p>
           <h1>{course.title}</h1>
           <p className="programs-hero-sub">
-            {course.category ?? 'دورة تدريبية'}
+            {noun.text}
             {branch ? <> — <span>{branch}</span></> : null}
           </p>
         </div>
@@ -98,25 +103,25 @@ export default function TrainingDetail() {
             </div>
 
             <div className="card program-detail-card">
-              <h2>نبذة عن الدورة</h2>
-              <p className="program-detail-text">{course.description || 'لا يوجد وصف متاح لهذه الدورة حاليًا.'}</p>
+              <h2>نبذة عن {noun.text}</h2>
+              <p className="program-detail-text">{course.description || 'لا يوجد وصف متاح حاليًا.'}</p>
             </div>
 
             <div className="card program-detail-card">
-              <h2>تنظيم الدورة</h2>
+              <h2>تنظيم {noun.text}</h2>
               <p className="program-detail-text">
-                تُنفَّذ الدورة في مقر الفرع المحدد أعلاه، بتنسيق من مركز التدريب في المعهد الوطني للعلوم
-                الإدارية. تُمنح شهادة حضور معتمدة بنهاية الدورة لمن يكمل المتطلبات بنجاح.
+                تُنفَّذ هذه البرامج في مقر الفرع المحدد أعلاه، بتنسيق من مركز التدريب في المعهد الوطني للعلوم
+                الإدارية. وتُمنح شهادة حضور معتمدة بنهاية لكل من يكمل المتطلبات بنجاح.
               </p>
             </div>
 
             <div className="card admission-cta admission-cta--bottom">
               <div>
-                <h3>سجّل الآن في هذه الدورة</h3>
-                <p>املأ نموذج التسجيل وسيتواصل معك فرع المعهد لتأكيد مقعدك في الدورة.</p>
+                <h3>سجّل الآن في {noun.demo}</h3>
+                <p>املأ نموذج التسجيل وسيتواصل معك فرع المعهد لتأكيد مقعدك في {noun.text}.</p>
               </div>
               <Link to={`/training/register?course=${course.id}`} className="btn btn-primary">
-                سجّل في الدورة
+                سجّل في {noun.text}
               </Link>
             </div>
           </div>
@@ -135,7 +140,7 @@ export default function TrainingDetail() {
                   </li>
                 ))}
               </ul>
-              <Link to="/training" className="btn btn-soft program-detail-back">العودة إلى جميع الدورات</Link>
+              <Link to="/training" className="btn btn-soft program-detail-back">العودة إلى التدريب</Link>
             </div>
           </aside>
         </div>

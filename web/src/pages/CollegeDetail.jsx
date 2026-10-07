@@ -4,6 +4,7 @@ import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
+import { collegeHeadNoun, collegeHeadRole, collegeHeadWord } from '../lib/college.js';
 
 const decodeEntities = (s) =>
   s
@@ -38,7 +39,7 @@ export default function CollegeDetail() {
           <div className="card college-page-empty">
             <h2>الكلية غير موجودة</h2>
             <p className="muted">تعذر العثور على هذه الكلية أو أنها غير منشورة.</p>
-            <Link to="/branches" className="btn btn-primary">العودة إلى الفروع</Link>
+            <Link to="/colleges" className="btn btn-primary">العودة إلى الكليات</Link>
           </div>
         </div>
       </section>
@@ -61,7 +62,7 @@ export default function CollegeDetail() {
       <section className="college-page-hero">
         <div className="container">
           <nav className="college-page-crumbs" aria-label="مسار الصفحة">
-            <Link to="/branches">الفروع</Link>
+            <Link to="/colleges">الكليات</Link>
             {college.branch_slug && (
               <>
                 <span aria-hidden="true">/</span>
@@ -121,11 +122,11 @@ export default function CollegeDetail() {
 
           {(dean || college.dean_message_ar || college.dean_message_en) && (
             <section className="card college-page-dean" aria-labelledby="college-dean-title">
-              <h2 id="college-dean-title">عميد الكلية</h2>
+              <h2 id="college-dean-title">{collegeHeadWord(college.name_ar)} {collegeHeadNoun(college.name_ar)}</h2>
               <div className="college-page-dean-inner">
                 <div className="college-page-dean-photo">
                   {college.dean_image ? (
-                    <img src={college.dean_image} alt={`عميد ${college.name_ar}`} />
+                    <img src={college.dean_image} alt={collegeHeadRole(college.name_ar)} />
                   ) : (
                     <img src={logo} alt="شعار المعهد الوطني للعلوم الإدارية" />
                   )}
@@ -134,12 +135,12 @@ export default function CollegeDetail() {
                   {dean && (
                     <div className="college-page-dean-name">
                       <strong>{dean}</strong>
-                      <span className="college-page-dean-role">عميد {college.name_ar}</span>
+                      <span className="college-page-dean-role">{collegeHeadRole(college.name_ar)}</span>
                     </div>
                   )}
                   {college.dean_message_ar && (
                     <>
-                      <span className="college-page-dean-role">كلمة عميد {college.name_ar}</span>
+                      <span className="college-page-dean-role">كلمة {collegeHeadRole(college.name_ar)}</span>
                       <div
                         className="college-page-dean-message"
                         dangerouslySetInnerHTML={{ __html: decodeEntities(college.dean_message_ar) }}

@@ -2,10 +2,14 @@ import { z } from 'zod';
 
 const idParams = z.object({ id: z.coerce.number().int().positive() });
 
+// تصنيفات البرامج التدريبية المعتمدة: دورة تدريبية / برنامج تأهيلي / ندوة / نشاط تدريبى
+export const TRAINING_CATEGORIES = ['course', 'qualifying', 'seminar', 'activity'];
+
 export const listTrainingCoursesSchema = {
   query: z.object({
     status: z.enum(['draft', 'open', 'closed', 'completed']).optional(),
     branchId: z.coerce.number().int().positive().optional(),
+    category: z.enum(TRAINING_CATEGORIES).optional(),
     page: z.coerce.number().int().positive().default(1),
     limit: z.coerce.number().int().positive().max(100).default(20),
   }),
@@ -21,6 +25,7 @@ const courseBody = z.object({
   location: z.string().trim().max(190).nullable().optional(),
   capacity: z.coerce.number().int().positive().nullable().optional(),
   trainer: z.string().trim().max(190).nullable().optional(),
+  category: z.enum(TRAINING_CATEGORIES).nullable().optional(),
   image_url: z.string().trim().max(500).nullable().optional(),
   status: z.enum(['draft', 'open', 'closed', 'completed']).default('draft'),
 });

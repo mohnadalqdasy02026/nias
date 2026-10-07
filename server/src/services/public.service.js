@@ -90,7 +90,10 @@ export class PublicService {
   }
 
   async listTrainingCourses(query = {}) {
-    return this.publicRepo.listTrainingCourses({ branchId: query.branchId ? Number(query.branchId) : null });
+    return this.publicRepo.listTrainingCourses({
+      branchId: query.branchId ? Number(query.branchId) : null,
+      category: query.category || null,
+    });
   }
 
   async getTrainingCourse(id) {

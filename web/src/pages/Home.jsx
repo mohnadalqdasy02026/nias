@@ -4,13 +4,16 @@ import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
+import { trainingCategoryLabel } from '../lib/training.js';
+import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
+import { IntroBlock, useIntroPages } from '../components/IntroBlocks.jsx';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
   { label: 'الكليات والأقسام', key: 'colleges' },
   { label: 'الطلاب والطالبات', key: 'students' },
   { label: 'أعضاء هيئة التدريس', key: 'faculty' },
-  { label: 'الدورات التدريبية', key: 'trainingCourses' },
+  { label: 'البرامج التدريبية', key: 'trainingCourses' },
   { label: 'الأخبار والفعاليات', key: 'news' },
 ];
 
@@ -101,6 +104,35 @@ function FeaturesBand({ features }) {
   );
 }
 
+function MinistryLinks({ general }) {
+  const admission = general?.ministry_admission_url || 'https://oasyemen.net';
+  const results = general?.ministry_results_url || '';
+  if (!admission && !results) return null;
+  return (
+    <section className="ministry-links" aria-labelledby="ministry-links-title">
+      <div className="container">
+        <h2 id="ministry-links-title" className="ministry-links-title">روابط وزارة التربية والتعليم والبحث العلمي</h2>
+        <div className="ministry-links-grid">
+          {admission && (
+            <a className="ministry-link-card" href={admission} target="_blank" rel="noopener noreferrer">
+              <span className="ministry-link-name">بوابة التسجيل والتنسيق الإلكتروني</span>
+              <span className="ministry-link-desc">الترشيح والتقديم والقبول في كليات المعهد عبر البوابة الموحدة</span>
+              <span className="ministry-link-go">زيارة البوابة ←</span>
+            </a>
+          )}
+          {results && (
+            <a className="ministry-link-card" href={results} target="_blank" rel="noopener noreferrer">
+              <span className="ministry-link-name">الاستعلام عن نتائج القبول</span>
+              <span className="ministry-link-desc">متابعة نتائج المفاضلة والقبول للعام الدراسي الحالي</span>
+              <span className="ministry-link-go">استعلام عن النتيجة ←</span>
+            </a>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [stats, setStats] = useState(null);
   const [programs, setPrograms] = useState([]);
@@ -126,6 +158,7 @@ export default function Home() {
   }, []);
 
   const heroImages = heroImagesFrom(home);
+  const intro = useIntroPages();
 
   useEffect(() => {
     if (heroImages.length < 2) return;
@@ -158,7 +191,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link to="/programs" className="btn btn-primary">البرامج الأكاديمية</Link>
-            <Link to="/training/register" className="btn hero-btn-outline">سجّل في دورة تدريبية</Link>
+            <Link to="/training/register" className="btn hero-btn-outline">سجّل في برنامج تدريبى</Link>
           </div>
           <div className="hero-stats">
             {statsKeys.map((s) => (
@@ -171,12 +204,26 @@ export default function Home() {
         </div>
       </section>
 
+      <MinistryLinks general={settings?.general} />
+
       <FeaturesBand features={home.features} />
+
+      {(intro.vision || intro.mission) && (
+        <section className="section">
+          <div className="container">
+            <SectionHeading title="رؤيتنا ورسالتنا" subtitle="المحددات الاستراتيجية لعمل المعهد الوطني للعلوم الإدارية" to="/about" linkText="عن المعهد" />
+            <div className="intro-blocks-row">
+              <IntroBlock page={intro.vision} className="intro-block--vision" />
+              <IntroBlock page={intro.mission} className="intro-block--mission" />
+            </div>
+          </div>
+        </section>
+      )}
 
       {colleges.length > 0 && (
         <section className="section section-alt">
           <div className="container">
-            <SectionHeading title="كليات المعهد" subtitle="كلية متخصصة تمنح درجة علمية في تخصصات إدارية حديثة" to="/programs" linkText="استكشف البرامج" />
+            <SectionHeading title="كليات المعهد" subtitle="كلية متخصصة تمنح درجة علمية في تخصصات إدارية حديثة" to="/colleges" linkText="جميع الكليات والأقسام" />
             <div className="colleges-grid">
               {colleges.map((c) => (
                 <article key={c.id} className="card college-card">
@@ -188,15 +235,15 @@ export default function Home() {
                       onError={(e) => { e.currentTarget.src = '/uploads/design/site/logo.jpg'; }}
                     />
                   </div>
-                  <h3>{c.name_ar}</h3>
-                  {c.dean_name && (
+                  <h3><Link to={`/colleges/${c.id}`}>{c.name_ar}</Link></h3>
+                  {(c.dean_name_ar ?? c.dean_name) && (
                     <div className="college-dean">
                       {c.dean_image && c.dean_image !== 'null' ? (
                         <span className="college-dean-photo">
                           <img src={c.dean_image} alt="" loading="lazy" />
                         </span>
                       ) : null}
-                      <span>عميد الكلية: {c.dean_name}</span>
+                      <span>{collegeHeadWord(c.name_ar)} {collegeHeadNoun(c.name_ar)}: {c.dean_name_ar ?? c.dean_name}</span>
                     </div>
                   )}
                   {c.about && <p className="college-about">{c.about}</p>}
@@ -244,13 +291,13 @@ export default function Home() {
 
       <section className="section section-alt">
         <div className="container">
-          <SectionHeading title="الدورات التدريبية" subtitle="دورات مفتوحة للتسجيل الآن" to="/training" linkText="عرض جميع الدورات" />
+          <SectionHeading title="البرامج التدريبية" subtitle="برامج مفتوحة للتسجيل الآن" to="/training" linkText="عرض جميع البرامج" />
           <div className="courses-grid">
             {courses.slice(0, 3).map((c, ci) => (
               <article key={c.id} className="card course-card">
                 <div className="card-cover">
                   <img src={courseCovers[ci % courseCovers.length]} alt="" loading="lazy" />
-                  {c.category && <span className="cover-badge">{c.category}</span>}
+                  {c.category && <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>}
                 </div>
                 <div className="card-body">
                   <h3>{c.title}</h3>
@@ -266,7 +313,7 @@ export default function Home() {
                 </div>
               </article>
             ))}
-            {courses.length === 0 && <p className="muted">لا توجد دورات مفتوحة حاليًا.</p>}
+            {courses.length === 0 && <p className="muted">لا توجد برامج تدريبية مفتوحة حاليًا.</p>}
           </div>
         </div>
       </section>

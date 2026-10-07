@@ -17,6 +17,7 @@ import GalleryPage from './pages/GalleryPage.jsx';
 import DownloadsPage from './pages/DownloadsPage.jsx';
 import FacultyPage from './pages/FacultyPage.jsx';
 import CollegeDetail from './pages/CollegeDetail.jsx';
+import CollegesList from './pages/CollegesList.jsx';
 import BranchesPage from './pages/BranchesPage.jsx';
 import Login from './pages/Login.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
@@ -66,6 +67,7 @@ export default function App() {
             <Route path="faculty" element={<FacultyPage />} />
             <Route path="branches" element={<BranchesPage />} />
             <Route path="branches/:slug" element={<BranchesPage />} />
+            <Route path="colleges" element={<CollegesList />} />
             <Route path="colleges/:id" element={<CollegeDetail />} />
             <Route path="contact" element={<Contact />} />
             <Route path="login" element={<Login />} />

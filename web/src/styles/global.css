@@ -145,12 +145,12 @@ h6 {
 }
 
 .btn-register {
-  background: var(--color-register);
+  background: var(--color-primary);
   color: #fff;
 }
 
 .btn-register:hover {
-  background: #e08e00;
+  background: var(--color-primary-dark);
   color: #fff;
 }
 
@@ -253,7 +253,7 @@ h6 {
 
 /* Smooth focus for accessibility */
 :focus-visible {
-  outline: 3px solid var(--color-accent);
+  outline: 3px solid var(--color-primary-dark);
   outline-offset: 2px;
 }
 
