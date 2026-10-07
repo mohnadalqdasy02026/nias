@@ -5,7 +5,7 @@ import { usePageMeta } from '../hooks/usePageMeta.js';
 import { branchTitle } from '../lib/branch.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
 
-function CollegeCard({ college }) {
+function CollegeCard({ college, departments = [] }) {
   const about = (college.about ?? '').trim();
   const excerpt = about.length > 160 ? `${about.slice(0, 160).trim()}…` : about;
   const backTo = college.branch_slug ? `/branches/${college.branch_slug}` : '/branches';
@@ -32,6 +32,16 @@ function CollegeCard({ college }) {
           )}
         </div>
         {excerpt && <p className="college-list-card-about">{excerpt}</p>}
+        {departments.length > 0 && (
+          <div className="college-list-depts">
+            <span className="college-list-depts-label">الأقسام العلمية ({departments.length})</span>
+            <div className="college-list-depts-chips">
+              {departments.map((d) => (
+                <Link key={d.id} to={`/departments/${d.id}`}>{d.name_ar.replace(/^قسم\s+/, '')}</Link>
+              ))}
+            </div>
+          </div>
+        )}
         <Link to={`/colleges/${college.id}`} className="college-list-card-cta">التفاصيل ←</Link>
       </div>
     </article>
@@ -61,6 +71,15 @@ export default function CollegesList() {
     }
     return [...map.values()].filter((g) => g.college || g.items.length > 0);
   }, [colleges, departments]);
+
+  const deptsByCollege = useMemo(() => {
+    const m = new Map();
+    for (const d of departments) {
+      if (!m.has(d.college_id)) m.set(d.college_id, []);
+      m.get(d.college_id).push(d);
+    }
+    return m;
+  }, [departments]);
 
   const deptsTotal = departments.length;
 
@@ -92,7 +111,7 @@ export default function CollegesList() {
           <h2 className="section-title">الكليات والمراكز</h2>
           {colleges.length === 0 && <p className="muted">لا توجد كليات منشورة حاليًا.</p>}
           <div className="colleges-list-grid">
-            {colleges.map((c) => <CollegeCard key={c.id} college={c} />)}
+            {colleges.map((c) => <CollegeCard key={c.id} college={c} departments={deptsByCollege.get(c.id) ?? []} />)}
           </div>
 
           {deptsTotal > 0 && (

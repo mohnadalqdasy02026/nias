@@ -11,6 +11,7 @@ import Training from './pages/Training.jsx';
 import TrainingDetail from './pages/TrainingDetail.jsx';
 import TrainingRegister from './pages/TrainingRegister.jsx';
 import ProgramDetail from './pages/ProgramDetail.jsx';
+import Apply from './pages/Apply.jsx';
 import Contact from './pages/Contact.jsx';
 import { NewsList, NewsDetail } from './pages/News.jsx';
 import GalleryPage from './pages/GalleryPage.jsx';
@@ -59,6 +60,7 @@ export default function App() {
             />
             <Route path="programs" element={<Programs />} />
             <Route path="programs/:id" element={<ProgramDetail />} />
+            <Route path="apply" element={<Apply />} />
             <Route path="news" element={<NewsList />} />
             <Route path="news/:id" element={<NewsDetail />} />
             <Route path="training" element={<Training />} />

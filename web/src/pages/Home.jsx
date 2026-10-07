@@ -7,6 +7,8 @@ import { branchTitle } from '../lib/branch.js';
 import { trainingCategoryLabel } from '../lib/training.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
 import { IntroBlock, useIntroPages } from '../components/IntroBlocks.jsx';
+import RegistrationSteps from '../components/RegistrationSteps.jsx';
+import ProgramExplorer from '../components/ProgramExplorer.jsx';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
@@ -139,6 +141,7 @@ export default function Home() {
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
   const [colleges, setColleges] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const settings = useSiteSettings();
 
@@ -155,6 +158,7 @@ export default function Home() {
     api.get('/public/training-courses').then((d) => setCourses(d ?? [])).catch(() => {});
     api.get('/public/news?limit=3').then((d) => setNews(d ?? [])).catch(() => {});
     api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
+    api.get('/public/departments').then((d) => setDepartments(d ?? [])).catch(() => {});
   }, []);
 
   const heroImages = heroImagesFrom(home);
@@ -191,6 +195,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link to="/programs" className="btn btn-primary">البرامج الأكاديمية</Link>
+            <Link to="/apply" className="btn hero-btn-outline">خطوات التسجيل</Link>
             <Link to="/training/register" className="btn hero-btn-outline">سجّل في برنامج تدريبى</Link>
           </div>
           <div className="hero-stats">
@@ -205,6 +210,8 @@ export default function Home() {
       </section>
 
       <MinistryLinks general={settings?.general} />
+
+      <RegistrationSteps />
 
       <FeaturesBand features={home.features} />
 
@@ -253,6 +260,8 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <ProgramExplorer colleges={colleges} departments={departments} programs={programs} />
 
       <section className="section">
         <div className="container">

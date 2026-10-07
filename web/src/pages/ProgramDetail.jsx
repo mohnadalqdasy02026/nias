@@ -47,12 +47,14 @@ export default function ProgramDetail() {
   const { id } = useParams();
   const [program, setProgram] = useState(null);
   const [error, setError] = useState(null);
+  const [tab, setTab] = useState('overview');
 
   usePageMeta(program?.title_ar ? `برنامج ${program.title_ar}` : 'البرنامج الأكاديمي', program?.summary_ar ?? 'برنامج من برامج المعهد الوطني للعلوم الإدارية.');
 
   useEffect(() => {
     setError(null);
     setProgram(null);
+    setTab('overview');
     api.get(`/public/programs/${id}`)
       .then(setProgram)
       .catch((e) => setError(e.message));
@@ -100,16 +102,41 @@ export default function ProgramDetail() {
 
   const facts = [
     { icon: 'grad', label: 'الدرجة العلمية', value: type.plural ?? type.label },
-    { icon: 'book', label: 'الكلية', value: college },
-    { icon: 'list', label: 'القسم', value: department ?? '—' },
+    { icon: 'book', label: 'الكلية', value: college, link: program.college_id ? `/colleges/${program.college_id}` : null },
+    { icon: 'list', label: 'القسم', value: department ?? '—', link: department && program.department_id ? `/departments/${program.department_id}` : null },
     { icon: 'locations', label: 'الفرع', value: program.branch_name_ar ? branchTitle(program.branch_name_ar) : '—' },
     ...planFacts,
   ];
+
+  const tabs = [
+    { key: 'overview', label: 'نبذة عن البرنامج' },
+    ...(program.outcomes ? [{ key: 'outcomes', label: 'مخرجات التعلم' }] : []),
+    { key: 'admission', label: 'شروط القبول' },
+    ...(studyPlan && planCourses.length > 0 ? [{ key: 'plan', label: `الخطة الدراسية (${studyPlan.totalHours} ساعة)` }] : []),
+  ];
+  const activeTab = tab && tabs.some((t) => t.key === tab) ? tab : 'overview';
 
   return (
     <>
       <section className="program-detail-hero">
         <div className="container program-detail-hero-inner">
+          <nav className="college-page-crumbs" aria-label="مسار الصفحة">
+            <Link to="/programs">البرامج</Link>
+            {program.college_id && (
+              <>
+                <span aria-hidden="true">/</span>
+                <Link to={`/colleges/${program.college_id}`}>{college}</Link>
+              </>
+            )}
+            {department && program.department_id && (
+              <>
+                <span aria-hidden="true">/</span>
+                <Link to={`/departments/${program.department_id}`}>{department}</Link>
+              </>
+            )}
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{program.name_ar ?? program.name_en}</span>
+          </nav>
           <p className="programs-hero-eyebrow">التفاصيل — {type.label}</p>
           <h1>{program.name_ar ?? program.name_en}</h1>
           <p className="programs-hero-sub">
@@ -134,12 +161,29 @@ export default function ProgramDetail() {
               <img src={cover} alt="" />
             </div>
 
-            <div className="card program-detail-card">
-              <h2>نبذة عن البرنامج</h2>
-              <p className="program-detail-text">{program.description || 'لا يوجد وصف متاح لهذا البرنامج حاليًا.'}</p>
+            <div className="program-detail-tabs" role="tablist" aria-label="أقسام صفحة البرنامج">
+              {tabs.map((t) => (
+                <button
+                  key={t.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeTab === t.key}
+                  className={`program-detail-tab${activeTab === t.key ? ' is-active' : ''}`}
+                  onClick={() => setTab(t.key)}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
 
-            {program.outcomes && (() => {
+            {activeTab === 'overview' && (
+              <div className="card program-detail-card" role="tabpanel">
+                <h2>نبذة عن البرنامج</h2>
+                <p className="program-detail-text">{program.description || 'لا يوجد وصف متاح لهذا البرنامج حاليًا.'}</p>
+              </div>
+            )}
+
+            {activeTab === 'outcomes' && program.outcomes && (() => {
                 const parts = program.outcomes
                   .split(/\n|\(\d+\)/)
                   .map((s) => s.trim())
@@ -147,7 +191,7 @@ export default function ProgramDetail() {
                 const intro = parts[0];
                 const items = parts.slice(1);
                 return (
-                  <div className="card program-detail-card">
+                  <div className="card program-detail-card" role="tabpanel">
                     <h2>مخرجات التعلم</h2>
                     {intro && <p className="program-detail-text program-detail-outcomes-intro">{intro}</p>}
                     {items.length > 0 && (
@@ -159,16 +203,19 @@ export default function ProgramDetail() {
                 );
               })()}
 
-            <div className="card program-detail-card">
-              <h2>شروط القبول والتسجيل</h2>
-              <p className="program-detail-text">
-                يتطلب التقديم على هذا البرنامج استيفاء شروط القبول المعتمدة وفق المعايير الأكاديمية للمعهد
-                الوطني للعلوم الإدارية، والتسجيل يتم عبر بوابة التنسيق الموحد المعتمدة من وزارة التربية
-                والتعليم والبحث العلمي.
-              </p>
-            </div>
+            {activeTab === 'admission' && (
+              <div className="card program-detail-card" role="tabpanel">
+                <h2>شروط القبول والتسجيل</h2>
+                <p className="program-detail-text">
+                  يتطلب التقديم على هذا البرنامج استيفاء شروط القبول المعتمدة وفق المعايير الأكاديمية للمعهد
+                  الوطني للعلوم الإدارية، والتسجيل يتم عبر بوابة التنسيق الموحد المعتمدة من وزارة التربية
+                  والتعليم والبحث العلمي.
+                </p>
+                <Link to="/apply" className="btn btn-soft program-detail-tablink">اطّلع على خطوات التسجيل ←</Link>
+              </div>
+            )}
 
-            {(() => {
+            {activeTab === 'plan' && (() => {
               if (!studyPlan || planCourses.length === 0) return null;
               const groups = new Map();
               planCourses.forEach((c, i) => {
@@ -181,7 +228,7 @@ export default function ProgramDetail() {
               );
               const semesterCount = new Set(planCourses.map((c) => `${c.level_no}|${c.semester_no}`)).size;
               return (
-                <div className="card program-detail-card">
+                <div className="card program-detail-card" role="tabpanel">
                   <h2>الخطة الدراسية</h2>
                   <p className="program-detail-text program-detail-plan-intro">
                     تمتد الدراسة على {semesterCount === 1 ? 'فصل دراسي واحد' : `${semesterCount} فصول دراسية`}
@@ -248,7 +295,7 @@ export default function ProgramDetail() {
                     <span className="program-detail-fact-icon"><Icon name={f.icon} size={17} /></span>
                     <div>
                       <small>{f.label}</small>
-                      <strong>{f.value}</strong>
+                      {f.link ? <strong><Link to={f.link}>{f.value}</Link></strong> : <strong>{f.value}</strong>}
                     </div>
                   </li>
                 ))}

@@ -9,6 +9,7 @@ const navItems = [
   { to: '/', label: 'الرئيسية' },
   { to: '/about', label: 'عن المعهد' },
   { to: '/programs', label: 'البرامج الأكاديمية' },
+  { to: '/apply', label: 'التسجيل والقبول' },
   { to: '/colleges', label: 'الكليات والأقسام' },
   { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/training', label: 'التدريب' },
