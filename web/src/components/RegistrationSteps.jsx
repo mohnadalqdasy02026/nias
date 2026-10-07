@@ -83,14 +83,14 @@ function StepIcon({ name, size = 22 }) {
   );
 }
 
-export default function RegistrationSteps({ steps = REGISTRATION_STEPS, heading, subtitle }) {
+export default function RegistrationSteps({ steps = REGISTRATION_STEPS, heading, subtitle, tone = 'light' }) {
   const [active, setActive] = useState(0);
   const settings = useSiteSettings();
   const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
   const step = steps[active];
 
   return (
-    <section className="regsteps" aria-labelledby="regsteps-title">
+    <section className={`regsteps regsteps--${tone}`} aria-labelledby="regsteps-title">
       <div className="container">
         <div className="section-head">
           <h2 className="section-title" id="regsteps-title">{heading ?? 'خطوات التسجيل والقبول'}</h2>

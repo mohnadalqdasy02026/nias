@@ -211,7 +211,7 @@ export default function Home() {
 
       <MinistryLinks general={settings?.general} />
 
-      <RegistrationSteps />
+      <RegistrationSteps tone="dark" />
 
       <FeaturesBand features={home.features} />
 
@@ -228,7 +228,7 @@ export default function Home() {
       )}
 
       {colleges.length > 0 && (
-        <section className="section section-alt">
+        <section className="section">
           <div className="container">
             <SectionHeading title="كليات المعهد" subtitle="كلية متخصصة تمنح درجة علمية في تخصصات إدارية حديثة" to="/colleges" linkText="جميع الكليات والأقسام" />
             <div className="colleges-grid">
