@@ -3082,6 +3082,23 @@ code {
   font-weight: 700;
 }
 
+/* Breadcrumb inside the dark department hero must invert to light */
+.department-page-hero .college-page-crumbs {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.department-page-hero .college-page-crumbs a {
+  color: #fff;
+}
+
+.department-page-hero .college-page-crumbs a:hover {
+  color: var(--color-accent);
+}
+
+.department-page-hero .college-page-crumbs [aria-current='page'] {
+  color: rgba(255, 255, 255, 0.94);
+}
+
 .college-page {
   display: flex;
   flex-direction: column;
@@ -4314,6 +4331,10 @@ button,
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.department-faculty-item > .department-faculty-avatar {
+  color: #fff;
 }
 
 .department-faculty-item > div {
