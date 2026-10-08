@@ -1774,10 +1774,39 @@
 }
 
 .program-detail-hero {
-  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-nav) 100%);
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(1100px 480px at 88% -18%, rgba(201, 162, 39, 0.16), transparent 60%),
+    linear-gradient(135deg, var(--color-nav) 0%, var(--color-nav-light) 100%);
   color: #fff;
   padding: 64px 0 56px;
   text-align: center;
+}
+
+.program-detail-hero::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--color-accent), var(--color-primary), var(--color-accent));
+}
+
+/* Breadcrumb inside the dark program hero must invert to light */
+.program-detail-hero .college-page-crumbs {
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.program-detail-hero .college-page-crumbs a {
+  color: #fff;
+}
+
+.program-detail-hero .college-page-crumbs a:hover {
+  color: var(--color-accent);
+}
+
+.program-detail-hero .college-page-crumbs [aria-current='page'] {
+  color: rgba(255, 255, 255, 0.94);
 }
 
 .program-detail-hero-inner {
