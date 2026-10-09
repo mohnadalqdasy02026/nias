@@ -92,6 +92,10 @@
   display: none;
 }
 
+.nav-brand {
+  display: none;
+}
+
 .nav-scrim {
   display: none;
 }
@@ -3653,6 +3657,23 @@ code {
   .nav-close:hover {
     background: #fff;
     transform: scale(1.08);
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 8px 14px;
+    margin-bottom: 6px;
+    border-bottom: 1px solid rgba(14, 124, 102, 0.16);
+  }
+
+  .nav-brand .brand-text strong {
+    font-size: 0.98rem;
+  }
+
+  .nav-brand .brand-text small {
+    font-size: 0.7rem;
   }
 
   /* Dimmed layer behind the drawer: tapping it closes the menu. */
