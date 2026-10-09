@@ -1302,7 +1302,7 @@
     padding-top: 2px;
   }
 
-  .admin-table td > *:not(::before) {
+  .admin-table td > * {
     min-width: 0;
     flex: 1;
     margin: 0;
