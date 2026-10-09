@@ -25,8 +25,6 @@ import CollegesList from './pages/CollegesList.jsx';
 import DepartmentDetail from './pages/DepartmentDetail.jsx';
 import BranchesPage from './pages/BranchesPage.jsx';
 import Login from './pages/Login.jsx';
-import ForgotPassword from './pages/ForgotPassword.jsx';
-import ResetPassword from './pages/ResetPassword.jsx';
 import AdminDashboard from './pages/admin/Dashboard.jsx';
 import AdminSettings from './pages/admin/Settings.jsx';
 import AdminNews, { NewsForm } from './pages/admin/NewsAdmin.jsx';
@@ -147,8 +145,6 @@ export default function App() {
             <Route path="departments/:id" element={<DepartmentDetail />} />
             <Route path="contact" element={<Contact />} />
             <Route path="login" element={<Login />} />
-            <Route path="forgot-password" element={<ForgotPassword />} />
-            <Route path="reset-password" element={<ResetPassword />} />
             <Route path="*" element={<NotFound />} />
           </Route>
 

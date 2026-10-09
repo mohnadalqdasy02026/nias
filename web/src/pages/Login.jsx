@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 
@@ -59,10 +59,6 @@ export default function Login() {
             {submitting ? 'جارٍ الدخول...' : 'دخول'}
           </button>
         </form>
-
-        <p className="muted auth-note">
-          <Link to="/forgot-password">نسيت كلمة المرور؟</Link>
-        </p>
       </div>
     </section>
   );
