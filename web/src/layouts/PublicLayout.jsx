@@ -228,29 +228,50 @@ function Footer() {
   return (
     <footer className="site-footer">
       <div className="container">
-        <div className="footer-social">
-          <p className="footer-social-note">تابعونا على مواقع التواصل الاجتماعي</p>
-          <div className="footer-social-links">
-            {socials.map((s) => (
-              <a key={s.label} className="footer-social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={s.path} /></svg>
-                <span>{s.label}</span>
-              </a>
-            ))}
+        <div className="footer-main">
+          <div className="footer-brand">
+            <Link to="/" className="footer-brand-link">
+              <Logo src={general.logo} />
+              <span className="footer-brand-text">
+                <strong>{general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'}</strong>
+                <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
+              </span>
+            </Link>
+            <p className="footer-brand-note">صرح تعليمي متخصص في العلوم الإدارية يقدّم برامج نوعية لإعداد الكوادر القيادية.</p>
+            <div className="footer-social-links">
+              {socials.map((s) => (
+                <a key={s.label} className="footer-social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d={s.path} /></svg>
+                </a>
+              ))}
+            </div>
           </div>
-          <div className="footer-legal">
-            {ministryLinks.map((m) => (
-              <a key={m.label} href={m.href} target="_blank" rel="noopener noreferrer">{m.label}</a>
-            ))}
-            <Link to="/terms">الشروط والأحكام</Link>
-            <Link to="/privacy">سياسة الخصوصية</Link>
-            <Link to="/accessibility">إمكانية الوصول</Link>
-            <Link to="/sitemap">خريطة الموقع</Link>
-          </div>
-          <nav className="footer-links" aria-label="روابط سريعة">
-            {quickLinks.map((l) => (
-              <Link key={l.to} to={l.to}>{l.label}</Link>
-            ))}
+
+          <nav className="footer-col" aria-label="روابط سريعة">
+            <h4 className="footer-col-title">روابط سريعة</h4>
+            <ul className="footer-link-list">
+              {quickLinks.map((l) => (
+                <li key={l.to}><Link to={l.to}>{l.label}</Link></li>
+              ))}
+            </ul>
+          </nav>
+
+          <nav className="footer-col" aria-label="روابط رسمية وقانونية">
+            <h4 className="footer-col-title">روابط رسمية</h4>
+            <ul className="footer-link-list">
+              {ministryLinks.map((m) => (
+                <li key={m.label}>
+                  <a href={m.href} target="_blank" rel="noopener noreferrer">
+                    {m.label}
+                    <svg className="footer-ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" /></svg>
+                  </a>
+                </li>
+              ))}
+              <li><Link to="/terms">الشروط والأحكام</Link></li>
+              <li><Link to="/privacy">سياسة الخصوصية</Link></li>
+              <li><Link to="/accessibility">إمكانية الوصول</Link></li>
+              <li><Link to="/sitemap">خريطة الموقع</Link></li>
+            </ul>
           </nav>
         </div>
       </div>
