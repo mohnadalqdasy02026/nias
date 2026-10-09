@@ -93,8 +93,8 @@ function FeaturesBand({ features }) {
     <section className="section">
       <div className="container">
         <div className="highlight-grid">
-          {list.map((f) => (
-            <div key={f.title ?? f.icon ?? Math.random().toString(36)} className="card highlight-card">
+          {list.map((f, fi) => (
+            <div key={f.title ?? f.icon ?? `item-${fi}`} className="card highlight-card">
               <span className="highlight-mark" aria-hidden="true">{f.icon ?? '✦'}</span>
               {f.title && <h3>{f.title}</h3>}
               {f.text && <p>{f.text}</p>}

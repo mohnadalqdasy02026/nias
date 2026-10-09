@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
@@ -45,18 +45,18 @@ export default function CollegesAdmin() {
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  const load = async () => {
+  const load = useCallback(async () => {
     setError(null);
     try {
       setItems((await api.get('/admin/colleges', { auth: true })) ?? []);
     } catch (e) {
       setError(e.message);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const remove = async (c) => {
     if (!window.confirm(`هل تريد حذف الكلية «${c.name_ar}»؟ سيُحذف كل ما يرتبط بها من أقسام.`)) return;

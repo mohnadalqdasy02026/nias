@@ -18,13 +18,6 @@ const coverByType = {
   diploma: '/uploads/design/site/main_1782830791_165.jpg',
 };
 
-const collegeIcon = {
-  'كلية العلوم الإدارية': 'buildings',
-  'كلية تكنولوجيا المعلومات': 'code',
-  'مركز الدبلومات المتوسطة': 'book',
-  'كلية الدراسات العليا': 'grad',
-};
-
 const iconPaths = {
   book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM20 17v4',
   buildings: 'M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M15 9h4a2 2 0 0 1 2 2v10M9 7h2M9 11h2M9 15h2',
