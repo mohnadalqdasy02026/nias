@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
@@ -31,14 +31,12 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
   const [branches, setBranches] = useState([]);
-  const [searchQ, setSearchQ] = useState('');
   const { user } = useAuth();
   const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
   const general = settings?.general ?? {};
   const navRef = useRef(null);
   const toggleRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
@@ -56,16 +54,6 @@ function Header() {
   const closeMenu = () => {
     setOpen(false);
     setBranchOpen(false);
-  };
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    const q = searchQ.trim();
-    if (q.length >= 2) {
-      setOpen(false);
-      setSearchQ('');
-      navigate(`/search?q=${encodeURIComponent(q)}`);
-    }
   };
 
   // Tapping outside the drawer closes it, and Escape closes it too.
@@ -108,17 +96,6 @@ function Header() {
             <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
           </span>
         </Link>
-
-        <form className="header-search" role="search" onSubmit={handleSearch}>
-          <input
-            type="search"
-            value={searchQ}
-            onChange={(e) => setSearchQ(e.target.value)}
-            placeholder="ابحث في الموقع..."
-            aria-label="ابحث في الموقع"
-          />
-          <button type="submit" aria-label="بحث" title="بحث">🔍</button>
-        </form>
 
         <nav ref={navRef} className={`main-nav${open ? ' main-nav--open' : ''}`} aria-label="التنقل الرئيسي">
           <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); }}>×</button>
