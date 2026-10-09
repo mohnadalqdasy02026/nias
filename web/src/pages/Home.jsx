@@ -6,17 +6,13 @@ import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
 import { trainingCategoryLabel } from '../lib/training.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
-import { IntroBlock, useIntroPages } from '../components/IntroBlocks.jsx';
 import RegistrationSteps from '../components/RegistrationSteps.jsx';
-import ProgramExplorer from '../components/ProgramExplorer.jsx';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
   { label: 'الكليات والأقسام', key: 'colleges' },
   { label: 'الطلاب والطالبات', key: 'students' },
   { label: 'أعضاء هيئة التدريس', key: 'faculty' },
-  { label: 'البرامج التدريبية', key: 'trainingCourses' },
-  { label: 'الأخبار والفعاليات', key: 'news' },
 ];
 
 const typeLabel = {
@@ -212,7 +208,6 @@ export default function Home() {
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
   const [colleges, setColleges] = useState([]);
-  const [departments, setDepartments] = useState([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const settings = useSiteSettings();
 
@@ -229,11 +224,9 @@ export default function Home() {
     api.get('/public/training-courses').then((d) => setCourses(d ?? [])).catch(() => {});
     api.get('/public/news?limit=10').then((d) => setNews(d ?? [])).catch(() => {});
     api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
-    api.get('/public/departments').then((d) => setDepartments(d ?? [])).catch(() => {});
   }, []);
 
   const heroImages = heroImagesFrom(home);
-  const intro = useIntroPages();
 
   useEffect(() => {
     if (heroImages.length < 2) return;
@@ -266,8 +259,7 @@ export default function Home() {
           </p>
           <div className="hero-actions">
             <Link to="/programs" className="btn btn-primary">البرامج الأكاديمية</Link>
-            <Link to="/apply" className="btn hero-btn-outline">خطوات التسجيل</Link>
-            <Link to="/training/register" className="btn hero-btn-outline">سجّل في برنامج تدريبى</Link>
+            <Link to="/apply" className="btn hero-btn-outline">التسجيل والقبول</Link>
           </div>
           <div className="hero-stats">
             {statsKeys.map((s) => (
@@ -280,23 +272,11 @@ export default function Home() {
         </div>
       </section>
 
-      <MinistryLinks general={settings?.general} />
+      <FeaturesBand features={home.features} />
 
       <RegistrationSteps tone="dark" />
 
-      <FeaturesBand features={home.features} />
-
-      {(intro.vision || intro.mission) && (
-        <section className="section">
-          <div className="container">
-            <SectionHeading title="رؤيتنا ورسالتنا" subtitle="المحددات الاستراتيجية لعمل المعهد الوطني للعلوم الإدارية" to="/about" linkText="عن المعهد" />
-            <div className="intro-blocks-row">
-              <IntroBlock page={intro.vision} className="intro-block--vision" />
-              <IntroBlock page={intro.mission} className="intro-block--mission" />
-            </div>
-          </div>
-        </section>
-      )}
+      <MinistryLinks general={settings?.general} />
 
       {colleges.length > 0 && (
         <section className="section">
@@ -331,8 +311,6 @@ export default function Home() {
           </div>
         </section>
       )}
-
-      <ProgramExplorer colleges={colleges} departments={departments} programs={programs} />
 
       <section className="section">
         <div className="container">

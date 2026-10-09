@@ -373,7 +373,7 @@
 
 .hero-stats {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
   position: relative;
   margin-top: 56px;
@@ -3844,7 +3844,7 @@ code {
 /* Responsive */
 @media (max-width: 1200px) {
   .hero-stats {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
