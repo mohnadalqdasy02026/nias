@@ -41,19 +41,13 @@ export class AuthController {
   });
 
   forgotPassword = asyncHandler(async (req, res) => {
-    const result = await this.service.requestPasswordReset({
+    await this.service.requestPasswordReset({
       identifier: req.body.identifier,
       userAgent: req.get('user-agent'),
     });
-    // SMTP is not configured; expose dev token only outside production.
-    if (result && process.env.NODE_ENV !== 'production') {
-      return success(res, {
-        message: 'Reset link sent (dev mode: no SMTP configured)',
-        debugResetToken: result.resetToken,
-        expiresIn: result.expiresIn,
-      });
-    }
-    return success(res, { message: 'If the account exists, a reset link has been sent.' });
+    // Always return the same message to avoid account enumeration. The reset
+    // link (when the account exists) is delivered by email.
+    return success(res, { message: 'إذا كان الحساب موجودًا، فقد أُرسل إليك رابط إعادة التعيين.' });
   });
 
   resetPassword = asyncHandler(async (req, res) => {

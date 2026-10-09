@@ -247,7 +247,7 @@ export default function Home() {
                     <div className="college-dean">
                       {c.dean_image && c.dean_image !== 'null' ? (
                         <span className="college-dean-photo">
-                          <img src={c.dean_image} alt="" loading="lazy" />
+                          <img src={c.dean_image} alt={`${collegeHeadWord(c.name_ar)} ${collegeHeadNoun(c.name_ar)} — ${c.name_ar}`} loading="lazy" />
                         </span>
                       ) : null}
                       <span>{collegeHeadWord(c.name_ar)} {collegeHeadNoun(c.name_ar)}: {c.dean_name_ar ?? c.dean_name}</span>
@@ -270,7 +270,7 @@ export default function Home() {
             {programs.slice(0, 3).map((p) => (
               <article key={p.id} className={`program-card program-card--${p.program_type}`}>
                 <div className="program-card-cover">
-                  <img src={programCovers[programCoverKind[p.program_type] ?? 'bachelor']} alt="" loading="lazy" />
+                  <img src={programCovers[programCoverKind[p.program_type] ?? 'bachelor']} alt={p.name_ar ?? p.name_en} loading="lazy" />
                   <span className="program-card-type">{programTypeLabel[p.program_type] ?? p.program_type}</span>
                 </div>
                 <div className="program-card-body">
@@ -305,7 +305,7 @@ export default function Home() {
             {courses.slice(0, 3).map((c, ci) => (
               <article key={c.id} className="card course-card">
                 <div className="card-cover">
-                  <img src={courseCovers[ci % courseCovers.length]} alt="" loading="lazy" />
+                  <img src={courseCovers[ci % courseCovers.length]} alt={c.title} loading="lazy" />
                   <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
                 </div>
                 <div className="card-body">

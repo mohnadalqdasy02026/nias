@@ -13,6 +13,7 @@ const emptyForm = {
   phone: '',
   is_headquarters: false,
   dean_image: '',
+  image_url: '',
   latitude: '',
   longitude: '',
   dean_name_ar: '',
@@ -57,6 +58,7 @@ export default function BranchesAdmin() {
             <tr>
               <th>الفرع</th>
               <th>الصورة</th>
+              <th>صورة الفرع</th>
               <th>المسؤول</th>
               <th>كلمته</th>
               <th>العنوان</th>
@@ -76,6 +78,13 @@ export default function BranchesAdmin() {
                 <td data-label={`صورة ${head}`}>
                   {b.dean_image ? (
                     <img src={b.dean_image} alt="" className="table-thumb table-thumb--round" />
+                  ) : (
+                    <span className="table-muted">—</span>
+                  )}
+                </td>
+                <td data-label="صورة الفرع">
+                  {b.image_url ? (
+                    <img src={b.image_url} alt="" className="table-thumb" />
                   ) : (
                     <span className="table-muted">—</span>
                   )}
@@ -115,6 +124,7 @@ export function BranchForm() {
       phone: record.phone ?? '',
       is_headquarters: record.is_headquarters ?? false,
       dean_image: record.dean_image ?? '',
+      image_url: record.image_url ?? '',
       latitude: record.latitude != null ? String(record.latitude) : '',
       longitude: record.longitude != null ? String(record.longitude) : '',
       dean_name_ar: record.dean_name_ar ?? '',
@@ -130,6 +140,12 @@ export function BranchForm() {
     altText: () => (form.is_headquarters ? 'عميد المعهد الوطني' : `مدير ${form.name_ar || 'الفرع'}`),
   });
 
+  const uploadCover = useImageUpload({
+    onUploaded: (_key, url) => setForm((f) => ({ ...f, image_url: url })),
+    onError: setError,
+    altText: () => form.name_ar || 'صورة الفرع',
+  });
+
   const save = async (e) => {
     e.preventDefault();
     setError(null);
@@ -142,6 +158,7 @@ export function BranchForm() {
         phone: form.phone.trim() || null,
         is_headquarters: !!form.is_headquarters,
         dean_image: form.dean_image.trim() || null,
+        image_url: form.image_url.trim() || null,
         latitude: form.latitude.trim() || null,
         longitude: form.longitude.trim() || null,
         dean_name_ar: form.dean_name_ar.trim() || null,
@@ -195,6 +212,18 @@ export function BranchForm() {
             <div className="form-field">
               <label>خط العرض (Latitude)</label>
               <input value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} dir="ltr" placeholder="مثال: 15.3694" />
+            </div>
+            <div className="form-field form-field--full">
+              <label>صورة الفرع الرئيسية</label>
+              <ImageField
+                label="صورة الفرع"
+                value={form.image_url}
+                onChange={(url) => setForm({ ...form, image_url: url })}
+                upload={uploadCover}
+                fieldKey="image_url"
+                shape="landscape"
+                hint="صورة تظهر في بطاقة الفرع وصفحته. عند عدم وجودها تُستخدم صورة شعار المعهد."
+              />
             </div>
             <div className="form-field form-field--full">
               <label>العنوان</label>

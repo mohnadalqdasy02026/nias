@@ -3,9 +3,12 @@ import { AuthProvider } from './contexts/auth.jsx';
 import PublicLayout from './layouts/PublicLayout.jsx';
 import AdminLayout from './layouts/AdminLayout.jsx';
 import ProtectedRoute from './components/admin/ProtectedRoute.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
 import StaticPage from './pages/StaticPage.jsx';
+import NotFound from './pages/NotFound.jsx';
+import SearchResults from './pages/SearchResults.jsx';
 import Programs from './pages/Programs.jsx';
 import Training from './pages/Training.jsx';
 import TrainingDetail from './pages/TrainingDetail.jsx';
@@ -43,22 +46,90 @@ export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Routes>
-          <Route element={<PublicLayout />}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route
-              path="terms"
-              element={
-                <StaticPage
-                  slug="terms"
-                  fallbackTitle="الشروط والأحكام"
-                  metaTitle="الشروط والأحكام"
-                  metaDescription="شروط وأحكام استخدام موقع المعهد الوطني للعلوم الإدارية."
-                />
-              }
-            />
-            <Route path="programs" element={<Programs />} />
+        <ErrorBoundary>
+          <Routes>
+            <Route element={<PublicLayout />}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route
+                path="terms"
+                element={
+                  <StaticPage
+                    slug="terms"
+                    fallbackTitle="الشروط والأحكام"
+                    metaTitle="الشروط والأحكام"
+                    metaDescription="شروط وأحكام استخدام موقع المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="privacy"
+                element={
+                  <StaticPage
+                    slug="privacy"
+                    fallbackTitle="سياسة الخصوصية"
+                    metaTitle="سياسة الخصوصية"
+                    metaDescription="سياسة الخصوصية وحماية البيانات في موقع المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="faq"
+                element={
+                  <StaticPage
+                    slug="faq"
+                    fallbackTitle="الأسئلة الشائعة"
+                    metaTitle="الأسئلة الشائعة"
+                    metaDescription="إجابات عن الأسئلة الشائعة حول المعهد الوطني للعلوم الإدارية وبرامجه الأكاديمية والتدريبية."
+                  />
+                }
+              />
+              <Route
+                path="accessibility"
+                element={
+                  <StaticPage
+                    slug="accessibility"
+                    fallbackTitle="بيان إمكانية الوصول"
+                    metaTitle="بيان إمكانية الوصول"
+                    metaDescription="بيان إمكانية الوصول في موقع المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="sitemap"
+                element={
+                  <StaticPage
+                    slug="sitemap"
+                    fallbackTitle="خريطة الموقع"
+                    metaTitle="خريطة الموقع"
+                    metaDescription="خريطة موقع المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="academic-calendar"
+                element={
+                  <StaticPage
+                    slug="academic-calendar"
+                    fallbackTitle="التقويم الأكاديمي"
+                    metaTitle="التقويم الأكاديمي"
+                    metaDescription="التقويم الأكاديمي المعتمد في المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="student-portal"
+                element={
+                  <StaticPage
+                    slug="student-portal"
+                    fallbackTitle="بوابة الطالب"
+                    metaTitle="بوابة الطالب"
+                    metaDescription="بوابة الطالب في المعهد الوطني للعلوم الإدارية — النتائج والتعليم الإلكتروني."
+                  />
+                }
+              />
+              <Route path="search" element={<SearchResults />} />
+              <Route path="programs" element={<Programs />} />
             <Route path="programs/:id" element={<ProgramDetail />} />
             <Route path="apply" element={<Apply />} />
             <Route path="news" element={<NewsList />} />
@@ -78,6 +149,7 @@ export default function App() {
             <Route path="login" element={<Login />} />
             <Route path="forgot-password" element={<ForgotPassword />} />
             <Route path="reset-password" element={<ResetPassword />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
 
           <Route
@@ -347,6 +419,7 @@ export default function App() {
             />
           </Route>
         </Routes>
+        </ErrorBoundary>
       </BrowserRouter>
     </AuthProvider>
   );

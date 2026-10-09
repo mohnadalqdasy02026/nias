@@ -7,6 +7,11 @@ import pg from 'pg';
 
 const DATABASE_URL = process.env.DATABASE_URL || 'postgres://nias:nias@localhost:5432/nias';
 
+if (process.env.SEED_DEMO !== 'true') {
+  console.log('Academic seed skipped: set SEED_DEMO=true to run demo data seeds.');
+  process.exit(0);
+}
+
 const COLLEGE_CONTENT = {
   'كلية العلوم الإدارية': {
     about:

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
+import { usePageMeta } from '../hooks/usePageMeta.js';
 
 const AR_ERRORS = {
   'Invalid credentials': 'بيانات الدخول غير صحيحة. تأكد من كتابة المعرف وكلمة المرور بشكل صحيح.',
@@ -11,6 +12,7 @@ const AR_ERRORS = {
 const translateError = (msg) => AR_ERRORS[msg] ?? msg;
 
 export default function Login() {
+  usePageMeta('تسجيل الدخول', 'تسجيل الدخول إلى لوحة إدارة المعهد الوطني للعلوم الإدارية.');
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();

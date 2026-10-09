@@ -92,7 +92,6 @@ export default function ProgramDetail() {
   const planFacts = [];
   if (studyPlan && planCourses.length > 0) {
     const maxLevel = Math.max(...studyPlan.levels);
-    const semesterCount = new Set(planCourses.map((c) => `${c.level_no}|${c.semester_no}`)).size;
     const durationLabel = { 4: 'أربع سنوات', 3: 'ثلاث سنوات', 2: 'سنتان', 1: 'سنة واحدة' }[maxLevel] ?? `${maxLevel} مستويات`;
     planFacts.push(
       { icon: 'clock', label: 'مدة الدراسة', value: durationLabel },
@@ -158,7 +157,7 @@ export default function ProgramDetail() {
         <div className="container program-detail-layout">
           <div className="program-detail-main">
             <div className="program-detail-cover">
-              <img src={cover} alt="" />
+              <img src={cover} alt={program.name_ar ?? program.name_en} />
             </div>
 
             <div className="program-detail-tabs" role="tablist" aria-label="أقسام صفحة البرنامج">

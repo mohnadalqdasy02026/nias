@@ -161,7 +161,7 @@ export default function BranchesPage() {
               {branches.map((b) => (
                 <Link key={b.id} to={`/branches/${b.slug}`} className={`card branch-page-card${b.is_headquarters ? ' is-hq' : ''}`}>
                   <div className="branch-page-cover">
-                    <img src={logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
+                    <img src={b.image_url || logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
                   </div>
                   <div className="branch-page-body">
                     <span className="branch-page-city">{b.name_en ?? b.slug}</span>
@@ -188,7 +188,7 @@ export default function BranchesPage() {
             <>
               <article className={`card branch-detail-card${hq ? ' is-hq' : ''}`}>
                 <div className="branch-detail-cover">
-                  <img src={logo} alt={branch.name_ar || 'المعهد الوطني للعلوم الإدارية'} />
+                  <img src={branch.image_url || logo} alt={branch.name_ar || 'المعهد الوطني للعلوم الإدارية'} />
                 </div>
                 <div className="branch-detail-body">
                   <span className="branch-page-city">{branch.name_en ?? branch.slug}</span>

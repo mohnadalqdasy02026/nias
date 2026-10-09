@@ -16,5 +16,6 @@ export const updateBranchSchema = z.object({
     dean_name_en: z.string().trim().optional().nullable(),
     dean_message_ar: z.string().trim().optional().nullable(),
     dean_message_en: z.string().trim().optional().nullable(),
+    image_url: z.string().trim().optional().nullable(),
   }),
 });

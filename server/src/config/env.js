@@ -40,4 +40,15 @@ export const env = {
   UPLOAD_DIR: process.env.UPLOAD_DIR ?? 'uploads',
   LOG_LEVEL: process.env.LOG_LEVEL ?? 'info',
   TRUST_PROXY: process.env.TRUST_PROXY === 'true',
+
+  // Email / SMTP. When SMTP_HOST is empty the mailer falls back to logging
+  // the message (development) instead of failing the request.
+  SMTP_HOST: process.env.SMTP_HOST || '',
+  SMTP_PORT: Number(process.env.SMTP_PORT ?? 587),
+  SMTP_SECURE: process.env.SMTP_SECURE === 'true',
+  SMTP_USER: process.env.SMTP_USER || '',
+  SMTP_PASS: process.env.SMTP_PASS || '',
+  EMAIL_FROM: process.env.EMAIL_FROM || 'NIAS Academy <no-reply@nias-academy.onrender.com>',
+  CONTACT_NOTIFY_TO: process.env.CONTACT_NOTIFY_TO || '',
+  PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'https://nias-academy.onrender.com',
 };

@@ -11,6 +11,8 @@ import {
 import { hashToken } from '../utils/token.js';
 import { UserRepository } from '../repositories/user.repository.js';
 import { TokenRepository } from '../repositories/token.repository.js';
+import { buildResetEmail, sendMail } from './mailer.service.js';
+import { env } from '../config/env.js';
 import {
   assertLoginAllowed,
   clearFailedLogins,
@@ -88,10 +90,12 @@ export class AuthService {
       expiresAt: new Date(Date.now() + RESET_TOKEN_TTL_MS),
     });
 
-    // NOTE: SMTP channel is not configured yet (Unknown). In production this URL
-    // must be emailed. For development the token is returned in the response
-    // debug field ONLY when NODE_ENV !== 'production'.
-    return { resetToken, expiresIn: RESET_TOKEN_TTL_MS / 1000 };
+    const resetUrl = `${env.PUBLIC_BASE_URL}/reset-password?token=${encodeURIComponent(resetToken)}`;
+    const { html, text } = buildResetEmail({
+      resetUrl,
+      nameAr: user.full_name_ar,
+    });
+    await sendMail({ to: user.email, subject: 'استعادة كلمة المرور — المعهد الوطني للعلوم الإدارية', html, text });
   }
 
   async resetPassword({ token, newPassword, userAgent }) {
@@ -100,6 +104,8 @@ export class AuthService {
 
     const passwordHash = await hashPassword(newPassword);
     await this.userRepo.updatePasswordHash(userId, passwordHash);
+    // A changed password must invalidate every existing session immediately.
+    await this.tokenRepo.revokeAllUserRefreshTokens(userId);
   }
 
   async issueTokens(user, userAgent, ipAddress) {

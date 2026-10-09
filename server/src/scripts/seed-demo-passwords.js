@@ -8,6 +8,11 @@ import bcrypt from 'bcryptjs';
 const DATABASE_URL = process.env.DATABASE_URL || 'postgres://nias:nias@localhost:5432/nias';
 const DEMO_PASSWORD = process.env.DEMO_PASSWORD || 'Demo@12345';
 
+if (process.env.SEED_DEMO !== 'true') {
+  console.log('Demo password seed skipped: set SEED_DEMO=true to run demo data seeds.');
+  process.exit(0);
+}
+
 async function main() {
   const client = new pg.Client({ connectionString: DATABASE_URL });
   await client.connect();

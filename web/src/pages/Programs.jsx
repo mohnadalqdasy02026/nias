@@ -80,7 +80,7 @@ function ProgramCard({ program }) {
   return (
     <article className={`program-card program-card--${program.program_type}`}>
       <div className="program-card-cover">
-        <img src={cover} alt="" loading="lazy" />
+        <img src={cover} alt={program.name_ar ?? program.name_en} loading="lazy" />
         <span className="program-card-type">{type.label}</span>
       </div>
       <div className="program-card-body">

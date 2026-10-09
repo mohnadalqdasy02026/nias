@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { renderRichText } from '../lib/richText.js';
 
 export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescription }) {
   const [page, setPage] = useState(null);
@@ -20,7 +21,7 @@ export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescrip
             {page.primary_image && (
               <img className="about-hero-image" src={page.primary_image} alt={page.title_ar ?? fallbackTitle} />
             )}
-            <div dangerouslySetInnerHTML={{ __html: page.content_ar }} />
+            <div dangerouslySetInnerHTML={{ __html: renderRichText(page.content_ar) }} />
           </article>
         ) : (
           <p className="muted">لم يتم نشر هذه الصفحة بعد.</p>

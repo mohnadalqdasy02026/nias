@@ -102,7 +102,11 @@ export function NewsDetail() {
   const [item, setItem] = useState(null);
   const [notFound, setNotFound] = useState(false);
 
-  usePageMeta(item ? (item.title_ar ?? item.title_en) : 'خبر');
+  usePageMeta(
+    item ? (item.title_ar ?? item.title_en) : 'خبر',
+    item?.summary_ar || item?.summary_en || '',
+    { image: item?.cover_image, type: 'article' },
+  );
 
   useEffect(() => {
     api

@@ -150,7 +150,7 @@ export default function DepartmentDetail() {
                     {department.faculty.map((f) => (
                       <li key={f.id} className="department-faculty-item">
                         <span className="department-faculty-avatar">
-                          {f.photo ? <img src={f.photo} alt="" loading="lazy" /> : <IconSVG d={paths.people} size={16} />}
+                          {f.photo ? <img src={f.photo} alt={f.name_ar ?? f.name_en} loading="lazy" /> : <IconSVG d={paths.people} size={16} />}
                         </span>
                         <div>
                           <strong>{f.name_ar ?? f.name_en}</strong>

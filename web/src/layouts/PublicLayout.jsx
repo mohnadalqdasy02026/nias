@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
@@ -11,8 +11,12 @@ const navItems = [
   { to: '/programs', label: 'البرامج الأكاديمية' },
   { to: '/apply', label: 'التسجيل والقبول' },
   { to: '/colleges', label: 'الكليات والأقسام' },
-  { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/training', label: 'التدريب' },
+  { to: '/news', label: 'الأخبار والفعاليات' },
+  { to: '/gallery', label: 'المعرض' },
+  { to: '/downloads', label: 'التحميلات' },
+  { to: '/faculty', label: 'هيئة التدريس' },
+  { to: '/contact', label: 'تواصل معنا' },
 ];
 
 function Logo({ small, src }) {
@@ -27,12 +31,14 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
   const [branches, setBranches] = useState([]);
+  const [searchQ, setSearchQ] = useState('');
   const { user } = useAuth();
   const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
   const general = settings?.general ?? {};
   const navRef = useRef(null);
   const toggleRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
@@ -50,6 +56,16 @@ function Header() {
   const closeMenu = () => {
     setOpen(false);
     setBranchOpen(false);
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const q = searchQ.trim();
+    if (q.length >= 2) {
+      setOpen(false);
+      setSearchQ('');
+      navigate(`/search?q=${encodeURIComponent(q)}`);
+    }
   };
 
   // Tapping outside the drawer closes it, and Escape closes it too.
@@ -92,6 +108,17 @@ function Header() {
             <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
           </span>
         </Link>
+
+        <form className="header-search" role="search" onSubmit={handleSearch}>
+          <input
+            type="search"
+            value={searchQ}
+            onChange={(e) => setSearchQ(e.target.value)}
+            placeholder="ابحث في الموقع..."
+            aria-label="ابحث في الموقع"
+          />
+          <button type="submit" aria-label="بحث" title="بحث">🔍</button>
+        </form>
 
         <nav ref={navRef} className={`main-nav${open ? ' main-nav--open' : ''}`} aria-label="التنقل الرئيسي">
           <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); }}>×</button>
@@ -171,6 +198,18 @@ function Footer() {
       ? [{ label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url }]
       : []),
   ];
+  const quickLinks = [
+    { to: '/about', label: 'عن المعهد' },
+    { to: '/programs', label: 'البرامج الأكاديمية' },
+    { to: '/apply', label: 'التسجيل والقبول' },
+    { to: '/training', label: 'التدريب' },
+    { to: '/branches', label: 'فروع المعهد' },
+    { to: '/gallery', label: 'المعرض' },
+    { to: '/downloads', label: 'التحميلات' },
+    { to: '/faculty', label: 'هيئة التدريس' },
+    { to: '/contact', label: 'تواصل معنا' },
+    { to: '/faq', label: 'الأسئلة الشائعة' },
+  ];
   const socials = [
     { label: 'تليجرام', href: 'https://t.me/nias_academy', path: 'M21 9.3a23.4 23.4 0 0 0-11.2 3.9L9 15.8l-3.9.9a.8.8 0 0 1-.6-.1l-2.3-1.1a.8.8 0 0 1-.2-1.4l3.9-3.6h.6l1.9 1.1M11.8 15.8l.9 2.9c0 .4.5.6.9.3l1-2.2' },
     { label: 'فيسبوك', href: 'https://www.facebook.com/nias.academy', path: 'M14 8h2V5h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8z' },
@@ -197,7 +236,15 @@ function Footer() {
               <a key={m.label} href={m.href} target="_blank" rel="noopener noreferrer">{m.label}</a>
             ))}
             <Link to="/terms">الشروط والأحكام</Link>
+            <Link to="/privacy">سياسة الخصوصية</Link>
+            <Link to="/accessibility">إمكانية الوصول</Link>
+            <Link to="/sitemap">خريطة الموقع</Link>
           </div>
+          <nav className="footer-links" aria-label="روابط سريعة">
+            {quickLinks.map((l) => (
+              <Link key={l.to} to={l.to}>{l.label}</Link>
+            ))}
+          </nav>
         </div>
       </div>
       <div className="footer-ticker" aria-hidden="true">
@@ -211,7 +258,6 @@ function Footer() {
 
 export default function PublicLayout() {
   const location = useLocation();
-  const isHome = location.pathname === '/';
 
   return (
     <>
@@ -221,7 +267,7 @@ export default function PublicLayout() {
           <Outlet />
         </div>
       </main>
-      {isHome && <Footer />}
+      <Footer />
     </>
   );
 }

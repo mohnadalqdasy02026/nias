@@ -114,49 +114,49 @@ export default function TrainingRegister() {
         <form onSubmit={handleSubmit} className="card admin-form">
           <div className="form-grid">
             <div className="form-field">
-              <label>الاسم الأول *</label>
-              <input value={form.first_name} onChange={set('first_name')} required />
+              <label htmlFor="tr-first-name">الاسم الأول *</label>
+              <input id="tr-first-name" value={form.first_name} onChange={set('first_name')} required />
             </div>
             <div className="form-field">
-              <label>اسم الأب *</label>
-              <input value={form.father_name} onChange={set('father_name')} required />
+              <label htmlFor="tr-father-name">اسم الأب *</label>
+              <input id="tr-father-name" value={form.father_name} onChange={set('father_name')} required />
             </div>
             <div className="form-field">
-              <label>اسم الجد *</label>
-              <input value={form.grandfather_name} onChange={set('grandfather_name')} required />
+              <label htmlFor="tr-grandfather-name">اسم الجد *</label>
+              <input id="tr-grandfather-name" value={form.grandfather_name} onChange={set('grandfather_name')} required />
             </div>
             <div className="form-field">
-              <label>العائلة *</label>
-              <input value={form.family_name} onChange={set('family_name')} required />
+              <label htmlFor="tr-family-name">العائلة *</label>
+              <input id="tr-family-name" value={form.family_name} onChange={set('family_name')} required />
             </div>
             <div className="form-field">
-              <label>رقم الجوال *</label>
-              <input value={form.phone} onChange={set('phone')} required dir="ltr" inputMode="tel" placeholder="77XXXXXXXX" />
+              <label htmlFor="tr-phone">رقم الجوال *</label>
+              <input id="tr-phone" value={form.phone} onChange={set('phone')} required dir="ltr" inputMode="tel" placeholder="77XXXXXXXX" />
             </div>
             <div className="form-field">
-              <label>الفرع *</label>
-              <select value={form.branch_id} onChange={set('branch_id')} required>
+              <label htmlFor="tr-branch">الفرع *</label>
+              <select id="tr-branch" value={form.branch_id} onChange={set('branch_id')} required>
                 <option value="">اختر الفرع</option>
                 {branches.map((b) => <option key={b.id} value={b.id}>{b.name_ar}</option>)}
               </select>
             </div>
             <div className="form-field form-field--full">
-              <label>البرنامج التدريبى *</label>
-              <select value={form.course_id} onChange={set('course_id')} required>
+              <label htmlFor="tr-course">البرنامج التدريبى *</label>
+              <select id="tr-course" value={form.course_id} onChange={set('course_id')} required>
                 <option value="">اختر البرنامج</option>
                 {courses.map((c) => <option key={c.id} value={c.id}>{trainingCategoryLabel(c.category)}: {c.title}</option>)}
               </select>
             </div>
 
             <div className="form-field">
-              <label>تحقق أمان (CAPTCHA) *</label>
+              <label htmlFor="tr-captcha">تحقق أمان (CAPTCHA) *</label>
               {captcha ? (
                 <>
                   <div className="captcha-row">
                     <strong>{captcha.question}</strong>
                     <button type="button" className="btn btn-sm btn-soft" onClick={refreshCaptcha}>تغيير</button>
                   </div>
-                  <input name="answer" type="number" required placeholder="أدخل الناتج" />
+                  <input id="tr-captcha" name="answer" type="number" required placeholder="أدخل الناتج" />
                 </>
               ) : (
                 <p className="muted">جارٍ التحضير...</p>
@@ -164,8 +164,8 @@ export default function TrainingRegister() {
             </div>
 
             <div className="form-field">
-              <label>التوقيع الإلكتروني (اختياري)</label>
-              <input value={form.signature_data} onChange={set('signature_data')} placeholder="اكتب اسمك للتوقيع" />
+              <label htmlFor="tr-signature">التوقيع الإلكتروني (اختياري)</label>
+              <input id="tr-signature" value={form.signature_data} onChange={set('signature_data')} placeholder="اكتب اسمك للتوقيع" />
             </div>
 
             <div className="form-field form-field--full">

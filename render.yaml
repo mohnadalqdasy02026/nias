@@ -25,6 +25,11 @@ services:
         generateValue: true
       - key: UPLOAD_DIR
         value: uploads
+      # Demo seed scripts (passwords/academic content) run ONLY when SEED_DEMO is true.
+      - key: SEED_DEMO
+        value: "false"
+      - key: PUBLIC_BASE_URL
+        value: https://nias-academy.onrender.com
 
 databases:
   - name: nias-postgres

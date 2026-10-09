@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { api } from '../api/client.js';
+import { renderRichText } from '../lib/richText.js';
 
 // صفحات المحتوى التعريفي (الرؤية/الرسالة/الأهداف/المسيرة) تُحرَّر من لوحة التحكم
 // عبر «إدارة الصفحات» بالـ slugs التالية.
@@ -10,7 +11,7 @@ export function IntroBlock({ page, className }) {
   return (
     <section className={`card intro-block ${className ?? ''}`} aria-labelledby={`intro-${page.slug}`}>
       <h2 id={`intro-${page.slug}`}>{page.title_ar}</h2>
-      <div className="intro-block-body" dangerouslySetInnerHTML={{ __html: page.content_ar }} />
+      <div className="intro-block-body" dangerouslySetInnerHTML={{ __html: renderRichText(page.content_ar) }} />
       {page.primary_image && <img className="intro-block-image" src={page.primary_image} alt={page.title_ar} loading="lazy" />}
     </section>
   );

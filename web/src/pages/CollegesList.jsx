@@ -13,7 +13,7 @@ function CollegeCard({ college, departments = [] }) {
     <article className="college-list-card">
       <Link to={`/colleges/${college.id}`} className="college-list-card-cover" aria-label={college.name_ar}>
         {college.image ? (
-          <img src={college.image} alt="" loading="lazy" />
+          <img src={college.image} alt={college.name_ar} loading="lazy" />
         ) : (
           <span className="college-list-card-letter" aria-hidden="true">{college.name_ar?.slice(0, 1) ?? 'ك'}</span>
         )}
