@@ -753,7 +753,7 @@
 .rail {
   display: grid;
   grid-auto-flow: column;
-  grid-auto-columns: minmax(262px, 300px);
+  grid-auto-columns: clamp(300px, 34vw, 420px);
   gap: 16px;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
@@ -828,7 +828,7 @@
   color: var(--color-primary-deep);
   font-size: 1.55rem;
   line-height: 1;
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -838,6 +838,7 @@
     transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
     background 0.2s ease,
     color 0.2s ease,
+    opacity 0.2s ease,
     box-shadow 0.25s ease;
   z-index: 5;
 }
@@ -849,21 +850,35 @@
   box-shadow: 0 10px 24px rgba(4, 26, 21, 0.26);
 }
 
-.rail-btn--prev {
+.rail-btn.is-off,
+.rail-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+  box-shadow: none;
+}
+
+.rail-btn--right {
   right: -12px;
 }
 
-.rail-btn--next {
+.rail-btn--left {
   left: -12px;
 }
 
-.rail-wrap.is-overflow .rail-btn {
-  display: inline-flex;
-}
+@media (max-width: 560px) {
+  .rail-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 1.3rem;
+  }
 
-@media (max-width: 900px) {
-  .rail-wrap.is-overflow .rail-btn {
-    display: none;
+  .rail-btn--right {
+    right: 2px;
+  }
+
+  .rail-btn--left {
+    left: 2px;
   }
 }
 

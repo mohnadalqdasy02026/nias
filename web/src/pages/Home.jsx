@@ -80,33 +80,68 @@ function SectionHeading({ title, subtitle, to, linkText }) {
 
 function Rail({ label, href, moreLabel = 'اكتشف المزيد', children }) {
   const railRef = useRef(null);
-  const [overflow, setOverflow] = useState(false);
+  const [state, setState] = useState({ overflow: false, canLeft: false, canRight: false });
 
   useEffect(() => {
     const el = railRef.current;
     if (!el) return undefined;
-    const measure = () => setOverflow(el.scrollWidth - el.clientWidth > 8);
+    const measure = () => {
+      const max = el.scrollWidth - el.clientWidth;
+      const rtl = getComputedStyle(el).direction === 'rtl';
+      const sl = el.scrollLeft;
+      const next = {
+        overflow: max > 8,
+        canRight: rtl ? sl < -4 : sl < max - 4,
+        canLeft: rtl ? sl > -max + 4 : sl > 4,
+      };
+      setState((prev) => (prev.overflow === next.overflow && prev.canLeft === next.canLeft && prev.canRight === next.canRight ? prev : next));
+    };
     measure();
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
     ro?.observe(el);
-    return () => ro?.disconnect();
-  });
+    el.addEventListener('scroll', measure, { passive: true });
+    return () => {
+      ro?.disconnect();
+      el.removeEventListener('scroll', measure);
+    };
+  }, []);
 
-  const scrollRail = (dir) => {
+  // Physical direction: positive step scrolls the viewport to the right,
+  // negative step scrolls it to the left — arrows always match their side.
+  const nudge = (step) => {
+    railRef.current?.scrollBy({ left: step, behavior: 'smooth' });
+  };
+
+  const cardStep = () => {
     const el = railRef.current;
-    if (!el) return;
-    const step = Math.max(240, Math.round(el.clientWidth * 0.8));
-    const rtl = getComputedStyle(el).direction === 'rtl';
-    el.scrollBy({ left: (rtl ? -step : step) * dir, behavior: 'smooth' });
+    const card = el?.querySelector('.rail-card');
+    const w = card ? card.getBoundingClientRect().width : 0;
+    return Math.round(w > 0 ? w + 16 : (el?.clientWidth ?? 400) * 0.7);
   };
 
   return (
-    <div className={`rail-wrap${overflow ? ' is-overflow' : ''}`}>
+    <div className={`rail-wrap${state.overflow ? ' is-overflow' : ''}`}>
       <div className="rail" ref={railRef} aria-label={label}>
         {children}
       </div>
-      <button type="button" className="rail-btn rail-btn--next" aria-label="تمرير للأمام" onClick={() => scrollRail(1)}>‹</button>
-      <button type="button" className="rail-btn rail-btn--prev" aria-label="تمرير للخلف" onClick={() => scrollRail(-1)}>›</button>
+      <button
+        type="button"
+        className={`rail-btn rail-btn--left${state.canLeft ? '' : ' is-off'}`}
+        aria-label="تحرك لليسار"
+        disabled={!state.canLeft}
+        onClick={() => nudge(-cardStep())}
+      >
+        ‹
+      </button>
+      <button
+        type="button"
+        className={`rail-btn rail-btn--right${state.canRight ? '' : ' is-off'}`}
+        aria-label="تحرك لليمين"
+        disabled={!state.canRight}
+        onClick={() => nudge(cardStep())}
+      >
+        ›
+      </button>
       <div className="rail-more">
         <Link to={href} className="btn btn-primary">{moreLabel}</Link>
       </div>
