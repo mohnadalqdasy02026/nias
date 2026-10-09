@@ -237,7 +237,6 @@ function Footer() {
                 <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
               </span>
             </Link>
-            <p className="footer-brand-note">صرح تعليمي متخصص في العلوم الإدارية يقدّم برامج نوعية لإعداد الكوادر القيادية.</p>
             <div className="footer-social-links">
               {socials.map((s) => (
                 <a key={s.label} className="footer-social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
