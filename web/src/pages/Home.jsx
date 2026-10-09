@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
@@ -74,6 +74,42 @@ function SectionHeading({ title, subtitle, to, linkText }) {
         {subtitle && <p className="section-subtitle">{subtitle}</p>}
       </div>
       {to && <Link to={to} className="section-more">{linkText} ←</Link>}
+    </div>
+  );
+}
+
+function Rail({ label, href, moreLabel = 'اكتشف المزيد', children }) {
+  const railRef = useRef(null);
+  const [overflow, setOverflow] = useState(false);
+
+  useEffect(() => {
+    const el = railRef.current;
+    if (!el) return undefined;
+    const measure = () => setOverflow(el.scrollWidth - el.clientWidth > 8);
+    measure();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null;
+    ro?.observe(el);
+    return () => ro?.disconnect();
+  });
+
+  const scrollRail = (dir) => {
+    const el = railRef.current;
+    if (!el) return;
+    const step = Math.max(240, Math.round(el.clientWidth * 0.8));
+    const rtl = getComputedStyle(el).direction === 'rtl';
+    el.scrollBy({ left: (rtl ? -step : step) * dir, behavior: 'smooth' });
+  };
+
+  return (
+    <div className={`rail-wrap${overflow ? ' is-overflow' : ''}`}>
+      <div className="rail" ref={railRef} aria-label={label}>
+        {children}
+      </div>
+      <button type="button" className="rail-btn rail-btn--next" aria-label="تمرير للأمام" onClick={() => scrollRail(1)}>‹</button>
+      <button type="button" className="rail-btn rail-btn--prev" aria-label="تمرير للخلف" onClick={() => scrollRail(-1)}>›</button>
+      <div className="rail-more">
+        <Link to={href} className="btn btn-primary">{moreLabel}</Link>
+      </div>
     </div>
   );
 }
@@ -156,7 +192,7 @@ export default function Home() {
     api.get('/public/stats').then((d) => setStats(d ?? {})).catch(() => setStats({}));
     api.get('/public/programs').then((d) => setPrograms(d ?? [])).catch(() => {});
     api.get('/public/training-courses').then((d) => setCourses(d ?? [])).catch(() => {});
-    api.get('/public/news?limit=3').then((d) => setNews(d ?? [])).catch(() => {});
+    api.get('/public/news?limit=10').then((d) => setNews(d ?? [])).catch(() => {});
     api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
     api.get('/public/departments').then((d) => setDepartments(d ?? [])).catch(() => {});
   }, []);
@@ -300,68 +336,73 @@ export default function Home() {
 
       <section className="section section-alt">
         <div className="container">
-          <SectionHeading title="البرامج التدريبية" subtitle="برامج مفتوحة للتسجيل الآن" to="/training" linkText="عرض جميع البرامج" />
-          <div className="courses-grid">
-            {courses.slice(0, 3).map((c, ci) => (
-              <article key={c.id} className="card course-card">
-                <div className="card-cover">
-                  <img src={courseCovers[ci % courseCovers.length]} alt={c.title} loading="lazy" />
-                  <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
-                </div>
-                <div className="card-body">
-                  <h3>{c.title}</h3>
-                  <div className="course-meta">
-                    {c.location && <span>{c.location}</span>}
-                    {c.start_date && <span>يبدأ: {new Date(c.start_date).toLocaleDateString('ar-YE')}</span>}
-                    {c.trainer && <span>المدرب: {c.trainer}</span>}
+          <SectionHeading title="البرامج التدريبية" subtitle="برامج مفتوحة للتسجيل الآن" />
+          {courses.length > 0 ? (
+            <Rail label="قائمة البرامج التدريبية" href="/training">
+              {courses.slice(0, 10).map((c, ci) => (
+                <article key={c.id} className="card course-card rail-card">
+                  <div className="card-cover">
+                    <img src={courseCovers[ci % courseCovers.length]} alt={c.title} loading="lazy" />
+                    <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
                   </div>
-                  <div className="course-card-actions">
-                    <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
-                    <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+                  <div className="card-body">
+                    <h3>{c.title}</h3>
+                    <div className="course-meta">
+                      {c.location && <span>{c.location}</span>}
+                      {c.start_date && <span>يبدأ: {new Date(c.start_date).toLocaleDateString('ar-YE')}</span>}
+                      {c.trainer && <span>المدرب: {c.trainer}</span>}
+                    </div>
+                    <div className="course-card-actions">
+                      <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
+                      <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
-            {courses.length === 0 && <p className="muted">لا توجد برامج تدريبية مفتوحة حاليًا.</p>}
-          </div>
+                </article>
+              ))}
+            </Rail>
+          ) : (
+            <p className="muted">لا توجد برامج تدريبية مفتوحة حاليًا.</p>
+          )}
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <SectionHeading title="أخبار وفعاليات المعهد" subtitle="مستجدات وأنشطة المعهد" to="/news" linkText="عرض جميع الأخبار" />
-          <div className="news-grid">
-            {news.map((item) => (
-              <article key={item.id} className="card news-card">
-                {item.cover_image ? (
-                  <img className="news-cover" src={item.cover_image} alt={item.title_ar ?? item.title_en} loading="lazy" />
-                ) : (
-                  <div className="news-cover news-cover--placeholder">
-                    <span className="news-cover-mark">NIAS</span>
-                    <span className="news-type-badge">{typeLabel[item.content_type] ?? 'خبر'}</span>
-                  </div>
-                )}
-                <div className="news-body">
-                  <div className="news-body-top">
-                    <span className={`news-type-badge news-type--${item.content_type}`}>{typeLabel[item.content_type] ?? 'خبر'}</span>
-                    {item.published_at && (
-                      <span className="news-date">{new Date(item.published_at).toLocaleDateString('ar-YE')}</span>
-                    )}
-                  </div>
-                  {item.branch_name_ar && (
-                    <Link to={`/branches/${item.branch_slug}`} className="news-branch-tag">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
-                      {branchTitle(item.branch_name_ar)}
-                    </Link>
+          <SectionHeading title="أخبار وفعاليات المعهد" subtitle="مستجدات وأنشطة المعهد" />
+          {news.length > 0 ? (
+            <Rail label="قائمة أخبار وفعاليات المعهد" href="/news">
+              {news.map((item) => (
+                <article key={item.id} className="card news-card rail-card">
+                  {item.cover_image ? (
+                    <img className="news-cover" src={item.cover_image} alt={item.title_ar ?? item.title_en} loading="lazy" />
+                  ) : (
+                    <div className="news-cover news-cover--placeholder">
+                      <span className="news-cover-mark">NIAS</span>
+                      <span className="news-type-badge">{typeLabel[item.content_type] ?? 'خبر'}</span>
+                    </div>
                   )}
-                  <h3>{item.title_ar ?? item.title_en}</h3>
-                  {item.summary_ar && <p>{item.summary_ar}</p>}
-                  <Link to={`/news/${item.id}`} className="news-link">اقرأ المزيد ←</Link>
-                </div>
-              </article>
-            ))}
-            {news.length === 0 && <p className="muted">لا توجد أخبار منشورة حاليًا.</p>}
-          </div>
+                  <div className="news-body">
+                    <div className="news-body-top">
+                      <span className={`news-type-badge news-type--${item.content_type}`}>{typeLabel[item.content_type] ?? 'خبر'}</span>
+                      {item.published_at && (
+                        <span className="news-date">{new Date(item.published_at).toLocaleDateString('ar-YE')}</span>
+                      )}
+                    </div>
+                    {item.branch_name_ar && (
+                      <Link to={`/branches/${item.branch_slug}`} className="news-branch-tag">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" /></svg>
+                        {branchTitle(item.branch_name_ar)}
+                      </Link>
+                    )}
+                    <h3>{item.title_ar ?? item.title_en}</h3>
+                    <Link to={`/news/${item.id}`} className="news-link">اقرأ المزيد ←</Link>
+                  </div>
+                </article>
+              ))}
+            </Rail>
+          ) : (
+            <p className="muted">لا توجد أخبار منشورة حاليًا.</p>
+          )}
         </div>
       </section>
 

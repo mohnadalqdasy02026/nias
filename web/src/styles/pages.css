@@ -744,6 +744,139 @@
   gap: 20px;
 }
 
+/* Home rails: horizontally scrollable card lists (training + news)
+   with arrow controls, snap scrolling and a "discover more" button. */
+.rail-wrap {
+  position: relative;
+}
+
+.rail {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(262px, 300px);
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 4px 2px 14px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary) rgba(14, 124, 102, 0.12);
+}
+
+.rail::-webkit-scrollbar {
+  height: 8px;
+}
+
+.rail::-webkit-scrollbar-track {
+  background: rgba(14, 124, 102, 0.1);
+  border-radius: 999px;
+}
+
+.rail::-webkit-scrollbar-thumb {
+  background: var(--color-primary);
+  border-radius: 999px;
+}
+
+.rail-card {
+  scroll-snap-align: start;
+  animation: railIn 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.rail-card:nth-child(1) { animation-delay: 0.04s; }
+.rail-card:nth-child(2) { animation-delay: 0.1s; }
+.rail-card:nth-child(3) { animation-delay: 0.16s; }
+.rail-card:nth-child(4) { animation-delay: 0.22s; }
+.rail-card:nth-child(5) { animation-delay: 0.28s; }
+.rail-card:nth-child(6) { animation-delay: 0.34s; }
+.rail-card:nth-child(7) { animation-delay: 0.4s; }
+.rail-card:nth-child(8) { animation-delay: 0.46s; }
+.rail-card:nth-child(9) { animation-delay: 0.52s; }
+.rail-card:nth-child(10) { animation-delay: 0.58s; }
+
+@keyframes railIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rail-card .news-body,
+.rail-card .card-body {
+  flex: 1;
+}
+
+.rail-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.rail-btn {
+  position: absolute;
+  top: calc(50% - 26px);
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(14, 124, 102, 0.25);
+  background: var(--color-surface, #fff);
+  color: var(--color-primary-deep);
+  font-size: 1.55rem;
+  line-height: 1;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  box-shadow: 0 6px 18px rgba(4, 26, 21, 0.18);
+  transition:
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.25s ease;
+  z-index: 5;
+}
+
+.rail-btn:hover {
+  background: var(--color-primary, #0e7c66);
+  color: #fff;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 10px 24px rgba(4, 26, 21, 0.26);
+}
+
+.rail-btn--prev {
+  right: -12px;
+}
+
+.rail-btn--next {
+  left: -12px;
+}
+
+.rail-wrap.is-overflow .rail-btn {
+  display: inline-flex;
+}
+
+@media (max-width: 900px) {
+  .rail-wrap.is-overflow .rail-btn {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail-card {
+    animation: none;
+  }
+
+  .rail {
+    scroll-behavior: auto;
+  }
+}
+
 .programs-grid,
 .courses-grid {
   display: grid;
