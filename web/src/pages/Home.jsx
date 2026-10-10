@@ -6,7 +6,6 @@ import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
 import { trainingCategoryLabel } from '../lib/training.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
-import RegistrationSteps from '../components/RegistrationSteps.jsx';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
@@ -202,6 +201,29 @@ function MinistryLinks({ general }) {
   );
 }
 
+function RegistrationCta({ general }) {
+  const admission = general?.ministry_admission_url || 'https://oasyemen.net';
+  return (
+    <section className="section">
+      <div className="container">
+        <div className="reg-cta">
+          <span className="reg-cta-icon" aria-hidden="true">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
+          </span>
+          <div className="reg-cta-text">
+            <h2>التسجيل والقبول</h2>
+            <p>خطوات التقديم والمستندات المطلوبة وشروط القبول — كلّها في صفحة واحدة.</p>
+          </div>
+          <div className="reg-cta-actions">
+            <Link to="/apply" className="btn btn-primary">شروط وخطوات التسجيل ←</Link>
+            <a className="btn btn-soft" href={admission} target="_blank" rel="noopener noreferrer">بوابة التنسيق الموحد</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function Home() {
   const [stats, setStats] = useState(null);
   const [programs, setPrograms] = useState([]);
@@ -274,7 +296,7 @@ export default function Home() {
 
       <FeaturesBand features={home.features} />
 
-      <RegistrationSteps tone="dark" />
+      <RegistrationCta general={settings?.general} />
 
       <MinistryLinks general={settings?.general} />
 
