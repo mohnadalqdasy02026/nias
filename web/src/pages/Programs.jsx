@@ -136,10 +136,11 @@ function TierSection({ tier, programs, compact }) {
     <section className="programs-tier" aria-labelledby={`tier-${tier.key}`}>
       <div className="programs-tier-head">
         <span className="programs-tier-icon" aria-hidden="true"><Icon name={tier.icon} size={22} /></span>
-        <div>
+        <div className="programs-tier-main">
           <h2 className="programs-tier-title" id={`tier-${tier.key}`}>{tier.title}</h2>
           {!compact && <p className="programs-tier-desc">{tier.desc}</p>}
         </div>
+        <span className="programs-tier-count">{programs.length} برنامج</span>
         {collegeId && (
           <Link to={`/colleges/${collegeId}`} className="programs-tier-link">استعراض الكلية ←</Link>
         )}
