@@ -18,7 +18,7 @@ const TIERS = [
   {
     key: 'graduate',
     tab: 'دراسات عليا',
-    title: 'كلية الدراسات العليا',
+    title: 'الدراسات العليا',
     desc: 'برامج الماجستير الأكاديمي والتنفيذي، وهي أعلى درجات التخصص في المعهد.',
     types: ['master_academic', 'master_executive'],
     icon: 'grad',
@@ -26,16 +26,16 @@ const TIERS = [
   {
     key: 'bachelor',
     tab: 'بكالوريوس',
-    title: 'كلية البكالوريوس',
-    desc: 'كليات المعهد والتخصصات المتاحة لنيل درجة البكالوريوس.',
+    title: 'البكالوريوس',
+    desc: 'التخصصات المتاحة لنيل درجة البكالوريوس في كليات المعهد.',
     types: ['bachelor'],
     icon: 'buildings',
   },
   {
     key: 'diploma',
     tab: 'دبلوم متوسط',
-    title: 'مراكز وأقسام الدبلوم',
-    desc: 'برامج الدبلوم المتوسطة وتقدمها مراكز المعهد وأقسامه.',
+    title: 'الدبلوم المتوسط',
+    desc: 'برامج الدبلوم المتوسطة التي تقدمها مراكز المعهد وأقسامه.',
     types: ['diploma'],
     icon: 'book',
   },
@@ -166,7 +166,7 @@ export default function Programs() {
   const settings = useSiteSettings();
   const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
 
-  usePageMeta('البرامج الأكاديمية', 'برامج المعهد الوطني للعلوم الإدارية بالترتيب: كلية الدراسات العليا، ثم البكالوريوس، ثم مراكز وأقسام الدبلوم.');
+  usePageMeta('البرامج الأكاديمية', 'برامج المعهد الوطني للعلوم الإدارية بالترتيب: الدراسات العليا، ثم البكالوريوس، ثم الدبلوم المتوسط.');
 
   useEffect(() => {
     api.get('/public/programs').then(setPrograms).catch(() => {});
@@ -203,7 +203,7 @@ export default function Programs() {
   const activeTier = TIERS.find((t) => t.key === active);
   const shownTiers = activeTier ? [activeTier] : TIERS;
 
-  const stats = TIERS.map((t) => ({ key: t.key, label: t.title.replace('كلية ', '').replace('مراكز وأقسام ', ''), value: counts[t.key] ?? 0 }));
+  const stats = TIERS.map((t) => ({ key: t.key, label: t.title, value: counts[t.key] ?? 0 }));
 
   return (
     <>
@@ -212,7 +212,7 @@ export default function Programs() {
           <p className="programs-hero-eyebrow">{programs.length} برنامجًا أكاديميًا معتمدًا — التسجيل عبر بوابة التنسيق</p>
           <h1>برامجنا الأكاديمية</h1>
           <p className="programs-hero-sub">
-            تُقدَّم برامجنا وفق تسلسل هرمي واضح: كلية الدراسات العليا، ثم كلية البكالوريوس، ثم مراكز وأقسام الدبلوم،
+            تُقدَّم برامجنا وفق تسلسل هرمي واضح: الدراسات العليا، ثم البكالوريوس، ثم الدبلوم المتوسط،
             وفق أعلى معايير الجودة الأكاديمية المعتمدة.
           </p>
           <div className="programs-hero-strip">

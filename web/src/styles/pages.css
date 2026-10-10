@@ -6231,3 +6231,78 @@ button,
   }
 }
 
+/* ==== Programs page: refined academic design ==== */
+.programs-tier {
+  margin-bottom: 40px;
+}
+
+.programs-tier-head {
+  position: relative;
+  overflow: hidden;
+  transition: box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.programs-tier-head::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: -40px;
+  top: -50%;
+  width: 190px;
+  height: 200%;
+  background: radial-gradient(60% 50% at 80% 42%, rgba(14, 124, 102, 0.14), transparent 72%);
+  pointer-events: none;
+}
+
+.programs-tier-head:hover {
+  box-shadow: 0 16px 36px rgba(6, 43, 36, 0.1);
+}
+
+.programs-tier-icon {
+  box-shadow: 0 10px 22px rgba(6, 43, 36, 0.24);
+}
+
+.programs-tier-head .programs-tier-main,
+.programs-tier-head .programs-tier-count,
+.programs-tier-head .programs-tier-link {
+  position: relative;
+  z-index: 1;
+}
+
+.programs-tier-link {
+  border: 1px solid rgba(14, 124, 102, 0.35);
+  padding: 7px 15px;
+  border-radius: 999px;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.programs-tier-link:hover {
+  text-decoration: none;
+  background: var(--color-primary, #0e7c66);
+  border-color: var(--color-primary, #0e7c66);
+  color: #fff;
+}
+
+/* Program cards: type-coded academic spine */
+.program-card {
+  border-inline-start: 4px solid var(--color-primary, #0e7c66);
+}
+
+.program-card--master_academic,
+.program-card--master_executive {
+  border-inline-start-color: var(--color-nav, #062b24);
+}
+
+.program-card--diploma {
+  border-inline-start-color: var(--color-accent, #c9a227);
+}
+
+.program-card-body {
+  gap: 11px;
+}
+
+@media (max-width: 720px) {
+  .programs-results {
+    gap: 18px;
+  }
+}
+
