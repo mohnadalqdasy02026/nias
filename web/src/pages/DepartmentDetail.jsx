@@ -12,6 +12,13 @@ const typeLabel = {
   master_academic: 'ماجستير أكاديمي',
 };
 
+const coverByType = {
+  bachelor: '/uploads/design/site/main_1786788776_852.jpg',
+  master_academic: '/uploads/design/site/main_1783197092_280.jpg',
+  master_executive: '/uploads/design/site/main_1783197092_280.jpg',
+  diploma: '/uploads/design/site/main_1782830791_165.jpg',
+};
+
 function HeadPhrase(nameAr) {
   return /^(أستاذة|دكتورة|أ\.د\.ة|هندسة|أمينة)/.test(nameAr) ? 'رئيسة القسم' : 'رئيس القسم';
 }
@@ -87,10 +94,15 @@ export default function DepartmentDetail() {
   const collegeLink = `/colleges/${department.college_id}`;
   const programsCount = department.programs?.length ?? 0;
   const facultyCount = department.faculty?.length ?? 0;
+  const heroStyle = department.college_image
+    ? {
+        backgroundImage: `linear-gradient(105deg, rgba(4, 26, 21, 0.94) 0%, rgba(6, 43, 36, 0.86) 52%, rgba(6, 43, 36, 0.58) 100%), url(${department.college_image})`,
+      }
+    : undefined;
 
   return (
     <>
-      <section className="department-page-hero">
+      <section className="department-page-hero" style={heroStyle}>
         <div className="container">
           <nav className="college-page-crumbs" aria-label="مسار الصفحة">
             <Link to="/colleges">الكليات</Link>
@@ -106,10 +118,10 @@ export default function DepartmentDetail() {
           <p className="department-page-eyebrow">قسم أكاديمي — {department.college_name_ar ?? 'المعهد'}</p>
           <h1>{department.name_ar}</h1>
           <p className="department-page-sub">
-            {department.college_name_ar}
+            {department.college_name_ar && <Link to={collegeLink}>{department.college_name_ar}</Link>}
             {department.branch_name_ar ? (
               <>
-                {' '}—{' '}
+                {' · '}
                 <Link to={`/branches/${department.branch_slug}`}>{branchTitle(department.branch_name_ar) ?? department.branch_name_ar}</Link>
               </>
             ) : null}
@@ -133,24 +145,27 @@ export default function DepartmentDetail() {
             <div className="department-page-main">
               {department.description && (
                 <div className="card department-page-card">
-                  <h2><IconSVG d={paths.book} size={17} /> نظرة عامة على القسم</h2>
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.book} size={17} /></span> نظرة عامة على القسم</h2>
                   <p>{department.description}</p>
                 </div>
               )}
 
               {department.programs?.length > 0 && (
                 <div className="card department-page-card">
-                  <h2><IconSVG d={paths.grad} size={17} /> البرامج الأكاديمية</h2>
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.grad} size={17} /></span> البرامج الأكاديمية <span className="department-page-count">{programsCount}</span></h2>
                   <div className="department-programs-grid">
                     {department.programs.map((p) => (
                       <Link key={p.id} to={`/programs/${p.id}`} className="department-program-card">
-                        <div className="department-program-top">
+                        <div className="department-program-cover">
+                          <img src={p.image_url || coverByType[p.program_type] || coverByType.diploma} alt={p.name_ar ?? p.name_en} loading="lazy" />
                           <span className="department-program-type">{typeLabel[p.program_type] ?? p.program_type}</span>
-                          {p.admission_open && <span className="program-badge program-badge--open">التسجيل مفتوح</span>}
+                          {p.admission_open && <span className="department-program-open">التسجيل مفتوح</span>}
                         </div>
-                        <h3>{p.name_ar ?? p.name_en}</h3>
-                        {p.description && <p>{p.description.length > 130 ? `${p.description.slice(0, 130)}…` : p.description}</p>}
-                        <span className="department-program-more">عرض تفاصيل البرنامج ←</span>
+                        <div className="department-program-body">
+                          <h3>{p.name_ar ?? p.name_en}</h3>
+                          {p.description && <p>{p.description.length > 130 ? `${p.description.slice(0, 130)}…` : p.description}</p>}
+                          <span className="department-program-more">عرض تفاصيل البرنامج ←</span>
+                        </div>
                       </Link>
                     ))}
                   </div>
@@ -159,7 +174,7 @@ export default function DepartmentDetail() {
 
               {department.faculty?.length > 0 && (
                 <div className="card department-page-card">
-                  <h2><IconSVG d={paths.people} size={17} /> أعضاء هيئة التدريس</h2>
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.people} size={17} /></span> أعضاء هيئة التدريس <span className="department-page-count">{facultyCount}</span></h2>
                   <ul className="department-faculty-grid">
                     {department.faculty.map((f) => (
                       <li key={f.id} className="department-faculty-item">
