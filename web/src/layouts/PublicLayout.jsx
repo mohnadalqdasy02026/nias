@@ -294,7 +294,7 @@ export default function PublicLayout() {
           <Outlet />
         </div>
       </main>
-      <Footer />
+      {location.pathname === '/' && <Footer />}
     </>
   );
 }
