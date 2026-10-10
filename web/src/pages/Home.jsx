@@ -172,35 +172,6 @@ function FeaturesBand({ features }) {
   );
 }
 
-function MinistryLinks({ general }) {
-  const admission = general?.ministry_admission_url || 'https://oasyemen.net';
-  const results = general?.ministry_results_url || '';
-  if (!admission && !results) return null;
-  return (
-    <section className="ministry-links" aria-labelledby="ministry-links-title">
-      <div className="container">
-        <h2 id="ministry-links-title" className="ministry-links-title">روابط وزارة التربية والتعليم والبحث العلمي</h2>
-        <div className="ministry-links-grid">
-          {admission && (
-            <a className="ministry-link-card" href={admission} target="_blank" rel="noopener noreferrer">
-              <span className="ministry-link-name">بوابة التسجيل والتنسيق الإلكتروني</span>
-              <span className="ministry-link-desc">الترشيح والتقديم والقبول في كليات المعهد عبر البوابة الموحدة</span>
-              <span className="ministry-link-go">زيارة البوابة ←</span>
-            </a>
-          )}
-          {results && (
-            <a className="ministry-link-card" href={results} target="_blank" rel="noopener noreferrer">
-              <span className="ministry-link-name">الاستعلام عن نتائج القبول</span>
-              <span className="ministry-link-desc">متابعة نتائج المفاضلة والقبول للعام الدراسي الحالي</span>
-              <span className="ministry-link-go">استعلام عن النتيجة ←</span>
-            </a>
-          )}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function RegistrationCta({ general }) {
   const admission = general?.ministry_admission_url || 'https://oasyemen.net';
   return (
@@ -297,8 +268,6 @@ export default function Home() {
       <FeaturesBand features={home.features} />
 
       <RegistrationCta general={settings?.general} />
-
-      <MinistryLinks general={settings?.general} />
 
       {colleges.length > 0 && (
         <section className="section">
