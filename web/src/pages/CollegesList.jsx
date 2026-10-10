@@ -5,45 +5,73 @@ import { usePageMeta } from '../hooks/usePageMeta.js';
 import { branchTitle } from '../lib/branch.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
 
-function CollegeCard({ college, departments = [] }) {
+function stripDept(name) {
+  return (name ?? '').replace(/^قسم\s+/, '');
+}
+
+function CollegeCard({ college, departments, open, onToggle }) {
   const about = (college.about ?? '').trim();
-  const excerpt = about.length > 160 ? `${about.slice(0, 160).trim()}…` : about;
+  const excerpt = about.length > 150 ? `${about.slice(0, 150).trim()}…` : about;
   const backTo = college.branch_slug ? `/branches/${college.branch_slug}` : '/branches';
+  const programs = departments.reduce((sum, d) => sum + (Number(d.programs_count) || 0), 0);
+
   return (
-    <article className="college-list-card">
-      <Link to={`/colleges/${college.id}`} className="college-list-card-cover" aria-label={college.name_ar}>
-        {college.image ? (
-          <img src={college.image} alt={college.name_ar} loading="lazy" />
-        ) : (
-          <span className="college-list-card-letter" aria-hidden="true">{college.name_ar?.slice(0, 1) ?? 'ك'}</span>
-        )}
-      </Link>
-      <div className="college-list-card-body">
-        <h2 className="college-list-card-name">
-          <Link to={`/colleges/${college.id}`}>{college.name_ar}</Link>
-        </h2>
-        {college.name_en && <span className="college-list-card-en" dir="ltr">{college.name_en}</span>}
-        <div className="college-list-card-meta">
-          {college.dean_name_ar && (
-            <span className="college-list-card-dean">{collegeHeadWord(college.name_ar)} {collegeHeadNoun(college.name_ar)}: {college.dean_name_ar}</span>
+    <article className={`college-card${open ? ' is-open' : ''}`}>
+      <button type="button" className="college-card-head" aria-expanded={open} onClick={onToggle}>
+        <span className="college-card-cover" aria-hidden="true">
+          {college.image ? (
+            <img src={college.image} alt="" loading="lazy" />
+          ) : (
+            <span>{college.name_ar?.slice(0, 1) ?? 'ك'}</span>
           )}
-          {college.branch_name_ar && (
-            <Link to={backTo} className="college-list-card-branch">{branchTitle(college.branch_name_ar) ?? college.branch_name_ar}</Link>
+        </span>
+        <span className="college-card-main">
+          <span className="college-card-name">{college.name_ar}</span>
+          {college.name_en && <span className="college-card-en" dir="ltr">{college.name_en}</span>}
+          {(college.dean_name_ar || college.branch_name_ar) && (
+            <span className="college-card-meta">
+              {college.dean_name_ar && (
+                <span>{collegeHeadWord(college.name_ar)} {collegeHeadNoun(college.name_ar)}: {college.dean_name_ar}</span>
+              )}
+              {college.branch_name_ar && (
+                <span className="college-card-branch">{branchTitle(college.branch_name_ar) ?? college.branch_name_ar}</span>
+              )}
+            </span>
           )}
-        </div>
-        {excerpt && <p className="college-list-card-about">{excerpt}</p>}
-        {departments.length > 0 && (
-          <div className="college-list-depts">
-            <span className="college-list-depts-label">الأقسام العلمية ({departments.length})</span>
-            <div className="college-list-depts-chips">
+        </span>
+        <span className="college-card-stats">
+          <span className="college-card-stat"><b>{departments.length}</b><small>قسم</small></span>
+          <span className="college-card-stat"><b>{programs}</b><small>برنامج</small></span>
+        </span>
+        <span className="college-card-caret" aria-hidden="true">▾</span>
+      </button>
+
+      {open && (
+        <div className="college-card-body">
+          {excerpt && <p className="college-card-about">{excerpt}</p>}
+          {departments.length > 0 ? (
+            <div className="dept-cards">
               {departments.map((d) => (
-                <Link key={d.id} to={`/departments/${d.id}`}>{d.name_ar.replace(/^قسم\s+/, '')}</Link>
+                <Link key={d.id} to={`/departments/${d.id}`} className="dept-card">
+                  <span className="dept-card-name">{stripDept(d.name_ar)}</span>
+                  <span className="dept-card-count">{d.programs_count ?? 0} برنامج</span>
+                  <span className="dept-card-arrow" aria-hidden="true">←</span>
+                </Link>
               ))}
             </div>
+          ) : (
+            <p className="muted">لا توجد أقسام مسجلة لهذه الكلية بعد.</p>
+          )}
+          <div className="college-card-actions">
+            <Link to={`/colleges/${college.id}`} className="btn btn-outline">صفحة الكلية</Link>
+            {college.branch_slug && (
+              <Link to={backTo} className="btn btn-soft">
+                فرع {branchTitle(college.branch_name_ar) ?? ''}
+              </Link>
+            )}
           </div>
-        )}
-        <Link to={`/colleges/${college.id}`} className="college-list-card-cta">التفاصيل ←</Link>
-      </div>
+        </div>
+      )}
     </article>
   );
 }
@@ -51,10 +79,11 @@ function CollegeCard({ college, departments = [] }) {
 export default function CollegesList() {
   const [colleges, setColleges] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [openIds, setOpenIds] = useState(() => new Set());
 
   usePageMeta(
     'الكليات والمراكز والأقسام',
-    'استعرض كليات المعهد الوطني للعلوم الإدارية ومراكزه وأقسامه العلمية ونبذة عن كل منها.',
+    'استعرض كليات المعهد الوطني للعلوم الإدارية ومراكزه وأقسامه العلمية وعدد برامج كل قسم.',
   );
 
   useEffect(() => {
@@ -62,15 +91,9 @@ export default function CollegesList() {
     api.get('/public/departments').then(setDepartments).catch(() => {});
   }, []);
 
-  const groupedDepartments = useMemo(() => {
-    const map = new Map();
-    for (const c of colleges) map.set(c.id, { college: c, items: [] });
-    for (const d of departments) {
-      if (!map.has(d.college_id)) map.set(d.college_id, { college: null, items: [] });
-      map.get(d.college_id).items.push(d);
-    }
-    return [...map.values()].filter((g) => g.college || g.items.length > 0);
-  }, [colleges, departments]);
+  useEffect(() => {
+    setOpenIds((prev) => (prev.size || colleges.length === 0 ? prev : new Set([colleges[0].id])));
+  }, [colleges]);
 
   const deptsByCollege = useMemo(() => {
     const m = new Map();
@@ -81,7 +104,19 @@ export default function CollegesList() {
     return m;
   }, [departments]);
 
-  const deptsTotal = departments.length;
+  const programsTotal = useMemo(
+    () => departments.reduce((sum, d) => sum + (Number(d.programs_count) || 0), 0),
+    [departments],
+  );
+
+  const toggle = (id) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <>
@@ -90,8 +125,8 @@ export default function CollegesList() {
           <p className="programs-hero-eyebrow">الهيكل الأكاديمي للمعهد الوطني للعلوم الإدارية</p>
           <h1>الكليات والمراكز والأقسام</h1>
           <p className="programs-hero-sub">
-            تأسست كليات المعهد ومراكزه لتقديم برامج البكالوريوس والماجستير والدبلوم،
-            ويشرف على كل منها عميده ونخبة من أعضاء هيئة التدريس.
+            تأسست كليات المعهد ومراكزه لتقديم برامج البكالوريوس والماجستير والدبلوم.
+            اضغط على أي كلية لعرض أقسامها العلمية وعدد البرامج في كل قسم.
           </p>
           <div className="programs-hero-strip">
             <div className="ph-stat">
@@ -99,8 +134,12 @@ export default function CollegesList() {
               <span className="ph-stat-label">الكليات والمراكز</span>
             </div>
             <div className="ph-stat">
-              <span className="ph-stat-num">{deptsTotal}</span>
+              <span className="ph-stat-num">{departments.length}</span>
               <span className="ph-stat-label">الأقسام العلمية</span>
+            </div>
+            <div className="ph-stat">
+              <span className="ph-stat-num">{programsTotal}</span>
+              <span className="ph-stat-label">البرامج الأكاديمية</span>
             </div>
           </div>
         </div>
@@ -108,41 +147,18 @@ export default function CollegesList() {
 
       <section className="section">
         <div className="container">
-          <h2 className="section-title">الكليات والمراكز</h2>
           {colleges.length === 0 && <p className="muted">لا توجد كليات منشورة حاليًا.</p>}
-          <div className="colleges-list-grid">
-            {colleges.map((c) => <CollegeCard key={c.id} college={c} departments={deptsByCollege.get(c.id) ?? []} />)}
+          <div className="college-cards">
+            {colleges.map((c) => (
+              <CollegeCard
+                key={c.id}
+                college={c}
+                departments={deptsByCollege.get(c.id) ?? []}
+                open={openIds.has(c.id)}
+                onToggle={() => toggle(c.id)}
+              />
+            ))}
           </div>
-
-          {deptsTotal > 0 && (
-            <div className="colleges-depts">
-              <h2 className="section-title">الأقسام العلمية</h2>
-              <div className="colleges-depts-list">
-                {groupedDepartments.map((g) => (
-                  <section key={g.college?.id ?? `dept-${g.items[0]?.id}`} className="colleges-depts-group">
-                    <h3 className="colleges-depts-title">
-                      {g.college ? (
-                        <Link to={`/colleges/${g.college.id}`}>{g.college.name_ar}</Link>
-                      ) : (
-                        'الأقسام'
-                      )}
-                    </h3>
-                    <ul className="colleges-depts-chips">
-                      {g.items.map((d) => (
-                        <li key={d.id}>
-                          {g.college ? (
-                            <Link to={`/colleges/${g.college.id}`}>{d.name_ar}</Link>
-                          ) : (
-                            d.name_ar
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </section>
     </>

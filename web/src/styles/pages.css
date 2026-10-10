@@ -5533,3 +5533,335 @@ button,
   border-color: var(--color-primary, #0e7c66);
   background: rgba(14, 124, 102, 0.06);
 }
+
+/* ==== Academic card system (white & green) ==== */
+@keyframes acFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* College drill-down cards */
+.college-cards {
+  display: grid;
+  gap: 16px;
+}
+
+.college-card {
+  position: relative;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-edge, #e3eae7);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.25s ease;
+}
+
+.college-card::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-accent, #c9a227), var(--color-primary, #0e7c66));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.college-card:hover {
+  border-color: rgba(14, 124, 102, 0.4);
+  box-shadow: 0 12px 30px rgba(6, 74, 61, 0.08);
+}
+
+.college-card:hover::before,
+.college-card.is-open::before {
+  opacity: 1;
+}
+
+.college-card.is-open {
+  border-color: rgba(14, 124, 102, 0.5);
+  box-shadow: 0 16px 40px rgba(6, 74, 61, 0.1);
+}
+
+.college-card-head {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  background: transparent;
+  border: 0;
+  text-align: right;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.college-card-head:hover {
+  background: #f3f9f6;
+}
+
+.college-card-cover {
+  flex: 0 0 62px;
+  width: 62px;
+  height: 62px;
+  border-radius: 14px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, var(--color-primary, #0e7c66), var(--color-primary-deep, #064a3d));
+  color: #fff;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.college-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.college-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.college-card-name {
+  font-family: var(--font-heading);
+  font-size: 1.12rem;
+  font-weight: 800;
+  color: var(--color-primary-deep, #064a3d);
+  line-height: 1.35;
+}
+
+.college-card-en {
+  font-family: var(--font-latin);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #5b6b67);
+}
+
+.college-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin-top: 4px;
+  font-size: 0.83rem;
+  color: var(--color-text-muted, #5b6b67);
+}
+
+.college-card-branch {
+  color: var(--color-primary, #0e7c66);
+  font-weight: 700;
+}
+
+.college-card-stats {
+  display: flex;
+  gap: 10px;
+}
+
+.college-card-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #eef7f3;
+  color: var(--color-primary-deep, #064a3d);
+}
+
+.college-card-stat b {
+  font-family: var(--font-heading);
+  font-size: 1.18rem;
+  line-height: 1.1;
+}
+
+.college-card-stat small {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--color-text-muted, #5b6b67);
+}
+
+.college-card-caret {
+  color: var(--color-primary, #0e7c66);
+  font-size: 1rem;
+  line-height: 1;
+  transition: transform 0.25s ease;
+}
+
+.college-card.is-open .college-card-caret {
+  transform: rotate(180deg);
+}
+
+.college-card-body {
+  padding: 2px 18px 18px;
+  border-top: 1px dashed var(--color-edge, #e3eae7);
+  animation: acFadeUp 0.25s ease;
+}
+
+.college-card-about {
+  margin: 14px 0;
+  font-size: 0.95rem;
+  color: var(--color-text-muted, #5b6b67);
+}
+
+.dept-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 10px;
+  margin: 6px 0 16px;
+}
+
+.dept-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-edge, #e3eae7);
+  border-radius: 12px;
+  background: var(--color-surface, #fff);
+  color: var(--color-text);
+  transition: border-color 0.2s, background 0.2s, transform 0.15s;
+}
+
+.dept-card:hover {
+  border-color: var(--color-primary, #0e7c66);
+  background: #f3f9f6;
+  transform: translateY(-1px);
+}
+
+.dept-card-name {
+  flex: 1;
+  min-width: 0;
+  font-weight: 700;
+  color: var(--color-primary-deep, #064a3d);
+}
+
+.dept-card-count {
+  flex: 0 0 auto;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--color-primary, #0e7c66);
+  color: #fff;
+  font-size: 0.74rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.dept-card-arrow {
+  color: var(--color-primary, #0e7c66);
+}
+
+.college-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Branch cards */
+.branch-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.branch-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #fff);
+  border: 1px solid var(--color-edge, #e3eae7);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  color: var(--color-text);
+  transition: border-color 0.2s, box-shadow 0.25s, transform 0.2s;
+}
+
+.branch-card:hover {
+  border-color: rgba(14, 124, 102, 0.45);
+  box-shadow: 0 14px 34px rgba(6, 74, 61, 0.1);
+  transform: translateY(-3px);
+}
+
+.branch-card-cover {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: linear-gradient(140deg, var(--color-primary, #0e7c66), var(--color-primary-deep, #064a3d));
+}
+
+.branch-card-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.branch-card:hover .branch-card-cover img {
+  transform: scale(1.05);
+}
+
+.branch-card-flag {
+  position: absolute;
+  top: 12px;
+  inset-inline-start: 12px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--color-accent, #c9a227);
+  color: #2b2200;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.branch-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px 18px;
+}
+
+.branch-card-name {
+  font-family: var(--font-heading);
+  font-size: 1.18rem;
+  font-weight: 800;
+  color: var(--color-primary-deep, #064a3d);
+  line-height: 1.35;
+}
+
+.branch-card-en {
+  font-family: var(--font-latin);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--color-text-muted, #5b6b67);
+}
+
+.branch-card-cta {
+  margin-top: 10px;
+  color: var(--color-primary, #0e7c66);
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .college-card-head {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .college-card-stats {
+    order: 3;
+  }
+
+  .college-card-caret {
+    margin-inline-start: auto;
+  }
+
+  .dept-cards {
+    grid-template-columns: 1fr;
+  }
+}
+

@@ -157,28 +157,18 @@ export default function BranchesPage() {
           {!slug && branches.length === 0 && !error && <p className="muted admin-empty">لم تُسجل فروع بعد.</p>}
 
           {!slug && (
-            <div className="branches-page-grid">
+            <div className="branch-cards">
               {branches.map((b) => (
-                <Link key={b.id} to={`/branches/${b.slug}`} className={`card branch-page-card${b.is_headquarters ? ' is-hq' : ''}`}>
-                  <div className="branch-page-cover">
+                <Link key={b.id} to={`/branches/${b.slug}`} className={`branch-card${b.is_headquarters ? ' is-hq' : ''}`}>
+                  <span className="branch-card-cover">
                     <img src={b.image_url || logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
-                  </div>
-                  <div className="branch-page-body">
-                    <span className="branch-page-city">{b.name_en ?? b.slug}</span>
-                    <h2>{b.name_ar}</h2>
-                    <span className={`branch-page-badge${b.is_headquarters ? ' branch-page-badge--hq' : ''}`}>
-                      {b.is_headquarters ? 'المقر الرئيسي' : 'فرع'}
-                    </span>
-                    <div className="branch-page-details">
-                      {b.address && (
-                        <p><span aria-hidden="true">📍</span> {b.address}</p>
-                      )}
-                      <p>
-                        <span aria-hidden="true">📞</span>{' '}
-                        {b.phone ? <a href={`tel:${b.phone}`} dir="ltr">{b.phone}</a> : '—'}
-                      </p>
-                    </div>
-                  </div>
+                    {b.is_headquarters && <span className="branch-card-flag">المقر الرئيسي</span>}
+                  </span>
+                  <span className="branch-card-body">
+                    <span className="branch-card-name">{b.name_ar}</span>
+                    <span className="branch-card-en" dir="ltr">{b.name_en ?? b.slug}</span>
+                    <span className="branch-card-cta">عرض تفاصيل الفرع ←</span>
+                  </span>
                 </Link>
               ))}
             </div>
