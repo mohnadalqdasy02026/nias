@@ -16,6 +16,12 @@ function HeadPhrase(nameAr) {
   return /^(أستاذة|دكتورة|أ\.د\.ة|هندسة|أمينة)/.test(nameAr) ? 'رئيسة القسم' : 'رئيس القسم';
 }
 
+function initials(name) {
+  const parts = String(name ?? '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '؟';
+  return `${parts[0][0] ?? ''}${parts[1]?.[0] ?? ''}`;
+}
+
 function IconSVG({ d, size = 18 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -79,6 +85,8 @@ export default function DepartmentDetail() {
 
   const head = department.head ?? null;
   const collegeLink = `/colleges/${department.college_id}`;
+  const programsCount = department.programs?.length ?? 0;
+  const facultyCount = department.faculty?.length ?? 0;
 
   return (
     <>
@@ -107,8 +115,14 @@ export default function DepartmentDetail() {
             ) : null}
           </p>
           <div className="department-page-stats">
-            <span className="department-page-stat"><IconSVG d={paths.list} size={15} /> {department.programs_count ?? 0} برنامج</span>
-            <span className="department-page-stat"><IconSVG d={paths.people} size={15} /> {department.faculty_count ?? 0} عضو هيئة تدريس</span>
+            <div className="department-page-stat">
+              <span className="department-page-stat-num">{programsCount}</span>
+              <span className="department-page-stat-label">برنامج أكاديمي</span>
+            </div>
+            <div className="department-page-stat">
+              <span className="department-page-stat-num">{facultyCount}</span>
+              <span className="department-page-stat-label">عضو هيئة تدريس</span>
+            </div>
           </div>
         </div>
       </section>
@@ -150,12 +164,16 @@ export default function DepartmentDetail() {
                     {department.faculty.map((f) => (
                       <li key={f.id} className="department-faculty-item">
                         <span className="department-faculty-avatar">
-                          {f.photo ? <img src={f.photo} alt={f.name_ar ?? f.name_en} loading="lazy" /> : <IconSVG d={paths.people} size={16} />}
+                          {f.photo
+                            ? <img src={f.photo} alt={f.name_ar ?? f.name_en} loading="lazy" />
+                            : <span className="department-faculty-initials">{initials(f.name_ar ?? f.name_en)}</span>}
                         </span>
                         <div>
                           <strong>{f.name_ar ?? f.name_en}</strong>
-                          {f.title && <span>{f.title}</span>}
-                          {f.specialization && <small>{f.specialization}</small>}
+                          <span className="department-faculty-meta">
+                            {f.title && <em className="department-faculty-title">{f.title}</em>}
+                            {f.specialization && <small>{f.specialization}</small>}
+                          </span>
                         </div>
                       </li>
                     ))}
@@ -197,7 +215,7 @@ export default function DepartmentDetail() {
                   </li>
                   <li>
                     <span className="department-side-icon"><IconSVG d={paths.list} size={15} /></span>
-                    <div><small>البرامج</small><strong>{department.programs_count ?? 0}</strong></div>
+                    <div><small>البرامج</small><strong>{programsCount}</strong></div>
                   </li>
                 </ul>
               </div>
