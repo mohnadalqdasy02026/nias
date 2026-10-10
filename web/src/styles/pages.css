@@ -2158,15 +2158,80 @@
   text-align: justify;
 }
 
-.about-content ul {
-  margin: 12px 0 20px;
-  padding-right: 24px;
+/* Content lists — numbered lists for goals/conditions, accent bullets for the rest */
+.content-list,
+.about-content ol,
+.intro-block-body ol {
+  list-style: none;
+  counter-reset: clist;
+  margin: 14px 0 22px;
+  padding: 0;
+  display: grid;
+  gap: 10px;
 }
 
-.about-content li {
-  line-height: 1.9;
-  margin-bottom: 10px;
+.content-list > li,
+.about-content ol > li,
+.intro-block-body ol > li {
+  position: relative;
+  margin: 0;
+  padding-inline-start: 2.5rem;
+  line-height: 1.95;
   color: var(--color-text);
+}
+
+.content-list > li::before,
+.about-content ol > li::before,
+.intro-block-body ol > li::before {
+  counter-increment: clist;
+  content: counter(clist);
+  position: absolute;
+  inset-inline-start: 0;
+  top: 2px;
+  width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 9px;
+  background: var(--color-primary);
+  color: #fff;
+  font-family: var(--font-latin);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bullet-list,
+.about-content ul,
+.intro-block-body ul {
+  list-style: none;
+  margin: 14px 0 22px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.bullet-list > li,
+.about-content ul > li,
+.intro-block-body ul > li {
+  position: relative;
+  margin: 0;
+  padding-inline-start: 1.6rem;
+  line-height: 1.95;
+  color: var(--color-text);
+}
+
+.bullet-list > li::before,
+.about-content ul > li::before,
+.intro-block-body ul > li::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 3px;
+  top: 0.8em;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-accent);
 }
 
 .lead {

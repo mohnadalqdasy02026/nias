@@ -62,15 +62,13 @@ export default function Apply() {
             <h2 className="section-title">المستندات المطلوبة</h2>
             <p className="section-subtitle">جهّز هذه الوثائق قبل بدء التقديم لتقدم طلبك دون تأخير.</p>
           </div>
-          <div className="apply-docs-grid">
+          <ol className="content-list apply-doc-list">
             {requiredDocs.map((d) => (
-              <div key={d.title} className="card apply-doc-card">
-                <span className="apply-doc-mark" aria-hidden="true">?✓</span>
-                <h3>{d.title}</h3>
-                <p>{d.text}</p>
-              </div>
+              <li key={d.title}>
+                <strong>{d.title}</strong> — {d.text}
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
