@@ -6004,3 +6004,153 @@ button,
   opacity: 1;
 }
 
+/* ==== Site-wide polish: unified cards, intro blocks, header ==== */
+
+/* Unified academic cards: programs / training / news */
+.program-card,
+.course-card,
+.news-card {
+  position: relative;
+  border-radius: var(--radius-lg, 16px);
+}
+
+.program-card::before,
+.course-card::before,
+.news-card::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  z-index: 3;
+  background: linear-gradient(90deg, var(--color-accent, #c9a227), var(--color-primary, #0e7c66));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.program-card:hover::before,
+.course-card:hover::before,
+.news-card:hover::before {
+  opacity: 1;
+}
+
+.program-card-cover img,
+.card-cover img,
+.news-cover {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.program-card:hover .program-card-cover img,
+.course-card:hover .card-cover img,
+.news-card:hover .news-cover {
+  transform: scale(1.045);
+}
+
+/* About page: academic intro (vision / mission / goals / history) */
+.intro-block {
+  position: relative;
+  padding: 26px 28px;
+  border-top: 4px solid var(--color-primary, #0e7c66);
+}
+
+.intro-block--mission {
+  border-top-color: var(--color-accent, #c9a227);
+}
+
+.intro-block--goals {
+  border-top-color: var(--color-primary-deep, #064a3d);
+}
+
+.intro-block h2 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 0;
+  padding-bottom: 0;
+  margin-bottom: 14px;
+}
+
+.intro-block-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: rgba(14, 124, 102, 0.1);
+  color: var(--color-primary, #0e7c66);
+  border: 1px solid rgba(14, 124, 102, 0.18);
+}
+
+/* About page prose */
+.about-content {
+  color: var(--color-text);
+}
+
+.about-content p:first-of-type {
+  font-size: 1.12rem;
+  color: var(--color-primary-deep, #064a3d);
+}
+
+/* Header & nav polish */
+.site-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-primary, #0e7c66), var(--color-accent, #c9a227));
+}
+
+.nav-link.active {
+  box-shadow: inset 0 -3px 0 var(--color-primary, #0e7c66);
+}
+
+.nav-drop-menu {
+  border-top: 3px solid var(--color-primary, #0e7c66);
+}
+
+/* About page: section markers + goals as academic cards */
+.about-content h2 {
+  position: relative;
+  padding-inline-start: 16px;
+}
+
+.about-content h2::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 7px;
+  bottom: 13px;
+  width: 5px;
+  border-radius: 3px;
+  background: linear-gradient(180deg, var(--color-primary, #0e7c66), var(--color-accent, #c9a227));
+}
+
+.about-content ul {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.about-content ul > li {
+  padding: 14px 16px;
+  padding-inline-start: 2.1rem;
+  background: #f6faf8;
+  border: 1px solid var(--color-edge, #e3eae7);
+  border-inline-start: 3px solid var(--color-primary, #0e7c66);
+  border-radius: 12px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.about-content ul > li:hover {
+  border-inline-start-color: var(--color-accent, #c9a227);
+  box-shadow: 0 8px 22px rgba(6, 74, 61, 0.08);
+}
+
+.about-content ul > li::before {
+  inset-inline-start: 12px;
+  top: 1.15em;
+}
+
