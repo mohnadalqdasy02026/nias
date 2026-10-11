@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import CountUp from '../components/CountUp.jsx';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
@@ -257,7 +258,7 @@ export default function Home() {
           <div className="hero-stats">
             {statsKeys.map((s) => (
               <div key={s.key} className="stat-card">
-                <span className="stat-value">{stats?.[s.key] ?? '—'}</span>
+                <span className="stat-value"><CountUp value={stats?.[s.key] ?? '—'} /></span>
                 <span className="stat-label">{s.label}</span>
               </div>
             ))}

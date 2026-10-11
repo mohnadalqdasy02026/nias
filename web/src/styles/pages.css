@@ -6555,3 +6555,90 @@ button,
   }
 }
 
+/* ===== Motion system: scroll reveal, hero entrance, header ===== */
+:root {
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur-fast: 0.22s;
+  --dur: 0.4s;
+  --dur-slow: 0.65s;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity var(--dur-slow) var(--ease-out),
+    transform var(--dur-slow) var(--ease-out);
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered entrance for hero content */
+.hero-inner > *,
+.programs-hero-inner > *,
+.college-page-hero .container > *,
+.department-page-hero .container > * {
+  animation: heroRise 0.7s var(--ease-out) both;
+}
+
+.hero-inner > *:nth-child(1),
+.programs-hero-inner > *:nth-child(1),
+.college-page-hero .container > *:nth-child(1),
+.department-page-hero .container > *:nth-child(1) { animation-delay: 0.05s; }
+.hero-inner > *:nth-child(2),
+.programs-hero-inner > *:nth-child(2),
+.college-page-hero .container > *:nth-child(2),
+.department-page-hero .container > *:nth-child(2) { animation-delay: 0.13s; }
+.hero-inner > *:nth-child(3),
+.programs-hero-inner > *:nth-child(3),
+.college-page-hero .container > *:nth-child(3),
+.department-page-hero .container > *:nth-child(3) { animation-delay: 0.21s; }
+.hero-inner > *:nth-child(4),
+.programs-hero-inner > *:nth-child(4),
+.college-page-hero .container > *:nth-child(4),
+.department-page-hero .container > *:nth-child(4) { animation-delay: 0.29s; }
+.hero-inner > *:nth-child(5),
+.programs-hero-inner > *:nth-child(5),
+.college-page-hero .container > *:nth-child(5),
+.department-page-hero .container > *:nth-child(5) { animation-delay: 0.37s; }
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header elevates once scrolled */
+.site-header {
+  transition: box-shadow var(--dur) ease, background var(--dur) ease;
+}
+
+.site-header.is-scrolled {
+  box-shadow: 0 10px 28px rgba(6, 43, 36, 0.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .hero-inner > *,
+  .programs-hero-inner > *,
+  .college-page-hero .container > *,
+  .department-page-hero .container > * {
+    animation: none !important;
+  }
+}
+

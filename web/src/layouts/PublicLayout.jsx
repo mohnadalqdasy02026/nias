@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
+import { initReveal } from '../lib/reveal.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const navItems = [
@@ -58,9 +59,20 @@ function Header() {
   const general = settings?.general ?? {};
   const navRef = useRef(null);
   const toggleRef = useRef(null);
+  const headerRef = useRef(null);
 
   useEffect(() => {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
+  }, []);
+
+  // Elevate the header once the page is scrolled away from the top.
+  useEffect(() => {
+    const onScroll = () => {
+      headerRef.current?.classList.toggle('is-scrolled', window.scrollY > 8);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   const navBranchLabel = (b) => branchTitle(b) ?? 'فرع';
@@ -108,7 +120,7 @@ function Header() {
   }, [open]);
 
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       <a className="skip-link" href="#main-content">تخطى إلى المحتوى</a>
       <div className="container header-inner">
         <Link to="/" className="brand" aria-label="المعهد الوطني للعلوم الإدارية - الرئيسية" onClick={handleBrandClick}>
@@ -285,6 +297,12 @@ function Footer() {
 
 export default function PublicLayout() {
   const location = useLocation();
+
+  useLayoutEffect(() => {
+    const main = document.getElementById('main-content');
+    if (!main) return undefined;
+    return initReveal(main);
+  }, [location.pathname]);
 
   return (
     <>
