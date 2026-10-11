@@ -238,9 +238,42 @@ p.name_ar, p.name_en, p.program_type,
 
   async listGallery() {
     const { rows } = await pool.query(
-      'SELECT id, title, image, link, sort_order FROM gallery_items ORDER BY sort_order, id',
+      `SELECT id, title, image, link, sort_order FROM gallery_items
+        WHERE album_id IS NULL ORDER BY sort_order, id`,
     );
     return rows;
+  }
+
+  async listGalleryAlbums() {
+    const { rows } = await pool.query(
+      `SELECT a.id, a.title, a.description, a.event_date, a.sort_order,
+              COALESCE(
+                a.cover_image,
+                (SELECT i.image FROM gallery_items i
+                  WHERE i.album_id = a.id ORDER BY i.sort_order, i.id LIMIT 1)
+              ) AS cover_image,
+              (SELECT count(*)::int FROM gallery_items i WHERE i.album_id = a.id) AS image_count
+         FROM gallery_albums a
+        WHERE a.is_published = TRUE
+        ORDER BY a.sort_order, a.id`,
+    );
+    return rows;
+  }
+
+  async getGalleryAlbum(id) {
+    const { rows } = await pool.query(
+      `SELECT id, title, description, cover_image, event_date, sort_order
+         FROM gallery_albums WHERE is_published = TRUE AND id = $1`,
+      [id],
+    );
+    const album = rows[0];
+    if (!album) return null;
+    const { rows: images } = await pool.query(
+      `SELECT id, title, image, link FROM gallery_items
+        WHERE album_id = $1 ORDER BY sort_order, id`,
+      [id],
+    );
+    return { ...album, images };
   }
 
   async listDownloads() {

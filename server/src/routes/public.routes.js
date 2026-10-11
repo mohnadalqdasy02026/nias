@@ -12,6 +12,7 @@ import {
   getBranchParams,
   getCollegeParams,
   getDepartmentParams,
+  getGalleryAlbumParams,
   getPageParams,
   searchSchema,
   contactSchema,
@@ -41,6 +42,8 @@ router.get('/branches', publicController.listBranches);
 router.get('/branches/:slug', validate(getBranchParams), publicController.getBranch);
 
 router.get('/gallery', publicController.listGallery);
+router.get('/gallery/albums', publicController.listGalleryAlbums);
+router.get('/gallery/albums/:id', validate(getGalleryAlbumParams), publicController.getGalleryAlbum);
 router.get('/downloads', publicController.listDownloads);
 router.get('/conferences', publicController.listConferences);
 router.get('/trustees', publicController.listTrustees);

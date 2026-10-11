@@ -100,6 +100,16 @@ export class PublicService {
     return this.publicRepo.listGallery();
   }
 
+  async listGalleryAlbums() {
+    return this.publicRepo.listGalleryAlbums();
+  }
+
+  async getGalleryAlbum(id) {
+    const album = await this.publicRepo.getGalleryAlbum(id);
+    if (!album) throw AppError.notFound('Album not found');
+    return album;
+  }
+
   async listDownloads() {
     return this.publicRepo.listDownloads();
   }

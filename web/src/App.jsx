@@ -37,6 +37,7 @@ import RolesAdmin, { RoleForm } from './pages/admin/RolesAdmin.jsx';
 import ContactMessages from './pages/admin/ContactMessages.jsx';
 import BranchesAdmin, { BranchForm } from './pages/admin/BranchesAdmin.jsx';
 import CollegesAdmin, { CollegeForm } from './pages/admin/CollegesAdmin.jsx';
+import GalleryAdmin, { AlbumForm, AlbumImages } from './pages/admin/GalleryAdmin.jsx';
 import DepartmentsAdmin, { DepartmentForm } from './pages/admin/DepartmentsAdmin.jsx';
 import FacultyAdmin, { FacultyForm } from './pages/admin/FacultyAdmin.jsx';
 
@@ -378,6 +379,38 @@ export default function App() {
               element={
                 <ProtectedRoute permission="colleges.manage">
                   <DepartmentForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="gallery"
+              element={
+                <ProtectedRoute permission="gallery.read">
+                  <GalleryAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="gallery/new"
+              element={
+                <ProtectedRoute permission="gallery.manage">
+                  <AlbumForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="gallery/:id/images"
+              element={
+                <ProtectedRoute permission="gallery.manage">
+                  <AlbumImages />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="gallery/:id"
+              element={
+                <ProtectedRoute permission="gallery.manage">
+                  <AlbumForm />
                 </ProtectedRoute>
               }
             />

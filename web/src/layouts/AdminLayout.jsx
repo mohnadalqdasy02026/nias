@@ -14,6 +14,7 @@ const navSections = [
     items: [
       { to: '/admin/content/news', label: 'الأخبار', perm: 'news.read' },
       { to: '/admin/content/pages', label: 'الصفحات الثابتة', perm: 'site_pages.read' },
+      { to: '/admin/gallery', label: 'ألبومات المعرض', perm: 'gallery.read' },
     ],
   },
   {

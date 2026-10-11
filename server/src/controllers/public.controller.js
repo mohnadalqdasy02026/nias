@@ -24,6 +24,8 @@ export class PublicController {
   listBranches = asyncHandler(async (_req, res) => success(res, await this.publicService.listBranches()));
   getBranch = asyncHandler(async (req, res) => success(res, await this.publicService.getBranch(req.params.slug)));
   listGallery = asyncHandler(async (_req, res) => success(res, await this.publicService.listGallery()));
+  listGalleryAlbums = asyncHandler(async (_req, res) => success(res, await this.publicService.listGalleryAlbums()));
+  getGalleryAlbum = asyncHandler(async (req, res) => success(res, await this.publicService.getGalleryAlbum(req.params.id)));
   listDownloads = asyncHandler(async (_req, res) => success(res, await this.publicService.listDownloads()));
   listConferences = asyncHandler(async (_req, res) => success(res, await this.publicService.listConferences()));
   listTrustees = asyncHandler(async (_req, res) => success(res, await this.publicService.listTrustees()));

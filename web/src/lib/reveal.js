@@ -14,6 +14,7 @@ const SELECTORS = [
   '.branch-card',
   '.faculty-card',
   '.gallery-item',
+  '.gallery-album-card',
   '.download-item',
   '.highlight-card',
   '.intro-block',

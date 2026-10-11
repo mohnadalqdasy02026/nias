@@ -27,6 +27,10 @@ export const getDepartmentParams = {
   params: z.object({ id: z.coerce.number().int().positive() }),
 };
 
+export const getGalleryAlbumParams = {
+  params: z.object({ id: z.coerce.number().int().positive() }),
+};
+
 export const listProgramsSchema = {
   query: z.object({
     open: z.enum(['true', 'false']).optional(),
