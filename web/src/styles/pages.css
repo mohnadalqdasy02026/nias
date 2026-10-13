@@ -260,7 +260,7 @@
   opacity: 1;
 }
 
-.hero.has-slides .hero-inner {
+.hero .hero-inner {
   position: relative;
   z-index: 2;
 }
@@ -5865,11 +5865,11 @@ button,
   }
 }
 
-/* ==== Academic hero polish (white & green) ==== */
+/* ==== Academic hero polish ==== */
+/* Neutral, light scrim so the hero photo stays clearly visible (no green wash). */
 .hero::before {
   background:
-    linear-gradient(to left, rgba(4, 34, 28, 0.95) 0%, rgba(6, 74, 61, 0.86) 46%, rgba(6, 74, 61, 0.46) 100%),
-    radial-gradient(circle at 10% 88%, rgba(201, 162, 39, 0.22), transparent 46%);
+    linear-gradient(to left, rgba(2, 16, 13, 0.62) 0%, rgba(2, 16, 13, 0.32) 55%, rgba(2, 16, 13, 0.06) 100%);
 }
 
 .hero-eyebrow {
@@ -6824,6 +6824,39 @@ button,
 }
 
 @media (max-width: 640px) {
+  .gallery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .gallery-caption {
+    padding: 16px 12px 9px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .gallery-albums {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .gallery-album-cover {
+    aspect-ratio: 3 / 2;
+  }
+
+  .gallery-album-body {
+    padding: 15px 16px 17px;
+  }
+
+  .gallery-album-body strong {
+    font-size: 1.02rem;
+  }
+
+  .gallery-album-badge {
+    font-size: 0.72rem;
+    padding: 4px 9px;
+  }
+
   .album-viewer {
     padding: 12px;
   }

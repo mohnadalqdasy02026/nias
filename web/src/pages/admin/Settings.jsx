@@ -56,9 +56,36 @@ export default function Settings() {
   const [general, setGeneral] = useState(emptyGeneral);
   const [home, setHome] = useState(emptyHome);
   const [stats, setStats] = useState(emptyStats);
+  const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [standalone, albums] = await Promise.all([
+          api.get('/public/gallery').catch(() => []),
+          api.get('/public/gallery/albums').catch(() => []),
+        ]);
+        const full = await Promise.all(
+          (albums ?? []).map((a) => api.get(`/public/gallery/albums/${a.id}`).catch(() => null)),
+        );
+        const collected = [];
+        for (const s of standalone ?? []) {
+          if (s?.image) collected.push({ url: s.image, title: s.title });
+        }
+        for (const a of full) {
+          for (const im of a?.images ?? []) {
+            if (im?.image) collected.push({ url: im.image, title: im.title || a.title });
+          }
+        }
+        setGalleryImages(collected.filter((x, i) => collected.findIndex((y) => y.url === x.url) === i));
+      } catch {
+        /* picker is optional */
+      }
+    })();
+  }, []);
 
   useEffect(() => {
     api.get('/public/settings', { auth: true })
@@ -96,6 +123,13 @@ export default function Settings() {
 
   const removeHeroImage = (index) => {
     setHome((p) => ({ ...p, hero_images: (p.hero_images ?? []).filter((_, i) => i !== index) }));
+  };
+
+  const addHeroFromGallery = (url) => {
+    setHome((p) => {
+      const list = p.hero_images ?? [];
+      return list.includes(url) ? p : { ...p, hero_images: [...list, url] };
+    });
   };
 
   const notifySaved = (message) => {
@@ -252,7 +286,7 @@ export default function Settings() {
           </AdminFormSection>
 
           <AdminFormSection title="صور خلفية الهيرو (تتبدل كل 5 ثوانٍ)">
-            <p className="muted">اضف صورة واحدة أو أكثر؛ تُعرض كخلفية متحركة في أعلى الصفحة الرئيسية. أول صورة هي الافتراضية إن لم تتوفر صور.</p>
+            <p className="muted">اضف صورة واحدة أو أكثر (من الجهاز أو من معرض الصور)؛ تُعرض كخلفية متحركة في أعلى الصفحة الرئيسية. لا توجد صورة ثابتة — كل ما تضيفه هنا فقط هو ما يظهر.</p>
             <div className="settings-hero-row">
               {(home.hero_images ?? []).map((url, i) => (
                 <div key={`${url}-${i}`} className="settings-hero-thumb">
@@ -283,6 +317,28 @@ export default function Settings() {
                 heroUpload.compressAndUpload(file, 'hero');
               }}
             />
+            {galleryImages.length > 0 && (
+              <div className="settings-gallery-picker">
+                <p className="muted">اختر من صور المعرض لإضافتها إلى خلفيات الهيرو:</p>
+                <div className="settings-gallery-grid">
+                  {galleryImages.map((img) => {
+                    const picked = (home.hero_images ?? []).includes(img.url);
+                    return (
+                      <button
+                        key={img.url}
+                        type="button"
+                        className={`settings-gallery-option${picked ? ' is-picked' : ''}`}
+                        title={img.title || 'صورة المعرض'}
+                        onClick={() => addHeroFromGallery(img.url)}
+                        disabled={picked}
+                      >
+                        <img src={img.url} alt={img.title || 'صورة المعرض'} loading="lazy" />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </AdminFormSection>
 
           <AdminFormSection title="المميزات (بطاقات تحت العنوان)">

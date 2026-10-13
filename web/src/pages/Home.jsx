@@ -48,12 +48,9 @@ function shorten(text, max = 120) {
   return trimmed.length > max ? `${trimmed.slice(0, max).trimEnd()}…` : trimmed;
 }
 
-const DEFAULT_HERO_IMAGE = '/uploads/design/site/about_National.jpg';
-
 function heroImagesFrom(home) {
   const added = (home.hero_images ?? []).filter((src) => src && src !== 'null');
-  const all = [DEFAULT_HERO_IMAGE, ...added];
-  return all.filter((src, i) => all.indexOf(src) === i);
+  return added.filter((src, i) => added.indexOf(src) === i);
 }
 
 const courseCovers = [
