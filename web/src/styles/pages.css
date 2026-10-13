@@ -4445,7 +4445,12 @@ canvas {
 /* ===== Transitions & animations ===== */
 /* Page enter: every route change gets a soft fade + rise. */
 .page-enter {
-  animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  /* `backwards` (not `both`): once the animation finishes, no fill value is
+     retained, so the element keeps its base (untransformed) style. A retained
+     transform — even the neutral matrix from translateY(0) — would make
+     .page-enter a containing block and misplace position:fixed overlays
+     such as the gallery lightbox and album viewer. */
+  animation: page-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @keyframes page-enter {
@@ -4455,10 +4460,7 @@ canvas {
   }
   to {
     opacity: 1;
-    /* End on `none` (not translateY(0)) so the finished animation leaves no
-       transform, which would otherwise turn .page-enter into a containing
-       block and break position:fixed overlays (lightbox, album viewer). */
-    transform: none;
+    transform: translateY(0);
   }
 }
 
