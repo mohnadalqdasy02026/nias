@@ -4455,7 +4455,10 @@ canvas {
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    /* End on `none` (not translateY(0)) so the finished animation leaves no
+       transform, which would otherwise turn .page-enter into a containing
+       block and break position:fixed overlays (lightbox, album viewer). */
+    transform: none;
   }
 }
 
