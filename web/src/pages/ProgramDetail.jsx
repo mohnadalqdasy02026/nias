@@ -2,7 +2,9 @@
 import { useParams, Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
+import { DEFAULT_ADMISSION, admissionKeyFor } from '../lib/admissionContent.js';
 
 const typeMeta = {
   bachelor: { label: 'بكالوريوس', plural: 'برامج البكالوريوس' },
@@ -41,6 +43,9 @@ export default function ProgramDetail() {
   const [program, setProgram] = useState(null);
   const [error, setError] = useState(null);
   const [tab, setTab] = useState('overview');
+  const settings = useSiteSettings();
+  const admissionCfg = { ...DEFAULT_ADMISSION, ...(settings?.admission ?? {}) };
+  const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
 
   usePageMeta(program?.title_ar ? `برنامج ${program.title_ar}` : 'البرنامج الأكاديمي', program?.summary_ar ?? 'برنامج من برامج المعهد الوطني للعلوم الإدارية.');
 
@@ -100,31 +105,7 @@ export default function ProgramDetail() {
     ...planFacts,
   ];
 
-  const admissionConditions = (() => {
-    if (program.program_type === 'bachelor') {
-      return [
-        'الحصول على شهادة الثانوية العامة (القسم العلمي أو الأدبي) أو ما يعادلها بمعدل لا يقل عن الحد المعتمد.',
-        'التقديم عبر بوابة التنسيق الموحد لوزارة التربية والتعليم والبحث العلمي.',
-        'رفع المستندات المطلوبة كاملة: الشهادة، الصورة الشخصية، والهوية الوطنية.',
-        'اجتياز المفاضلة التنافسية وفق المعدل والأماكن المتاحة.',
-        'استيفاء أي شروط خاصة يقررها القسم أو الكلية.',
-      ];
-    }
-    if (program.program_type === 'diploma') {
-      return [
-        'الحصول على شهادة الثانوية العامة أو ما يعادلها.',
-        'التقديم عبر بوابة التنسيق الموحد للجامعات اليمنية.',
-        'رفع المستندات المطلوبة كاملة.',
-        'استيفاء المفاضلة التنافسية حسب الأماكن المتاحة.',
-      ];
-    }
-    return [
-      'الحصول على درجة البكالوريوس في تخصص ذي صلة من جهة معترف بها بتقدير لا يقل عن «جيد».',
-      'اجتياز المفاضلة والمقابلة العلمية التي يقررها القسم.',
-      'رفع المستندات المطلوبة: البكالوريوس، كشف الدرجات، الهوية، والسيرة الذاتية.',
-      'استيفاء أي متطلبات إضافية يحددها البرنامج.',
-    ];
-  })();
+  const admissionConditions = admissionCfg[admissionKeyFor(program.program_type)] ?? DEFAULT_ADMISSION.bachelor;
 
   const tabs = [
     { key: 'overview', label: 'نبذة عن البرنامج' },
@@ -287,17 +268,17 @@ export default function ProgramDetail() {
 
             <div className="card admission-cta admission-cta--bottom">
               <div>
-                <h3>الترشيح والتسجيل عبر بوابة التنسيق الموحد</h3>
-                <p>تتم تقديم طلبات القبول والتسجيل للبرامج الأكاديمية عبر بوابة التنسيق الموحد المعتمدة من وزارة التربية والتعليم والبحث العلمي.</p>
+                <h3>{admissionCfg.cta_title}</h3>
+                <p>{admissionCfg.cta_text}</p>
               </div>
               <a
                 className="btn btn-primary"
-                href="https://oasyemen.net/"
+                href={admissionUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="الانتقال إلى بوابة التنسيق الموحد للجامعات اليمنية (رابط خارجي)"
               >
-                سجّل عبر البوابة
+                {admissionCfg.cta_button}
               </a>
             </div>
           </div>

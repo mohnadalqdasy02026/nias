@@ -170,7 +170,7 @@ function FeaturesBand({ features }) {
   );
 }
 
-function RegistrationCta({ general }) {
+function RegistrationCta({ general, home }) {
   const admission = general?.ministry_admission_url || 'https://oasyemen.net';
   return (
     <section className="section">
@@ -180,8 +180,8 @@ function RegistrationCta({ general }) {
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
           </span>
           <div className="reg-cta-text">
-            <h2>التسجيل والقبول</h2>
-            <p>خطوات التقديم والمستندات المطلوبة وشروط القبول — كلّها في صفحة واحدة.</p>
+            <h2>{home?.regcta_title || 'التسجيل والقبول'}</h2>
+            <p>{home?.regcta_text || 'خطوات التقديم والمستندات المطلوبة وشروط القبول — كلّها في صفحة واحدة.'}</p>
           </div>
           <div className="reg-cta-actions">
             <Link to="/apply" className="btn btn-primary">شروط وخطوات التسجيل ←</Link>
@@ -265,12 +265,12 @@ export default function Home() {
 
       <FeaturesBand features={home.features} />
 
-      <RegistrationCta general={settings?.general} />
+      <RegistrationCta general={settings?.general} home={home} />
 
       {colleges.length > 0 && (
         <section className="section">
           <div className="container">
-            <SectionHeading title="كليات المعهد" subtitle="كلية متخصصة تمنح درجة علمية في تخصصات إدارية حديثة" to="/colleges" linkText="جميع الكليات والأقسام" />
+            <SectionHeading title={home.colleges_title || 'كليات المعهد'} subtitle={home.colleges_subtitle || 'كلية متخصصة تمنح درجة علمية في تخصصات إدارية حديثة'} to="/colleges" linkText={home.colleges_link || 'جميع الكليات والأقسام'} />
             <div className="colleges-grid">
               {colleges.map((c) => (
                 <article key={c.id} className="card college-card">
@@ -303,7 +303,7 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <SectionHeading title="البرامج الأكاديمية" subtitle="برامجنا المتاحة للتسجيل" to="/programs" linkText="عرض جميع البرامج" />
+          <SectionHeading title={home.programs_title || 'البرامج الأكاديمية'} subtitle={home.programs_subtitle || 'برامجنا المتاحة للتسجيل'} to="/programs" linkText={home.programs_link || 'عرض جميع البرامج'} />
           <div className="programs-results">
             {programs.slice(0, 3).map((p) => (
               <article key={p.id} className={`program-card program-card--${p.program_type}`}>
@@ -338,7 +338,7 @@ export default function Home() {
 
       <section className="section section-alt">
         <div className="container">
-          <SectionHeading title="البرامج التدريبية" subtitle="برامج مفتوحة للتسجيل الآن" />
+          <SectionHeading title={home.training_title || 'البرامج التدريبية'} subtitle={home.training_subtitle || 'برامج مفتوحة للتسجيل الآن'} />
           {courses.length > 0 ? (
             <Rail label="قائمة البرامج التدريبية" href="/training">
               {courses.slice(0, 10).map((c, ci) => (
@@ -370,7 +370,7 @@ export default function Home() {
 
       <section className="section">
         <div className="container">
-          <SectionHeading title="أخبار وفعاليات المعهد" subtitle="مستجدات وأنشطة المعهد" />
+          <SectionHeading title={home.news_title || 'أخبار وفعاليات المعهد'} subtitle={home.news_subtitle || 'مستجدات وأنشطة المعهد'} />
           {news.length > 0 ? (
             <Rail label="قائمة أخبار وفعاليات المعهد" href="/news">
               {news.map((item) => (

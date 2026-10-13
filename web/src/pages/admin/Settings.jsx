@@ -5,6 +5,7 @@ import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFor
 import { useImageUpload } from '../../components/admin/ImageField.jsx';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../../lib/navigation.js';
 import { DEFAULT_APPLY, bodyToText, textToBody } from '../../lib/applyContent.js';
+import { DEFAULT_ADMISSION, linesToText, textToLines } from '../../lib/admissionContent.js';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -29,6 +30,18 @@ const emptyHome = {
   ],
   cta_title: '',
   cta_text: '',
+  regcta_title: '',
+  regcta_text: '',
+  colleges_title: '',
+  colleges_subtitle: '',
+  colleges_link: '',
+  programs_title: '',
+  programs_subtitle: '',
+  programs_link: '',
+  training_title: '',
+  training_subtitle: '',
+  news_title: '',
+  news_subtitle: '',
 };
 
 const emptyStats = {
@@ -60,6 +73,7 @@ const TABS = [
   { key: 'stats', label: 'عدادات الإحصائيات' },
   { key: 'navigation', label: 'القائمة العلوية' },
   { key: 'apply', label: 'صفحة التسجيل' },
+  { key: 'admission', label: 'شروط القبول' },
   { key: 'contact', label: 'التواصل والتذييل' },
 ];
 
@@ -82,6 +96,7 @@ export default function Settings() {
   const [contact, setContact] = useState(emptyContact);
   const [navigation, setNavigation] = useState(emptyNavigation);
   const [apply, setApply] = useState(() => structuredClone(DEFAULT_APPLY));
+  const [admission, setAdmission] = useState(() => structuredClone(DEFAULT_ADMISSION));
   const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
@@ -139,6 +154,11 @@ export default function Settings() {
           data.apply && Object.keys(data.apply).length
             ? { ...structuredClone(DEFAULT_APPLY), ...data.apply }
             : structuredClone(DEFAULT_APPLY),
+        );
+        setAdmission(
+          data.admission && Object.keys(data.admission).length
+            ? { ...structuredClone(DEFAULT_ADMISSION), ...data.admission }
+            : structuredClone(DEFAULT_ADMISSION),
         );
       })
       .catch((e) => setError(e.message));
@@ -256,6 +276,30 @@ export default function Settings() {
     try {
       await api.patch('/admin/settings/navigation', navigation, { auth: true });
       notifySaved('تم حفظ القائمة العلوية.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const setAdm = (k, v) => setAdmission((p) => ({ ...p, [k]: v }));
+  const setAdmList = (k, text) => setAdmission((p) => ({ ...p, [k]: textToLines(text) }));
+
+  const saveAdmission = async (e) => {
+    e.preventDefault();
+    setBusy('admission');
+    setError(null);
+    setSaved(null);
+    try {
+      const payload = {
+        ...admission,
+        bachelor: Array.isArray(admission.bachelor) ? admission.bachelor : textToLines(admission.bachelor),
+        diploma: Array.isArray(admission.diploma) ? admission.diploma : textToLines(admission.diploma),
+        master: Array.isArray(admission.master) ? admission.master : textToLines(admission.master),
+      };
+      await api.patch('/admin/settings/admission', payload, { auth: true });
+      notifySaved('تم حفظ شروط القبول.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -492,6 +536,23 @@ export default function Settings() {
             ))}
           </AdminFormSection>
 
+          <AdminFormSection title="عناوين الأقسام">
+            <div className="form-grid">
+              {field('regcta_title', home.regcta_title, setH, 'قسم التسجيل — العنوان')}
+              {field('regcta_text', home.regcta_text, setH, 'قسم التسجيل — النص', 'textarea', undefined, 2)}
+              {field('colleges_title', home.colleges_title, setH, 'الكليات — العنوان')}
+              {field('colleges_subtitle', home.colleges_subtitle, setH, 'الكليات — الوصف')}
+              {field('colleges_link', home.colleges_link, setH, 'الكليات — نص الرابط')}
+              {field('programs_title', home.programs_title, setH, 'البرامج الأكاديمية — العنوان')}
+              {field('programs_subtitle', home.programs_subtitle, setH, 'البرامج الأكاديمية — الوصف')}
+              {field('programs_link', home.programs_link, setH, 'البرامج الأكاديمية — نص الرابط')}
+              {field('training_title', home.training_title, setH, 'البرامج التدريبية — العنوان')}
+              {field('training_subtitle', home.training_subtitle, setH, 'البرامج التدريبية — الوصف')}
+              {field('news_title', home.news_title, setH, 'الأخبار — العنوان')}
+              {field('news_subtitle', home.news_subtitle, setH, 'الأخبار — الوصف')}
+            </div>
+          </AdminFormSection>
+
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'home' || heroUpload.busyKey === 'hero'}>
               {busy === 'home' ? 'جارٍ الحفظ…' : 'حفظ إعدادات الصفحة الرئيسية'}
@@ -515,6 +576,32 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {tab === 'admission' && (
+        <form className="card admin-form" onSubmit={saveAdmission}>
+          <AdminFormSection title="شروط القبول حسب نوع البرنامج" hint="سطر واحد لكل شرط. تُطبَّق على صفحات كل البرامج من نفس النوع.">
+            <div className="form-grid">
+              {field('bachelor', linesToText(admission.bachelor), setAdmList, 'البكالوريوس', 'textarea', undefined, 6)}
+              {field('diploma', linesToText(admission.diploma), setAdmList, 'الدبلوم المتوسط', 'textarea', undefined, 5)}
+              {field('master', linesToText(admission.master), setAdmList, 'الماجستير (أكاديمي وتنفيذي)', 'textarea', undefined, 5)}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="دعوة التسجيل داخل صفحة البرنامج">
+            <div className="form-grid">
+              {field('cta_title', admission.cta_title, setAdm, 'العنوان')}
+              {field('cta_text', admission.cta_text, setAdm, 'النص', 'textarea', undefined, 3)}
+              {field('cta_button', admission.cta_button, setAdm, 'زر التسجيل')}
+            </div>
+          </AdminFormSection>
+
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'admission'}>
+              {busy === 'admission' ? 'جارٍ الحفظ…' : 'حفظ شروط القبول'}
             </button>
           </div>
         </form>
