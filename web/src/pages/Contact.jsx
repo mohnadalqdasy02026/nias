@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const initialForm = { name: '', email: '', phone: '', subject: '', message: '' };
 
@@ -8,8 +9,11 @@ export default function Contact() {
   const [form, setForm] = useState(initialForm);
   const [status, setStatus] = useState(null);
   const [errors, setErrors] = useState(null);
+  const settings = useSiteSettings();
+  const contact = settings?.contact ?? {};
+  const hasInfo = contact.address || contact.phone || contact.email || contact.hours;
 
-  usePageMeta('تواصل معنا', 'تواصل مع المعهد الوطني للعلوم الإدارية: أمانة العاصمة صنعاء — شارع العدل. هاتف 01222537.');
+  usePageMeta('تواصل معنا', contact.address ? `تواصل مع المعهد الوطني للعلوم الإدارية: ${contact.address}.` : undefined);
 
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
@@ -31,6 +35,15 @@ export default function Contact() {
       <div className="container page-content">
         <h1 className="section-title">تواصل معنا</h1>
         <p className="section-subtitle">أرسل استفسارك وسنرد عليك في أقرب وقت.</p>
+
+        {hasInfo && (
+          <ul className="contact-info-list">
+            {contact.address && <li><span className="contact-info-label">العنوان</span><span>{contact.address}</span></li>}
+            {contact.phone && <li><span className="contact-info-label">الهاتف</span><a href={`tel:${contact.phone}`} dir="ltr">{contact.phone}</a></li>}
+            {contact.email && <li><span className="contact-info-label">البريد</span><a href={`mailto:${contact.email}`} dir="ltr">{contact.email}</a></li>}
+            {contact.hours && <li><span className="contact-info-label">أوقات العمل</span><span>{contact.hours}</span></li>}
+          </ul>
+        )}
 
         {status === 'success' && (
           <div className="alert alert-success" role="status">تم إرسال رسالتك بنجاح.</div>

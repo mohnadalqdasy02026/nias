@@ -1,6 +1,6 @@
 import { SettingsRepository } from '../repositories/settings.repository.js';
 
-const ALLOWED_GROUPS = ['general', 'home', 'stats'];
+const ALLOWED_GROUPS = ['general', 'home', 'stats', 'contact'];
 
 export class SettingsService {
   constructor(repo = new SettingsRepository()) {
@@ -15,6 +15,7 @@ export class SettingsService {
       general: result.general ?? {},
       home: result.home ?? {},
       stats: result.stats ?? {},
+      contact: result.contact ?? {},
     };
   }
 

@@ -34,10 +34,23 @@ const emptyStats = {
   students_female: '',
 };
 
+const emptyContact = {
+  address: '',
+  phone: '',
+  email: '',
+  whatsapp: '',
+  hours: '',
+  social_telegram: '',
+  social_facebook: '',
+  social_youtube: '',
+  footer_credits: '',
+};
+
 const TABS = [
   { key: 'general', label: 'إعدادات عامة' },
   { key: 'home', label: 'الصفحة الرئيسية' },
   { key: 'stats', label: 'عدادات الإحصائيات' },
+  { key: 'contact', label: 'التواصل والتذييل' },
 ];
 
 function field(name, value, onChange, label, as = 'input', dir, rows) {
@@ -56,6 +69,7 @@ export default function Settings() {
   const [general, setGeneral] = useState(emptyGeneral);
   const [home, setHome] = useState(emptyHome);
   const [stats, setStats] = useState(emptyStats);
+  const [contact, setContact] = useState(emptyContact);
   const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
@@ -93,6 +107,7 @@ export default function Settings() {
         const g = data.general ?? {};
         const h = data.home ?? {};
         const s = data.stats ?? {};
+        const c = data.contact ?? {};
         setGeneral({ ...emptyGeneral, ...g });
         setHome({
           ...emptyHome,
@@ -101,6 +116,7 @@ export default function Settings() {
           features: h.features?.length ? h.features : emptyHome.features,
         });
         setStats({ ...emptyStats, ...s });
+        setContact({ ...emptyContact, ...c });
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -108,6 +124,7 @@ export default function Settings() {
   const setG = (k, v) => setGeneral((p) => ({ ...p, [k]: v }));
   const setH = (k, v) => setHome((p) => ({ ...p, [k]: v }));
   const setS = (k, v) => setStats((p) => ({ ...p, [k]: v }));
+  const setC = (k, v) => setContact((p) => ({ ...p, [k]: v }));
 
   const logoUpload = useImageUpload({
     onUploaded: (_key, url) => setG('logo', url),
@@ -176,6 +193,21 @@ export default function Settings() {
     try {
       await api.patch('/admin/settings/stats', stats, { auth: true });
       notifySaved('تم حفظ عدادات الإحصائيات.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveContact = async (e) => {
+    e.preventDefault();
+    setBusy('contact');
+    setError(null);
+    setSaved(null);
+    try {
+      await api.patch('/admin/settings/contact', contact, { auth: true });
+      notifySaved('تم حفظ معلومات التواصل والتذييل.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -374,6 +406,40 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {tab === 'contact' && (
+        <form className="card admin-form" onSubmit={saveContact}>
+          <AdminFormSection title="معلومات التواصل" hint="تظهر في صفحة «تواصل معنا» وفي تذييل الصفحة الرئيسية.">
+            <div className="form-grid">
+              {field('address', contact.address, setC, 'العنوان')}
+              {field('phone', contact.phone, setC, 'الهاتف', 'input', 'ltr')}
+              {field('email', contact.email, setC, 'البريد الإلكتروني', 'input', 'ltr')}
+              {field('whatsapp', contact.whatsapp, setC, 'رقم واتساب (بصيغة دولية دون +)', 'input', 'ltr')}
+              {field('hours', contact.hours, setC, 'أوقات العمل')}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="روابط التواصل الاجتماعي" hint="اترك أي حقل فارغًا لإخفاء أيقونته من التذييل.">
+            <div className="form-grid">
+              {field('social_telegram', contact.social_telegram, setC, 'تليجرام', 'input', 'ltr')}
+              {field('social_facebook', contact.social_facebook, setC, 'فيسبوك', 'input', 'ltr')}
+              {field('social_youtube', contact.social_youtube, setC, 'يوتيوب', 'input', 'ltr')}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="التذييل" hint="يظهر أسفل الصفحة الرئيسية فقط.">
+            <div className="form-grid">
+              {field('footer_credits', contact.footer_credits, setC, 'سطر الحقوق أسفل التذييل')}
+            </div>
+          </AdminFormSection>
+
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'contact'}>
+              {busy === 'contact' ? 'جارٍ الحفظ…' : 'حفظ معلومات التواصل'}
             </button>
           </div>
         </form>

@@ -12,6 +12,17 @@ const DEFAULTS = {
     ministry_results_url: '',
   },
   home: {},
+  contact: {
+    address: 'أمانة العاصمة صنعاء — شارع العدل',
+    phone: '01222537',
+    email: 'nias@nias-ye.academy',
+    whatsapp: '9671222537',
+    hours: '',
+    social_telegram: 'https://t.me/nias_academy',
+    social_facebook: 'https://www.facebook.com/nias.academy',
+    social_youtube: 'https://www.youtube.com/@nias_academy',
+    footer_credits: 'حلول كود — مصمم ومطور الموقع  •  جميع الحقوق محفوظة للمعهد الوطني للعلوم الإدارية',
+  },
 };
 
 let cache = null;
@@ -68,8 +79,9 @@ export function useSiteSettings() {
           ? {
               general: { ...DEFAULTS.general, ...(data.general ?? {}) },
               home: { ...DEFAULTS.home, ...(data.home ?? {}) },
+              contact: { ...DEFAULTS.contact, ...(data.contact ?? {}) },
             }
-          : { ...DEFAULTS, home: { ...DEFAULTS.home } };
+          : { ...DEFAULTS, home: { ...DEFAULTS.home }, contact: { ...DEFAULTS.contact } };
         cache = merged;
         setSettings(merged);
         applyPrimary(merged.general.primary_color);
