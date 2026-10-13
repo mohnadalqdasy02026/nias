@@ -4,6 +4,7 @@ import { bustSiteSettings } from '../../hooks/useSiteSettings.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { useImageUpload } from '../../components/admin/ImageField.jsx';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../../lib/navigation.js';
+import { DEFAULT_APPLY, bodyToText, textToBody } from '../../lib/applyContent.js';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -58,6 +59,7 @@ const TABS = [
   { key: 'home', label: 'الصفحة الرئيسية' },
   { key: 'stats', label: 'عدادات الإحصائيات' },
   { key: 'navigation', label: 'القائمة العلوية' },
+  { key: 'apply', label: 'صفحة التسجيل' },
   { key: 'contact', label: 'التواصل والتذييل' },
 ];
 
@@ -79,6 +81,7 @@ export default function Settings() {
   const [stats, setStats] = useState(emptyStats);
   const [contact, setContact] = useState(emptyContact);
   const [navigation, setNavigation] = useState(emptyNavigation);
+  const [apply, setApply] = useState(() => structuredClone(DEFAULT_APPLY));
   const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
@@ -132,6 +135,11 @@ export default function Settings() {
           more: resolveNav(DEFAULT_MORE, nav.more),
           labels: { ...DEFAULT_NAV_LABELS, ...(nav.labels ?? {}) },
         });
+        setApply(
+          data.apply && Object.keys(data.apply).length
+            ? { ...structuredClone(DEFAULT_APPLY), ...data.apply }
+            : structuredClone(DEFAULT_APPLY),
+        );
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -157,6 +165,14 @@ export default function Settings() {
     });
 
   const setNavLabel = (k, v) => setNavigation((p) => ({ ...p, labels: { ...p.labels, [k]: v } }));
+
+  const setA = (k, v) => setApply((p) => ({ ...p, [k]: v }));
+  const setApplyRow = (list, key, i, k, v) =>
+    setApply((p) => ({ ...p, [list]: p[list].map((it, idx) => (idx === i ? { ...it, [k]: v } : it)) }));
+  const addApplyRow = (list, item) => setApply((p) => ({ ...p, [list]: [...p[list], item] }));
+  const removeApplyRow = (list, i) => setApply((p) => ({ ...p, [list]: p[list].filter((_, idx) => idx !== i) }));
+  const setStep = (i, k, v) => setApply((p) => ({ ...p, steps: p.steps.map((s, idx) => (idx === i ? { ...s, [k]: v } : s)) }));
+  const setStepBody = (i, text) => setApply((p) => ({ ...p, steps: p.steps.map((s, idx) => (idx === i ? { ...s, body: textToBody(text) } : s)) }));
 
   const logoUpload = useImageUpload({
     onUploaded: (_key, url) => setG('logo', url),
@@ -240,6 +256,25 @@ export default function Settings() {
     try {
       await api.patch('/admin/settings/navigation', navigation, { auth: true });
       notifySaved('تم حفظ القائمة العلوية.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveApply = async (e) => {
+    e.preventDefault();
+    setBusy('apply');
+    setError(null);
+    setSaved(null);
+    try {
+      const payload = {
+        ...apply,
+        steps: apply.steps.map((s) => ({ ...s, body: Array.isArray(s.body) ? s.body : textToBody(s.body) })),
+      };
+      await api.patch('/admin/settings/apply', payload, { auth: true });
+      notifySaved('تم حفظ محتوى صفحة التسجيل.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -480,6 +515,88 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {tab === 'apply' && (
+        <form className="card admin-form" onSubmit={saveApply}>
+          <AdminFormSection title="واجهة الصفحة">
+            <div className="form-grid">
+              {field('hero_eyebrow', apply.hero_eyebrow, setA, 'النص الصغير')}
+              {field('hero_title', apply.hero_title, setA, 'العنوان')}
+              {field('hero_text', apply.hero_text, setA, 'النص التعريفي', 'textarea', undefined, 4)}
+            </div>
+            <div className="apply-stats-editor">
+              {apply.stats.map((s, i) => (
+                <div className="apply-stat-row" key={i}>
+                  {field(`s${i}v`, s.value, (k, v) => setApplyRow('stats', 'stats', i, 'value', v), `بطاقة ${i + 1} — الرقم`)}
+                  {field(`s${i}l`, s.label, (k, v) => setApplyRow('stats', 'stats', i, 'label', v), `بطاقة ${i + 1} — الوصف`)}
+                </div>
+              ))}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="خطوات التسجيل">
+            <div className="form-grid">
+              {field('steps_heading', apply.steps_heading, setA, 'عنوان القسم')}
+              {field('steps_subtitle', apply.steps_subtitle, setA, 'الوصف تحت العنوان')}
+            </div>
+            {apply.steps.map((s, i) => (
+              <div className="apply-step-editor" key={s.key}>
+                <p className="apply-step-editor-title">الخطوة {i + 1}</p>
+                <div className="form-grid">
+                  {field(`st${i}t`, s.title, (k, v) => setStep(i, 'title', v), 'العنوان')}
+                  {field(`st${i}s`, s.short, (k, v) => setStep(i, 'short', v), 'الوصف المختصر')}
+                  {field(`st${i}b`, bodyToText(s.body), (k, v) => setStepBody(i, v), 'التفاصيل (سطر لكل نقطة)', 'textarea', undefined, 5)}
+                </div>
+              </div>
+            ))}
+          </AdminFormSection>
+
+          <AdminFormSection title="المستندات المطلوبة">
+            <div className="form-grid">
+              {field('docs_title', apply.docs_title, setA, 'العنوان')}
+              {field('docs_subtitle', apply.docs_subtitle, setA, 'الوصف تحت العنوان')}
+            </div>
+            {apply.docs.map((d, i) => (
+              <div className="apply-list-row" key={i}>
+                {field(`d${i}t`, d.title, (k, v) => setApplyRow('docs', 'docs', i, 'title', v), 'العنوان')}
+                {field(`d${i}x`, d.text, (k, v) => setApplyRow('docs', 'docs', i, 'text', v), 'النص')}
+                <button type="button" className="btn btn-sm btn-soft" onClick={() => removeApplyRow('docs', i)}>حذف</button>
+              </div>
+            ))}
+            <button type="button" className="btn btn-sm btn-outline" onClick={() => addApplyRow('docs', { title: '', text: '' })}>إضافة مستند</button>
+          </AdminFormSection>
+
+          <AdminFormSection title="معلومات هامة">
+            <div className="form-grid">
+              {field('notes_title', apply.notes_title, setA, 'العنوان')}
+              {field('notes_subtitle', apply.notes_subtitle, setA, 'الوصف تحت العنوان')}
+            </div>
+            {apply.notes.map((n, i) => (
+              <div className="apply-list-row" key={i}>
+                {field(`n${i}t`, n.title, (k, v) => setApplyRow('notes', 'notes', i, 'title', v), 'العنوان')}
+                {field(`n${i}x`, n.text, (k, v) => setApplyRow('notes', 'notes', i, 'text', v), 'النص')}
+                <button type="button" className="btn btn-sm btn-soft" onClick={() => removeApplyRow('notes', i)}>حذف</button>
+              </div>
+            ))}
+            <button type="button" className="btn btn-sm btn-outline" onClick={() => addApplyRow('notes', { title: '', text: '' })}>إضافة ملاحظة</button>
+          </AdminFormSection>
+
+          <AdminFormSection title="دعوة البدء">
+            <div className="form-grid">
+              {field('cta_title', apply.cta_title, setA, 'العنوان')}
+              {field('cta_text', apply.cta_text, setA, 'النص')}
+              {field('cta_button', apply.cta_button, setA, 'زر البوابة')}
+              {field('cta_button2', apply.cta_button2, setA, 'زر استعراض البرامج')}
+            </div>
+          </AdminFormSection>
+
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'apply'}>
+              {busy === 'apply' ? 'جارٍ الحفظ…' : 'حفظ محتوى التسجيل'}
             </button>
           </div>
         </form>

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
+import { DEFAULT_APPLY } from '../lib/applyContent.js';
 
 export const REGISTRATION_STEPS = [
   {
@@ -83,23 +84,27 @@ function StepIcon({ name, size = 22 }) {
   );
 }
 
-export default function RegistrationSteps({ steps = REGISTRATION_STEPS, heading, subtitle, tone = 'light' }) {
+export default function RegistrationSteps({ steps, heading, subtitle, tone = 'light' }) {
   const [active, setActive] = useState(0);
   const settings = useSiteSettings();
+  const a = settings?.apply ?? {};
+  const list = steps ?? (a.steps?.length ? a.steps : DEFAULT_APPLY.steps);
+  const resolvedHeading = heading ?? a.steps_heading ?? 'خطوات التسجيل والقبول';
+  const resolvedSubtitle = subtitle ?? a.steps_subtitle;
   const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
-  const step = steps[active];
+  const step = list[active];
 
   return (
     <section className={`regsteps regsteps--${tone}`} aria-labelledby="regsteps-title">
       <div className="container">
         <div className="section-head">
-          <h2 className="section-title" id="regsteps-title">{heading ?? 'خطوات التسجيل والقبول'}</h2>
-          {subtitle && <p className="section-subtitle">{subtitle}</p>}
+          <h2 className="section-title" id="regsteps-title">{resolvedHeading}</h2>
+          {resolvedSubtitle && <p className="section-subtitle">{resolvedSubtitle}</p>}
         </div>
 
         <div className="regsteps-inner">
           <ol className="regsteps-list">
-            {steps.map((s, i) => (
+            {list.map((s, i) => (
               <li key={s.key}>
                 <button
                   type="button"
@@ -121,12 +126,12 @@ export default function RegistrationSteps({ steps = REGISTRATION_STEPS, heading,
             <div className="regsteps-panel-head">
               <span className="regsteps-panel-icon"><StepIcon name={step.icon} /></span>
               <div>
-                <span className="regsteps-panel-step">الخطوة {step.num} من {steps.length}</span>
+                <span className="regsteps-panel-step">الخطوة {step.num} من {list.length}</span>
                 <h3>{step.title}</h3>
               </div>
             </div>
             <ul className="regsteps-panel-body">
-              {step.body.map((line) => <li key={line}>{line}</li>)}
+              {(Array.isArray(step.body) ? step.body : String(step.body ?? '').split('\n')).filter(Boolean).map((line, i) => <li key={i}>{line}</li>)}
             </ul>
             <div className="regsteps-panel-actions">
               <button
@@ -137,11 +142,11 @@ export default function RegistrationSteps({ steps = REGISTRATION_STEPS, heading,
               >
                 → الخطوة السابقة
               </button>
-              {active < steps.length - 1 ? (
+              {active < list.length - 1 ? (
                 <button
                   type="button"
                   className="btn btn-outline"
-                  onClick={() => setActive((v) => Math.min(steps.length - 1, v + 1))}
+                  onClick={() => setActive((v) => Math.min(list.length - 1, v + 1))}
                 >
                   الخطوة التالية ←
                 </button>

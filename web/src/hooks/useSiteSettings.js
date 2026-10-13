@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS } from '../lib/navigation.js';
+import { DEFAULT_APPLY } from '../lib/applyContent.js';
 
 const DEFAULTS = {
   general: {
@@ -18,6 +19,7 @@ const DEFAULTS = {
     more: DEFAULT_MORE.map((d) => ({ ...d, visible: true })),
     labels: { ...DEFAULT_NAV_LABELS },
   },
+  apply: DEFAULT_APPLY,
   contact: {
     address: 'أمانة العاصمة صنعاء — شارع العدل',
     phone: '01222537',
@@ -91,6 +93,7 @@ export function useSiteSettings() {
                 ...(data.navigation ?? {}),
                 labels: { ...DEFAULTS.navigation.labels, ...(data.navigation?.labels ?? {}) },
               },
+              apply: { ...DEFAULTS.apply, ...(data.apply ?? {}) },
             }
           : { ...DEFAULTS, home: { ...DEFAULTS.home }, contact: { ...DEFAULTS.contact } };
         cache = merged;
