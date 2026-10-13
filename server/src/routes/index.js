@@ -12,6 +12,7 @@ import settingsRoutes from './settings.routes.js';
 import collegesRoutes from './colleges.routes.js';
 import facultyRoutes from './faculty.routes.js';
 import galleryRoutes from './gallery.routes.js';
+import downloadsRoutes from './downloads.routes.js';
 import { adminUsersRouter, adminRolesRouter } from './admin-users.routes.js';
 
 const router = Router();
@@ -31,6 +32,7 @@ router.use('/admin/settings', settingsRoutes);
 router.use('/admin/colleges', collegesRoutes);
 router.use('/admin/faculty', facultyRoutes);
 router.use('/admin/gallery', galleryRoutes);
+router.use('/admin/downloads', downloadsRoutes);
 router.get('/', (_req, res) => {
   res.json({ success: true, data: { service: 'nias-api', version: 'v1', docs: '/api/v1/public/stats' } });
 });
