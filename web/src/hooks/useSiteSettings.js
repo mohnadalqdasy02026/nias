@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { api } from '../api/client.js';
+import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS } from '../lib/navigation.js';
 
 const DEFAULTS = {
   general: {
@@ -12,6 +13,11 @@ const DEFAULTS = {
     ministry_results_url: '',
   },
   home: {},
+  navigation: {
+    main: DEFAULT_MAIN.map((d) => ({ ...d, visible: true })),
+    more: DEFAULT_MORE.map((d) => ({ ...d, visible: true })),
+    labels: { ...DEFAULT_NAV_LABELS },
+  },
   contact: {
     address: 'أمانة العاصمة صنعاء — شارع العدل',
     phone: '01222537',
@@ -80,6 +86,11 @@ export function useSiteSettings() {
               general: { ...DEFAULTS.general, ...(data.general ?? {}) },
               home: { ...DEFAULTS.home, ...(data.home ?? {}) },
               contact: { ...DEFAULTS.contact, ...(data.contact ?? {}) },
+              navigation: {
+                ...DEFAULTS.navigation,
+                ...(data.navigation ?? {}),
+                labels: { ...DEFAULTS.navigation.labels, ...(data.navigation?.labels ?? {}) },
+              },
             }
           : { ...DEFAULTS, home: { ...DEFAULTS.home }, contact: { ...DEFAULTS.contact } };
         cache = merged;

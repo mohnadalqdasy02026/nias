@@ -5,23 +5,7 @@ import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
 import { initReveal } from '../lib/reveal.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-
-const navItems = [
-  { to: '/', label: 'الرئيسية' },
-  { to: '/about', label: 'عن المعهد' },
-  { to: '/programs', label: 'البرامج الأكاديمية' },
-  { to: '/colleges', label: 'الكليات والأقسام' },
-  { to: '/apply', label: 'التسجيل والقبول' },
-  { to: '/training', label: 'التدريب' },
-];
-
-const moreItems = [
-  { to: '/news', label: 'الأخبار والفعاليات' },
-  { to: '/gallery', label: 'المعرض' },
-  { to: '/downloads', label: 'التحميلات' },
-  { to: '/faculty', label: 'هيئة التدريس' },
-  { to: '/contact', label: 'تواصل معنا' },
-];
+import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../lib/navigation.js';
 
 function Logo({ small, src }) {
   return (
@@ -57,6 +41,10 @@ function Header() {
   const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
   const general = settings?.general ?? {};
+  const navCfg = settings?.navigation ?? {};
+  const navItems = resolveNav(DEFAULT_MAIN, navCfg.main).filter((i) => i.visible);
+  const moreItems = resolveNav(DEFAULT_MORE, navCfg.more).filter((i) => i.visible);
+  const navLabels = { ...DEFAULT_NAV_LABELS, ...(navCfg.labels ?? {}) };
   const navRef = useRef(null);
   const toggleRef = useRef(null);
   const headerRef = useRef(null);
@@ -151,7 +139,7 @@ function Header() {
               {item.label}
             </NavLink>
           ))}
-          <NavDropdown label="فروع المعهد" open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); }}>
+          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); }}>
             {branches.length === 0 && <span className="nav-drop-empty">لا توجد فروع مسجلة.</span>}
             {branches.map((b) => (
               <Link
@@ -165,7 +153,7 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
-          <NavDropdown label="المزيد" open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); }}>
+          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); }}>
             {moreItems.map((item) => (
               <Link
                 key={item.to}

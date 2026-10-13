@@ -3,6 +3,7 @@ import { api } from '../../api/client.js';
 import { bustSiteSettings } from '../../hooks/useSiteSettings.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { useImageUpload } from '../../components/admin/ImageField.jsx';
+import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../../lib/navigation.js';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -34,6 +35,12 @@ const emptyStats = {
   students_female: '',
 };
 
+const emptyNavigation = {
+  main: DEFAULT_MAIN.map((d) => ({ ...d, visible: true })),
+  more: DEFAULT_MORE.map((d) => ({ ...d, visible: true })),
+  labels: { ...DEFAULT_NAV_LABELS },
+};
+
 const emptyContact = {
   address: '',
   phone: '',
@@ -50,6 +57,7 @@ const TABS = [
   { key: 'general', label: 'إعدادات عامة' },
   { key: 'home', label: 'الصفحة الرئيسية' },
   { key: 'stats', label: 'عدادات الإحصائيات' },
+  { key: 'navigation', label: 'القائمة العلوية' },
   { key: 'contact', label: 'التواصل والتذييل' },
 ];
 
@@ -70,6 +78,7 @@ export default function Settings() {
   const [home, setHome] = useState(emptyHome);
   const [stats, setStats] = useState(emptyStats);
   const [contact, setContact] = useState(emptyContact);
+  const [navigation, setNavigation] = useState(emptyNavigation);
   const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
@@ -108,6 +117,7 @@ export default function Settings() {
         const h = data.home ?? {};
         const s = data.stats ?? {};
         const c = data.contact ?? {};
+        const nav = data.navigation ?? {};
         setGeneral({ ...emptyGeneral, ...g });
         setHome({
           ...emptyHome,
@@ -117,6 +127,11 @@ export default function Settings() {
         });
         setStats({ ...emptyStats, ...s });
         setContact({ ...emptyContact, ...c });
+        setNavigation({
+          main: resolveNav(DEFAULT_MAIN, nav.main),
+          more: resolveNav(DEFAULT_MORE, nav.more),
+          labels: { ...DEFAULT_NAV_LABELS, ...(nav.labels ?? {}) },
+        });
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -125,6 +140,23 @@ export default function Settings() {
   const setH = (k, v) => setHome((p) => ({ ...p, [k]: v }));
   const setS = (k, v) => setStats((p) => ({ ...p, [k]: v }));
   const setC = (k, v) => setContact((p) => ({ ...p, [k]: v }));
+
+  const setNavItem = (group, index, patch) =>
+    setNavigation((p) => ({
+      ...p,
+      [group]: p[group].map((it, i) => (i === index ? { ...it, ...patch } : it)),
+    }));
+
+  const moveNavItem = (group, index, dir) =>
+    setNavigation((p) => {
+      const list = [...p[group]];
+      const target = index + dir;
+      if (target < 0 || target >= list.length) return p;
+      [list[index], list[target]] = [list[target], list[index]];
+      return { ...p, [group]: list };
+    });
+
+  const setNavLabel = (k, v) => setNavigation((p) => ({ ...p, labels: { ...p.labels, [k]: v } }));
 
   const logoUpload = useImageUpload({
     onUploaded: (_key, url) => setG('logo', url),
@@ -200,6 +232,21 @@ export default function Settings() {
     }
   };
 
+  const saveNavigation = async (e) => {
+    e.preventDefault();
+    setBusy('navigation');
+    setError(null);
+    setSaved(null);
+    try {
+      await api.patch('/admin/settings/navigation', navigation, { auth: true });
+      notifySaved('تم حفظ القائمة العلوية.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
   const saveContact = async (e) => {
     e.preventDefault();
     setBusy('contact');
@@ -221,6 +268,33 @@ export default function Settings() {
       features: p.features.map((f, idx) => (idx === i ? { ...f, [k]: v } : f)),
     }));
   };
+
+  const renderNavGroup = (group) => (
+    <div className="nav-editor">
+      {navigation[group].map((item, i) => (
+        <div className="nav-editor-row" key={item.to}>
+          <input
+            className="nav-editor-label"
+            value={item.label}
+            onChange={(e) => setNavItem(group, i, { label: e.target.value })}
+          />
+          <code className="nav-editor-route" dir="ltr">{item.to}</code>
+          <label className="nav-editor-visible">
+            <input
+              type="checkbox"
+              checked={item.visible !== false}
+              onChange={(e) => setNavItem(group, i, { visible: e.target.checked })}
+            />
+            ظاهر
+          </label>
+          <div className="nav-editor-move">
+            <button type="button" className="btn btn-sm btn-soft" disabled={i === 0} onClick={() => moveNavItem(group, i, -1)} aria-label="أعلى">▲</button>
+            <button type="button" className="btn btn-sm btn-soft" disabled={i === navigation[group].length - 1} onClick={() => moveNavItem(group, i, 1)} aria-label="أسفل">▼</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <AdminFormPage
@@ -406,6 +480,31 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {tab === 'navigation' && (
+        <form className="card admin-form" onSubmit={saveNavigation}>
+          <AdminFormSection title="تسميات القوائم المنسدلة">
+            <div className="form-grid">
+              {field('more', navigation.labels.more, setNavLabel, 'تسمية قائمة «المزيد»')}
+              {field('branches', navigation.labels.branches, setNavLabel, 'تسمية قائمة «فروع المعهد»')}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="الروابط الرئيسية" hint="عدّل التسمية، أظهر/أخفِ، ورتّب. المسار ثابت لا يتغير.">
+            {renderNavGroup('main')}
+          </AdminFormSection>
+
+          <AdminFormSection title="قائمة «المزيد»" hint="تظهر داخل القائمة المنسدلة على اليمين.">
+            {renderNavGroup('more')}
+          </AdminFormSection>
+
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'navigation'}>
+              {busy === 'navigation' ? 'جارٍ الحفظ…' : 'حفظ القائمة العلوية'}
             </button>
           </div>
         </form>

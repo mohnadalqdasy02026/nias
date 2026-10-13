@@ -1464,6 +1464,56 @@
 .settings-hero-upload input[type='file'] {
   font-size: 0.85rem;
 }
+.nav-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nav-editor-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  background: var(--color-surface);
+}
+.nav-editor-label {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+.nav-editor-route {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  background: var(--color-bg-alt);
+  padding: 4px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+.nav-editor-visible {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+.nav-editor-move {
+  display: inline-flex;
+  gap: 6px;
+}
+@media (max-width: 700px) {
+  .nav-editor-row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: 'label move' 'route visible';
+  }
+  .nav-editor-label { grid-area: label; }
+  .nav-editor-move { grid-area: move; }
+  .nav-editor-route { grid-area: route; }
+  .nav-editor-visible { grid-area: visible; }
+}
 .settings-gallery-picker {
   margin-top: 16px;
   padding-top: 14px;
