@@ -2745,30 +2745,53 @@ code {
   position: fixed;
   inset: 0;
   z-index: 1000;
-  background: rgba(4, 26, 21, 0.92);
+  background: rgba(3, 16, 12, 0.94);
+  backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 30px;
+  padding: 24px;
   cursor: zoom-out;
+  animation: lightbox-fade 0.25s ease both;
+}
+
+@keyframes lightbox-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .lightbox-inner {
   position: relative;
-  max-width: 1000px;
-  width: 100%;
-  background: #fff;
+  width: min(1040px, 94vw);
+  background: #071a15;
   border-radius: var(--radius-lg);
   overflow: hidden;
   cursor: default;
+  box-shadow: 0 30px 74px rgba(0, 0, 0, 0.5);
 }
 
-.lightbox-inner img {
-  width: 100%;
-  max-height: 74vh;
+.lightbox-stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: min(72vh, 640px);
+  background: radial-gradient(circle at 50% 38%, #0c241e, #04140f 74%);
+}
+
+.lightbox-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
   display: block;
-  background: var(--color-hero);
+  animation: lightbox-img 0.3s var(--ease-out, ease-out) both;
+}
+
+@keyframes lightbox-img {
+  from { opacity: 0; transform: scale(0.99); }
+  to { opacity: 1; transform: scale(1); }
 }
 
 .lightbox-meta {
@@ -2776,27 +2799,115 @@ code {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 16px 20px;
+  padding: 14px 20px;
+  background: #071a15;
+  color: #fff;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.lightbox-meta strong {
+  flex: 1;
+  font-size: 1rem;
+}
+
+.lightbox-counter {
+  font-weight: 700;
+  color: var(--color-accent);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .lightbox-close {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #fff;
   font-size: 1.6rem;
   line-height: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.2s ease, transform 0.25s ease;
 }
 
 .lightbox-close:hover {
   background: var(--color-danger);
+  transform: rotate(90deg);
+}
+
+.lightbox-previous,
+.lightbox-next {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--color-primary-deep);
+  font-size: 2rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.32);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.lightbox-previous {
+  right: 14px;
+  transform: translateY(-50%);
+}
+
+.lightbox-next {
+  left: 14px;
+  transform: translateY(-50%);
+}
+
+.lightbox-previous:hover {
+  background: #fff;
+  transform: translateY(-50%) translateX(2px);
+}
+
+.lightbox-next:hover {
+  background: #fff;
+  transform: translateY(-50%) translateX(-2px);
+}
+
+@media (max-width: 640px) {
+  .lightbox {
+    padding: 10px;
+  }
+
+  .lightbox-inner {
+    width: 100%;
+    border-radius: var(--radius-md);
+  }
+
+  .lightbox-stage {
+    height: min(58vh, 440px);
+  }
+
+  .lightbox-previous,
+  .lightbox-next {
+    width: 42px;
+    height: 42px;
+    font-size: 1.6rem;
+  }
+
+  .lightbox-previous {
+    right: 8px;
+  }
+
+  .lightbox-next {
+    left: 8px;
+  }
 }
 
 /* Downloads */

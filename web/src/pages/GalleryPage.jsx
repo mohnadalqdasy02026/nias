@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 
@@ -48,6 +48,17 @@ export default function GalleryPage() {
       const next = (lb.index + dir + lb.images.length) % lb.images.length;
       return { ...lb, index: next };
     });
+  };
+
+  const touchX = useRef(null);
+  const onTouchStart = (e) => {
+    touchX.current = e.changedTouches?.[0]?.clientX ?? null;
+  };
+  const onTouchEnd = (e) => {
+    if (touchX.current == null) return;
+    const dx = (e.changedTouches?.[0]?.clientX ?? touchX.current) - touchX.current;
+    if (Math.abs(dx) > 45) step(dx < 0 ? 1 : -1);
+    touchX.current = null;
   };
 
   useEffect(() => {
@@ -189,8 +200,15 @@ export default function GalleryPage() {
 
       {lightbox && active && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label={active.title || lightbox.context} onClick={closeLightbox}>
-          <div className="lightbox-inner" onClick={(e) => e.stopPropagation()}>
-            <img src={active.image} alt={active.title || ''} />
+          <div
+            className="lightbox-inner"
+            onClick={(e) => e.stopPropagation()}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+          >
+            <div className="lightbox-stage">
+              <img src={active.image} alt={active.title || ''} />
+            </div>
             <div className="lightbox-meta">
               <strong>{active.title || lightbox.context}</strong>
               <span className="lightbox-counter" aria-hidden="true">{lightbox.index + 1} / {lightbox.images.length}</span>
@@ -200,8 +218,8 @@ export default function GalleryPage() {
             </div>
             {lightbox.images.length > 1 && (
               <>
-                <button type="button" className="lightbox-previous" onClick={() => step(-1)} aria-label="السابق">‹</button>
-                <button type="button" className="lightbox-next" onClick={() => step(1)} aria-label="التالي">›</button>
+                <button type="button" className="lightbox-previous" onClick={() => step(-1)} aria-label="الصورة السابقة">›</button>
+                <button type="button" className="lightbox-next" onClick={() => step(1)} aria-label="الصورة التالية">‹</button>
               </>
             )}
             <button type="button" className="lightbox-close" onClick={closeLightbox} aria-label="إغلاق">×</button>
