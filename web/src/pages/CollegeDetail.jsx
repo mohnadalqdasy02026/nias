@@ -20,7 +20,7 @@ export default function CollegeDetail() {
   const [depts, setDepts] = useState([]);
   const [error, setError] = useState(null);
   const settings = useSiteSettings();
-  const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
+  const logo = settings?.general?.logo ?? settings?.images?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
     college?.name_ar ? (/^(كلية|مركز|معهد|أكاديمية|كليات)(\s|$)/.test(college.name_ar) ? college.name_ar : `كلية ${college.name_ar}`) : 'الكلية',

@@ -5,19 +5,13 @@ import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
 import { DEFAULT_ADMISSION, admissionKeyFor } from '../lib/admissionContent.js';
+import { programCoverFor } from '../lib/imagesContent.js';
 
 const typeMeta = {
   bachelor: { label: 'بكالوريوس', plural: 'برامج البكالوريوس' },
   master_academic: { label: 'ماجستير أكاديمي', plural: 'الماجستير الأكاديمي' },
   master_executive: { label: 'ماجستير تنفيذي', plural: 'الماجستير التنفيذي' },
   diploma: { label: 'دبلوم متوسط', plural: 'الدبلوم المتوسط' },
-};
-
-const coverByType = {
-  bachelor: '/uploads/design/site/main_1786788776_852.jpg',
-  master_academic: '/uploads/design/site/main_1783197092_280.jpg',
-  master_executive: '/uploads/design/site/main_1783197092_280.jpg',
-  diploma: '/uploads/design/site/main_1782830791_165.jpg',
 };
 
 const iconPaths = {
@@ -83,7 +77,7 @@ export default function ProgramDetail() {
   const type = typeMeta[program.program_type] ?? { label: program.program_type };
   const college = program.college_name_ar ?? 'المعهد الوطني للعلوم الإدارية';
   const department = program.department_name_ar ?? null;
-  const cover = program.image_url || coverByType[program.program_type];
+  const cover = program.image_url || programCoverFor(settings?.images, program.program_type);
 
   const studyPlan = program.studyPlan ?? null;
   const planCourses = studyPlan?.courses ?? [];

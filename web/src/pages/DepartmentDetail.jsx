@@ -4,19 +4,13 @@ import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
+import { programCoverFor } from '../lib/imagesContent.js';
 
 const typeLabel = {
   bachelor: 'بكالوريوس',
   diploma: 'دبلوم متوسط',
   master_executive: 'ماجستير تنفيذي',
   master_academic: 'ماجستير أكاديمي',
-};
-
-const coverByType = {
-  bachelor: '/uploads/design/site/main_1786788776_852.jpg',
-  master_academic: '/uploads/design/site/main_1783197092_280.jpg',
-  master_executive: '/uploads/design/site/main_1783197092_280.jpg',
-  diploma: '/uploads/design/site/main_1782830791_165.jpg',
 };
 
 function HeadPhrase(nameAr) {
@@ -51,7 +45,7 @@ export default function DepartmentDetail() {
   const [department, setDepartment] = useState(null);
   const [error, setError] = useState(null);
   const settings = useSiteSettings();
-  const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
+  const logo = settings?.general?.logo ?? settings?.images?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
     department?.name_ar
@@ -157,7 +151,7 @@ export default function DepartmentDetail() {
                     {department.programs.map((p) => (
                       <Link key={p.id} to={`/programs/${p.id}`} className="department-program-card">
                         <div className="department-program-cover">
-                          <img src={p.image_url || coverByType[p.program_type] || coverByType.diploma} alt={p.name_ar ?? p.name_en} loading="lazy" />
+                          <img src={p.image_url || programCoverFor(settings?.images, p.program_type)} alt={p.name_ar ?? p.name_en} loading="lazy" />
                           <span className="department-program-type">{typeLabel[p.program_type] ?? p.program_type}</span>
                           {p.admission_open && <span className="department-program-open">التسجيل مفتوح</span>}
                         </div>

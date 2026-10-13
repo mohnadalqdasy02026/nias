@@ -3,6 +3,7 @@ import { api } from '../api/client.js';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS } from '../lib/navigation.js';
 import { DEFAULT_APPLY } from '../lib/applyContent.js';
 import { DEFAULT_ADMISSION } from '../lib/admissionContent.js';
+import { DEFAULT_IMAGES } from '../lib/imagesContent.js';
 
 const DEFAULTS = {
   general: {
@@ -22,6 +23,7 @@ const DEFAULTS = {
   },
   apply: DEFAULT_APPLY,
   admission: DEFAULT_ADMISSION,
+  images: DEFAULT_IMAGES,
   contact: {
     address: 'أمانة العاصمة صنعاء — شارع العدل',
     phone: '01222537',
@@ -97,6 +99,7 @@ export function useSiteSettings() {
               },
               apply: { ...DEFAULTS.apply, ...(data.apply ?? {}) },
               admission: { ...DEFAULTS.admission, ...(data.admission ?? {}) },
+              images: { ...DEFAULTS.images, ...(data.images ?? {}) },
             }
           : { ...DEFAULTS, home: { ...DEFAULTS.home }, contact: { ...DEFAULTS.contact } };
         cache = merged;

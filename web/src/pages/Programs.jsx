@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
+import { programCoverFor } from '../lib/imagesContent.js';
 import { branchTitle } from '../lib/branch.js';
 
 const typeMeta = {
@@ -41,13 +42,6 @@ const TIERS = [
   },
 ];
 
-const coverByType = {
-  bachelor: '/uploads/design/site/main_1786788776_852.jpg',
-  master_academic: '/uploads/design/site/main_1783197092_280.jpg',
-  master_executive: '/uploads/design/site/main_1783197092_280.jpg',
-  diploma: '/uploads/design/site/main_1782830791_165.jpg',
-};
-
 const collegeIcon = {
   'كلية العلوم الإدارية': 'buildings',
   'كلية تكنولوجيا المعلومات': 'code',
@@ -73,9 +67,10 @@ function Icon({ name, size = 18, ariaHidden = true }) {
 }
 
 function ProgramCard({ program }) {
+  const settings = useSiteSettings();
   const type = typeMeta[program.program_type] ?? { label: program.program_type };
   const college = program.college_name_ar ?? 'المعهد الوطني للعلوم الإدارية';
-  const cover = program.image_url || coverByType[program.program_type];
+  const cover = program.image_url || programCoverFor(settings?.images, program.program_type);
   const branch = branchTitle(program.branch_name_ar);
   return (
     <article className={`program-card program-card--${program.program_type}`}>

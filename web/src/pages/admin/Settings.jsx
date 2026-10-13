@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { api } from '../../api/client.js';
 import { bustSiteSettings } from '../../hooks/useSiteSettings.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
-import { useImageUpload } from '../../components/admin/ImageField.jsx';
+import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../../lib/navigation.js';
 import { DEFAULT_APPLY, bodyToText, textToBody } from '../../lib/applyContent.js';
 import { DEFAULT_ADMISSION, linesToText, textToLines } from '../../lib/admissionContent.js';
+import { DEFAULT_IMAGES } from '../../lib/imagesContent.js';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -67,9 +68,20 @@ const emptyContact = {
   footer_credits: '',
 };
 
+const IMAGE_FIELDS = [
+  { key: 'logo', label: 'شعار الموقع' },
+  { key: 'og_image', label: 'صورة المشاركة (OG)' },
+  { key: 'program_bachelor', label: 'غلاف البكالوريوس' },
+  { key: 'program_master', label: 'غلاف الماجستير' },
+  { key: 'program_diploma', label: 'غلاف الدبلوم' },
+  { key: 'course_cover', label: 'غلاف البرنامج التدريبي' },
+  { key: 'college_default', label: 'الصورة الافتراضية للكليات' },
+];
+
 const TABS = [
   { key: 'general', label: 'إعدادات عامة' },
   { key: 'home', label: 'الصفحة الرئيسية' },
+  { key: 'images', label: 'الصور الافتراضية' },
   { key: 'stats', label: 'عدادات الإحصائيات' },
   { key: 'navigation', label: 'القائمة العلوية' },
   { key: 'apply', label: 'صفحة التسجيل' },
@@ -97,6 +109,7 @@ export default function Settings() {
   const [navigation, setNavigation] = useState(emptyNavigation);
   const [apply, setApply] = useState(() => structuredClone(DEFAULT_APPLY));
   const [admission, setAdmission] = useState(() => structuredClone(DEFAULT_ADMISSION));
+  const [images, setImages] = useState(() => structuredClone(DEFAULT_IMAGES));
   const [galleryImages, setGalleryImages] = useState([]);
   const [saved, setSaved] = useState(null);
   const [error, setError] = useState(null);
@@ -160,6 +173,11 @@ export default function Settings() {
             ? { ...structuredClone(DEFAULT_ADMISSION), ...data.admission }
             : structuredClone(DEFAULT_ADMISSION),
         );
+        setImages(
+          data.images && Object.keys(data.images).length
+            ? { ...structuredClone(DEFAULT_IMAGES), ...data.images }
+            : structuredClone(DEFAULT_IMAGES),
+        );
       })
       .catch((e) => setError(e.message));
   }, []);
@@ -206,6 +224,12 @@ export default function Settings() {
     altText: () => home.hero_title || 'صورة خلفية الهيرو',
   });
 
+  const imagesUpload = useImageUpload({
+    onUploaded: (key, url) => setImages((p) => ({ ...p, [key]: url })),
+    onError: setError,
+    altText: () => 'صورة الموقع',
+  });
+
   const removeHeroImage = (index) => {
     setHome((p) => ({ ...p, hero_images: (p.hero_images ?? []).filter((_, i) => i !== index) }));
   };
@@ -246,6 +270,21 @@ export default function Settings() {
     try {
       await api.patch('/admin/settings/home', home, { auth: true });
       notifySaved('تم حفظ إعدادات الصفحة الرئيسية.');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const saveImages = async (e) => {
+    e.preventDefault();
+    setBusy('images');
+    setError(null);
+    setSaved(null);
+    try {
+      await api.patch('/admin/settings/images', images, { auth: true });
+      notifySaved('تم حفظ الصور الافتراضية.');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -576,6 +615,34 @@ export default function Settings() {
           <div className="admin-form-actions">
             <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
+            </button>
+          </div>
+        </form>
+      )}
+
+      {tab === 'images' && (
+        <form className="card admin-form" onSubmit={saveImages}>
+          <AdminFormSection
+            title="الصور الافتراضية"
+            hint="تُستخدم هذه الصور عند عدم وجود صورة مخصّصة للعنصر. يمكنك رفع صورة جديدة لكل حقل عبر زر «رفع صورة»."
+          >
+            <div className="settings-images-grid">
+              {IMAGE_FIELDS.map((f) => (
+                <ImageField
+                  key={f.key}
+                  label={f.label}
+                  value={images[f.key]}
+                  onChange={(url) => setImages((p) => ({ ...p, [f.key]: url }))}
+                  upload={imagesUpload}
+                  fieldKey={f.key}
+                />
+              ))}
+            </div>
+          </AdminFormSection>
+
+          <div className="admin-form-actions">
+            <button type="submit" className="btn btn-primary" disabled={busy === 'images' || imagesUpload.busyKey}>
+              {busy === 'images' ? 'جارٍ الحفظ…' : 'حفظ الصور الافتراضية'}
             </button>
           </div>
         </form>

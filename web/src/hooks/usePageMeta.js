@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useSiteSettings } from './useSiteSettings.js';
 
 const SITE_NAME = 'المعهد الوطني للعلوم الإدارية';
 const DEFAULT_OG_IMAGE = '/uploads/design/site/main_1787497216_201.jpg';
@@ -25,13 +26,16 @@ function upsertCanonical(href) {
 }
 
 export function usePageMeta(title, description, { image, url, type } = {}) {
+  const settings = useSiteSettings();
+  const defaultOgImage = settings?.images?.og_image || DEFAULT_OG_IMAGE;
+
   useEffect(() => {
     document.title = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
 
     if (description) upsertMeta('name', 'description', description);
 
     const finalTitle = title ? `${title} | ${SITE_NAME}` : SITE_NAME;
-    const imageUrl = image ?? DEFAULT_OG_IMAGE;
+    const imageUrl = image ?? defaultOgImage;
     const currentUrl = url ?? (typeof window !== 'undefined' ? window.location.href : '');
 
     upsertMeta('property', 'og:title', finalTitle);
@@ -44,5 +48,5 @@ export function usePageMeta(title, description, { image, url, type } = {}) {
     upsertMeta('name', 'twitter:description', description);
     upsertMeta('name', 'twitter:image', imageUrl);
     if (currentUrl) upsertCanonical(currentUrl);
-  }, [title, description, image, url, type]);
+  }, [title, description, image, url, type, defaultOgImage]);
 }

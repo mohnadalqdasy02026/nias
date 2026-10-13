@@ -86,7 +86,7 @@ export default function BranchesPage() {
   const [tab, setTab] = useState('dean');
   const [facultyFilter, setFacultyFilter] = useState('all');
   const settings = useSiteSettings();
-  const logo = settings?.general?.logo ?? '/uploads/design/site/logo.jpg';
+  const logo = settings?.general?.logo ?? settings?.images?.logo ?? '/uploads/design/site/logo.jpg';
 
   usePageMeta(
     slug ? (branchTitle(branch) ?? 'الفرع') : 'فروع المعهد',

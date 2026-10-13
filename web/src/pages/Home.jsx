@@ -7,6 +7,7 @@ import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
 import { trainingCategoryLabel } from '../lib/training.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
+import { programCoverFor } from '../lib/imagesContent.js';
 
 const statsKeys = [
   { label: 'البرامج الأكاديمية', key: 'programs' },
@@ -29,19 +30,6 @@ const programTypeLabel = {
   master_academic: 'ماجستير أكاديمي',
 };
 
-const programCoverKind = {
-  bachelor: 'bachelor',
-  master_academic: 'master',
-  master_executive: 'master',
-  diploma: 'diploma',
-};
-
-const programCovers = {
-  bachelor: '/uploads/design/site/main_1786788776_852.jpg',
-  master: '/uploads/design/site/main_1783197092_280.jpg',
-  diploma: '/uploads/design/site/main_1782830791_165.jpg',
-};
-
 function shorten(text, max = 120) {
   if (!text) return text;
   const trimmed = text.replace(/\s+/g, ' ').trim();
@@ -52,12 +40,6 @@ function heroImagesFrom(home) {
   const added = (home.hero_images ?? []).filter((src) => src && src !== 'null');
   return added.filter((src, i) => added.indexOf(src) === i);
 }
-
-const courseCovers = [
-  '/uploads/design/site/main_1786901865_894.jpg',
-  '/uploads/design/site/main_1786899199_299.jpg',
-  '/uploads/design/site/main_1787071099_197.jpg',
-];
 
 function SectionHeading({ title, subtitle, to, linkText }) {
   return (
@@ -276,10 +258,10 @@ export default function Home() {
                 <article key={c.id} className="card college-card">
                   <div className="college-cover">
                     <img
-                      src={c.image && c.image !== 'null' ? c.image : '/uploads/design/site/logo.jpg'}
+                      src={c.image && c.image !== 'null' ? c.image : (settings?.images?.college_default || '/uploads/design/site/logo.jpg')}
                       alt={c.name_ar}
                       loading="lazy"
-                      onError={(e) => { e.currentTarget.src = '/uploads/design/site/logo.jpg'; }}
+                      onError={(e) => { e.currentTarget.src = settings?.images?.college_default || '/uploads/design/site/logo.jpg'; }}
                     />
                   </div>
                   <h3><Link to={`/colleges/${c.id}`}>{c.name_ar}</Link></h3>
@@ -308,7 +290,7 @@ export default function Home() {
             {programs.slice(0, 3).map((p) => (
               <article key={p.id} className={`program-card program-card--${p.program_type}`}>
                 <div className="program-card-cover">
-                  <img src={programCovers[programCoverKind[p.program_type] ?? 'bachelor']} alt={p.name_ar ?? p.name_en} loading="lazy" />
+                  <img src={programCoverFor(settings?.images, p.program_type)} alt={p.name_ar ?? p.name_en} loading="lazy" />
                   <span className="program-card-type">{programTypeLabel[p.program_type] ?? p.program_type}</span>
                 </div>
                 <div className="program-card-body">
@@ -341,10 +323,10 @@ export default function Home() {
           <SectionHeading title={home.training_title || 'البرامج التدريبية'} subtitle={home.training_subtitle || 'برامج مفتوحة للتسجيل الآن'} />
           {courses.length > 0 ? (
             <Rail label="قائمة البرامج التدريبية" href="/training">
-              {courses.slice(0, 10).map((c, ci) => (
+              {courses.slice(0, 10).map((c) => (
                 <article key={c.id} className="card course-card rail-card">
                   <div className="card-cover">
-                    <img src={courseCovers[ci % courseCovers.length]} alt={c.title} loading="lazy" />
+                    <img src={c.cover_image || settings?.images?.course_cover} alt={c.title} loading="lazy" />
                     <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
                   </div>
                   <div className="card-body">

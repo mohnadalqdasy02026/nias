@@ -4,6 +4,7 @@ import { api } from '../api/client.js';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { branchTitle } from '../lib/branch.js';
 import { trainingCategoryLabel, trainingCategoryNoun } from '../lib/training.js';
+import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const iconPaths = {
   clock: 'M12 22a10 10 0 1 1 0-20 10 10 0 0 1 0 20zM12 6v6l4 2',
@@ -13,8 +14,6 @@ const iconPaths = {
   money: 'M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6',
   book: 'M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15zM20 17v4',
 };
-
-const fallbackCover = '/uploads/design/site/main_1786901865_894.jpg';
 
 function Icon({ name, size = 18 }) {
   return (
@@ -33,6 +32,7 @@ export default function TrainingDetail() {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
   const [error, setError] = useState(null);
+  const settings = useSiteSettings();
 
   usePageMeta(
     course?.title ? `${trainingCategoryLabel(course.category)}: ${course.title}` : 'البرامج التدريبية',
@@ -69,7 +69,7 @@ export default function TrainingDetail() {
     );
   }
 
-  const cover = course.image_url || fallbackCover;
+  const cover = course.image_url || settings?.images?.course_cover || '/uploads/design/site/main_1786901865_894.jpg';
   const branch = course.branch_name_ar ? branchTitle(course.branch_name_ar) : null;
   const noun = trainingCategoryNoun(course.category);
 
