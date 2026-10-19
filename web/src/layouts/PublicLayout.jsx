@@ -6,6 +6,7 @@ import { branchTitle } from '../lib/branch.js';
 import { initReveal } from '../lib/reveal.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../lib/navigation.js';
+import SmartAssistant from '../components/SmartAssistant.jsx';
 
 function Logo({ small, src }) {
   return (
@@ -309,6 +310,7 @@ export default function PublicLayout() {
         </div>
       </main>
       {location.pathname === '/' && <Footer />}
+      <SmartAssistant />
     </>
   );
 }
