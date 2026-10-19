@@ -33,6 +33,7 @@ const DEFAULTS = {
     social_telegram: 'https://t.me/nias_academy',
     social_facebook: 'https://www.facebook.com/nias.academy',
     social_youtube: 'https://www.youtube.com/@nias_academy',
+    map_url: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1923.6300188941655!2d44.20593455807952!3d15.340097268803138!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1603dbdec49d2661%3A0x673413994c65761a!2z2KfZhNmF2LnZh9ivINin2YTZiNi32YrZgSDZhNmE2LnZhNmI2YUg2KfZhNin2K9Yp9ix2YrYqQ!5e0!3m2!1sar!2s!4v1647414966606!5m2!1sar!2s',
     footer_credits: 'حلول كود — مصمم ومطور الموقع  •  جميع الحقوق محفوظة للمعهد الوطني للعلوم الإدارية',
   },
 };

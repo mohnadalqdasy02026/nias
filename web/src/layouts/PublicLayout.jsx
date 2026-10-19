@@ -282,6 +282,22 @@ function Footer() {
             </ul>
           </nav>
         </div>
+
+        {contact.map_url && (
+          <div className="footer-map-wrap">
+            <h4 className="footer-col-title">الموقع الجغرافي</h4>
+            <div className="footer-map-frame">
+              <iframe
+                src={contact.map_url}
+                title="موقع المعهد الوطني للعلوم الإدارية على الخريطة"
+                loading="lazy"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
+        )}
       </div>
       <div className="footer-ticker" aria-hidden="true">
         <div className="footer-ticker-track">

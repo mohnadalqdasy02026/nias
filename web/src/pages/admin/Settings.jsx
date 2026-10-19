@@ -61,6 +61,7 @@ const emptyContact = {
   phone: '',
   email: '',
   whatsapp: '',
+  map_url: '',
   hours: '',
   social_telegram: '',
   social_facebook: '',
@@ -798,6 +799,12 @@ export default function Settings() {
               {field('social_telegram', contact.social_telegram, setC, 'تليجرام', 'input', 'ltr')}
               {field('social_facebook', contact.social_facebook, setC, 'فيسبوك', 'input', 'ltr')}
               {field('social_youtube', contact.social_youtube, setC, 'يوتيوب', 'input', 'ltr')}
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="الموقع الجغرافي" hint="رابط تضمين خريطة جوجل (Google Maps Embed) — يظهر قسم «الموقع الجغرافي» أسفل تذييل الصفحة الرئيسية.">
+            <div className="form-grid">
+              {field('map_url', contact.map_url, setC, 'رابط تضمين الخريطة', 'input', 'ltr')}
             </div>
           </AdminFormSection>
 
