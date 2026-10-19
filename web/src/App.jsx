@@ -19,6 +19,7 @@ import Contact from './pages/Contact.jsx';
 import { NewsList, NewsDetail } from './pages/News.jsx';
 import GalleryPage from './pages/GalleryPage.jsx';
 import DownloadsPage from './pages/DownloadsPage.jsx';
+import JournalPage from './pages/JournalPage.jsx';
 import FacultyPage from './pages/FacultyPage.jsx';
 import CollegeDetail from './pages/CollegeDetail.jsx';
 import CollegesList from './pages/CollegesList.jsx';
@@ -39,6 +40,7 @@ import BranchesAdmin, { BranchForm } from './pages/admin/BranchesAdmin.jsx';
 import CollegesAdmin, { CollegeForm } from './pages/admin/CollegesAdmin.jsx';
 import GalleryAdmin, { AlbumForm, AlbumImages } from './pages/admin/GalleryAdmin.jsx';
 import DownloadsAdmin, { DownloadForm } from './pages/admin/DownloadsAdmin.jsx';
+import JournalAdmin, { JournalForm } from './pages/admin/JournalAdmin.jsx';
 import DepartmentsAdmin, { DepartmentForm } from './pages/admin/DepartmentsAdmin.jsx';
 import FacultyAdmin, { FacultyForm } from './pages/admin/FacultyAdmin.jsx';
 
@@ -139,6 +141,7 @@ export default function App() {
             <Route path="training/:id" element={<TrainingDetail />} />
             <Route path="gallery" element={<GalleryPage />} />
             <Route path="downloads" element={<DownloadsPage />} />
+            <Route path="journal" element={<JournalPage />} />
             <Route path="faculty" element={<FacultyPage />} />
             <Route path="branches" element={<BranchesPage />} />
             <Route path="branches/:slug" element={<BranchesPage />} />
@@ -436,6 +439,30 @@ export default function App() {
               element={
                 <ProtectedRoute permission="downloads.update">
                   <DownloadForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="journal"
+              element={
+                <ProtectedRoute permission="journal.read">
+                  <JournalAdmin />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="journal/new"
+              element={
+                <ProtectedRoute permission="journal.create">
+                  <JournalForm />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="journal/:id"
+              element={
+                <ProtectedRoute permission="journal.update">
+                  <JournalForm />
                 </ProtectedRoute>
               }
             />

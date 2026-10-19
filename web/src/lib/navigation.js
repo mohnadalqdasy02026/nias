@@ -11,6 +11,7 @@ export const DEFAULT_MORE = [
   { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/gallery', label: 'المعرض' },
   { to: '/downloads', label: 'التحميلات' },
+  { to: '/journal', label: 'المجلة العلمية' },
   { to: '/faculty', label: 'هيئة التدريس' },
   { to: '/contact', label: 'تواصل معنا' },
 ];

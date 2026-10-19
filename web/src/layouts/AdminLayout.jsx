@@ -16,6 +16,7 @@ const navSections = [
       { to: '/admin/content/pages', label: 'الصفحات الثابتة', perm: 'site_pages.read' },
       { to: '/admin/gallery', label: 'ألبومات المعرض', perm: 'gallery.read' },
       { to: '/admin/downloads', label: 'التحميلات', perm: 'downloads.read' },
+      { to: '/admin/journal', label: 'المجلة', perm: 'journal.read' },
     ],
   },
   {
