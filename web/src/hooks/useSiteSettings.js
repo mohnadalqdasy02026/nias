@@ -14,6 +14,8 @@ const DEFAULTS = {
     primary_color: '#0e7c66',
     ministry_admission_url: 'https://oasyemen.net',
     ministry_results_url: '',
+    portal_student_url: 'https://nias-ye.academy/sdm',
+    portal_training_url: 'https://nias-ye.academy/?page=training_portal&lang=ar',
   },
   home: {},
   navigation: {

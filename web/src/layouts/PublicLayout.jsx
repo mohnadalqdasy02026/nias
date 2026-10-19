@@ -166,6 +166,28 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
+          {general.portal_training_url && (
+            <a
+              className="btn btn-outline btn-light nav-portal"
+              href={general.portal_training_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+            >
+              التسجيل في الدورات
+            </a>
+          )}
+          {general.portal_student_url && (
+            <a
+              className="btn btn-primary nav-portal"
+              href={general.portal_student_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setOpen(false)}
+            >
+              بوابة الطالب
+            </a>
+          )}
           {isAdmin && (
             <Link to="/admin" className="btn btn-primary nav-login" onClick={() => setOpen(false)}>لوحة التحكم</Link>
           )}
@@ -205,6 +227,12 @@ function Footer() {
     { label: 'بوابة التسجيل والتنسيق الإلكتروني', href: general.ministry_admission_url || 'https://oasyemen.net' },
     ...(general.ministry_results_url
       ? [{ label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url }]
+      : []),
+    ...(general.portal_student_url
+      ? [{ label: 'بوابة الطالب', href: general.portal_student_url }]
+      : []),
+    ...(general.portal_training_url
+      ? [{ label: 'التسجيل في الدورات', href: general.portal_training_url }]
       : []),
   ];
   const quickLinks = [

@@ -7371,3 +7371,16 @@ button,
   height: 100%;
   display: block;
 }
+
+/* Header portal buttons */
+.nav-portal {
+  display: inline-flex;
+}
+
+@media (max-width: 900px) {
+  .nav-portal {
+    width: 100%;
+    justify-content: center;
+    margin-top: 6px;
+  }
+}

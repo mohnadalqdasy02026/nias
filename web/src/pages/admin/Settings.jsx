@@ -16,6 +16,8 @@ const emptyGeneral = {
   primary_color: '#0e7c66',
   ministry_admission_url: 'https://oasyemen.net',
   ministry_results_url: '',
+  portal_student_url: 'https://nias-ye.academy/sdm',
+  portal_training_url: 'https://nias-ye.academy/?page=training_portal&lang=ar',
 };
 
 const emptyHome = {
@@ -477,6 +479,13 @@ export default function Settings() {
                   }}
                 />
               </div>
+            </div>
+          </AdminFormSection>
+
+          <AdminFormSection title="بوابات الطلاب والدورات" hint="أزرار تظهر في ترويسة الموقع وتُفتح في نافذة جديدة. اترك أي حقل فارغًا لإخفاء زره.">
+            <div className="form-grid">
+              {field('portal_student_url', general.portal_student_url, setG, 'رابط بوابة الطالب', 'input', 'ltr')}
+              {field('portal_training_url', general.portal_training_url, setG, 'رابط التسجيل في الدورات', 'input', 'ltr')}
             </div>
           </AdminFormSection>
 
