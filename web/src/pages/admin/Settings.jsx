@@ -45,6 +45,8 @@ const emptyHome = {
   training_subtitle: '',
   news_title: '',
   news_subtitle: '',
+  activities_title: '',
+  activities_subtitle: '',
 };
 
 const emptyStats = {
@@ -599,6 +601,8 @@ export default function Settings() {
               {field('training_subtitle', home.training_subtitle, setH, 'البرامج التدريبية — الوصف')}
               {field('news_title', home.news_title, setH, 'الأخبار — العنوان')}
               {field('news_subtitle', home.news_subtitle, setH, 'الأخبار — الوصف')}
+              {field('activities_title', home.activities_title, setH, 'الفعاليات والأنشطة — العنوان')}
+              {field('activities_subtitle', home.activities_subtitle, setH, 'الفعاليات والأنشطة — الوصف')}
             </div>
           </AdminFormSection>
 

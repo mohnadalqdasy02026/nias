@@ -180,6 +180,7 @@ export default function Home() {
   const [programs, setPrograms] = useState([]);
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
+  const [activities, setActivities] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const settings = useSiteSettings();
@@ -196,6 +197,9 @@ export default function Home() {
     api.get('/public/programs').then((d) => setPrograms(d ?? [])).catch(() => {});
     api.get('/public/training-courses').then((d) => setCourses(d ?? [])).catch(() => {});
     api.get('/public/news?limit=10').then((d) => setNews(d ?? [])).catch(() => {});
+    api.get('/public/news?limit=50').then((d) => setActivities(
+      (d ?? []).filter((n) => n.content_type === 'event' || n.content_type === 'activity').slice(0, 6),
+    )).catch(() => {});
     api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
   }, []);
 
@@ -389,6 +393,44 @@ export default function Home() {
           )}
         </div>
       </section>
+
+      {activities.length > 0 && (
+        <section className="section section-alt">
+          <div className="container">
+            <SectionHeading
+              title={home.activities_title || 'الفعاليات والأنشطة'}
+              subtitle={home.activities_subtitle || 'تابع أحدث فعاليات وأنشطة المعهد'}
+              to="/news"
+              linkText="كل الأخبار"
+            />
+            <div className="news-grid">
+              {activities.map((item) => (
+                <article key={item.id} className="card news-card">
+                  {item.cover_image ? (
+                    <img className="news-cover" src={item.cover_image} alt={item.title_ar ?? item.title_en} loading="lazy" />
+                  ) : (
+                    <div className="news-cover news-cover--placeholder">
+                      <span className="news-cover-mark">NIAS</span>
+                      <span className={`news-type-badge news-type--${item.content_type}`}>{typeLabel[item.content_type] ?? 'نشاط'}</span>
+                    </div>
+                  )}
+                  <div className="news-body">
+                    <div className="news-body-top">
+                      <span className={`news-type-badge news-type--${item.content_type}`}>{typeLabel[item.content_type] ?? 'نشاط'}</span>
+                      {item.published_at && (
+                        <span className="news-date">{new Date(item.published_at).toLocaleDateString('ar-YE')}</span>
+                      )}
+                    </div>
+                    <h3>{item.title_ar ?? item.title_en}</h3>
+                    {item.summary_ar && <p>{shorten(item.summary_ar, 110)}</p>}
+                    <Link to={`/news/${item.id}`} className="news-link">اقرأ المزيد ←</Link>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="cta-band">
         <div className="container cta-inner">
