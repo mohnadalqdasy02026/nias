@@ -67,6 +67,28 @@ export default function App() {
                 }
               />
               <Route
+                path="trustees"
+                element={
+                  <StaticPage
+                    slug="trustees"
+                    fallbackTitle="مجلس أمناء المعهد"
+                    metaTitle="مجلس أمناء المعهد"
+                    metaDescription="أعضاء مجلس أمناء المعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
+                path="conferences"
+                element={
+                  <StaticPage
+                    slug="conferences"
+                    fallbackTitle="المؤتمرات العلمية"
+                    metaTitle="المؤتمرات العلمية"
+                    metaDescription="المؤتمرات والندوات العلمية للمعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
+              <Route
                 path="terms"
                 element={
                   <StaticPage
