@@ -8,6 +8,8 @@ export const DEFAULT_MAIN = [
 ];
 
 export const DEFAULT_MORE = [
+  { to: '/dean', label: 'كلمة العميد' },
+  { to: '/structure', label: 'الهيكل التنظيمي' },
   { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/gallery', label: 'المعرض' },
   { to: '/downloads', label: 'التحميلات' },

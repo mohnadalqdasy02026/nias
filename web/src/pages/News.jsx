@@ -36,7 +36,7 @@ function NewsCover({ item }) {
   );
 }
 
-function NewsCard({ item, linkPrefix = '/news' }) {
+export function NewsCard({ item, linkPrefix = '/news' }) {
   const type = typeLabel[item.content_type] ?? 'خبر';
   return (
     <article className="card news-card">

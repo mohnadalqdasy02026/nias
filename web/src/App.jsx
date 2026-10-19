@@ -6,6 +6,7 @@ import ProtectedRoute from './components/admin/ProtectedRoute.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import Home from './pages/Home.jsx';
 import About from './pages/About.jsx';
+import DeanPage from './pages/DeanPage.jsx';
 import StaticPage from './pages/StaticPage.jsx';
 import NotFound from './pages/NotFound.jsx';
 import SearchResults from './pages/SearchResults.jsx';
@@ -53,6 +54,18 @@ export default function App() {
             <Route element={<PublicLayout />}>
               <Route index element={<Home />} />
               <Route path="about" element={<About />} />
+              <Route path="dean" element={<DeanPage />} />
+              <Route
+                path="structure"
+                element={
+                  <StaticPage
+                    slug="structure"
+                    fallbackTitle="الهيكل التنظيمي"
+                    metaTitle="الهيكل التنظيمي"
+                    metaDescription="الهيكل التنظيمي للمعهد الوطني للعلوم الإدارية."
+                  />
+                }
+              />
               <Route
                 path="terms"
                 element={
