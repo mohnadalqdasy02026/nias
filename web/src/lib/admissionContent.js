@@ -23,6 +23,13 @@ export const DEFAULT_ADMISSION = {
   cta_button: 'سجّل عبر البوابة',
 };
 
+export const programTypeLabel = {
+  bachelor: 'بكالوريوس',
+  diploma: 'دبلوم',
+  master_executive: 'ماجستير تنفيذي',
+  master_academic: 'ماجستير أكاديمي',
+};
+
 export function admissionKeyFor(programType) {
   if (programType === 'bachelor') return 'bachelor';
   if (programType === 'diploma') return 'diploma';

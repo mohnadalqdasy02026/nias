@@ -5125,6 +5125,104 @@ button,
   color: var(--color-text);
 }
 
+/* ===== Admissions departments & specializations table ===== */
+.dept-table-block {
+  margin-top: 4px;
+}
+
+.dept-table-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.dept-table-count {
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.dept-table-search {
+  flex: 1 1 260px;
+  max-width: 360px;
+  min-height: var(--touch-target, 44px);
+  padding: 10px 14px;
+  border: 1px solid var(--color-border, #e3eae7);
+  border-radius: 10px;
+  background: var(--color-surface, #fff);
+  color: var(--color-text, #17211f);
+  font-family: inherit;
+  font-size: 0.92rem;
+}
+
+.dept-table-search:focus-visible {
+  outline: 2px solid var(--color-primary, #0e7c66);
+  outline-offset: 2px;
+}
+
+.dept-table {
+  min-width: 780px;
+  background: var(--color-surface, #fff);
+}
+
+.dept-table td {
+  vertical-align: middle;
+}
+
+.dept-table-en {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.78rem;
+  font-weight: 600;
+  direction: ltr;
+  text-align: right;
+}
+
+.dept-table-details-row td {
+  background: rgba(14, 124, 102, 0.035);
+}
+
+.dept-table-details p {
+  margin: 0 0 10px;
+  color: var(--color-text, #17211f);
+  line-height: 1.7;
+}
+
+.dept-table-details-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.dept-table-muted {
+  color: var(--color-text-muted, #5c6b66);
+}
+
+.dept-table-status {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(120, 130, 126, 0.14);
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.dept-table-status.is-open {
+  background: rgba(14, 124, 102, 0.12);
+  color: var(--color-primary-dark, var(--color-primary));
+}
+
+.dept-table-empty {
+  margin: 14px 0 0;
+  color: var(--color-text-muted, #5c6b66);
+  text-align: center;
+}
+
 .program-plan-optional {
   padding: 2px 9px;
   border-radius: 999px;

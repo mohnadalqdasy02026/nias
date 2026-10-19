@@ -723,6 +723,14 @@ export default function Settings() {
             ))}
           </AdminFormSection>
 
+          <AdminFormSection title="الأقسام والتخصصات المتاحة">
+            <div className="form-grid">
+              {field('table_title', apply.table_title, setA, 'العنوان')}
+              {field('table_subtitle', apply.table_subtitle, setA, 'الوصف تحت العنوان')}
+            </div>
+            <p className="admin-field-hint">يُبنى الجدول تلقائيًا من البيانات المعتمدة في «الكليات والأقسام» و«البرامج الأكاديمية».</p>
+          </AdminFormSection>
+
           <AdminFormSection title="المستندات المطلوبة">
             <div className="form-grid">
               {field('docs_title', apply.docs_title, setA, 'العنوان')}

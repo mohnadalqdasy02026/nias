@@ -5,6 +5,7 @@ import CountUp from '../components/CountUp.jsx';
 import { usePageMeta } from '../hooks/usePageMeta.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 import { branchTitle } from '../lib/branch.js';
+import { programTypeLabel } from '../lib/admissionContent.js';
 import { trainingCategoryLabel } from '../lib/training.js';
 import { collegeHeadNoun, collegeHeadWord } from '../lib/college.js';
 import { programCoverFor } from '../lib/imagesContent.js';
@@ -21,13 +22,6 @@ const typeLabel = {
   event: 'فعالية',
   activity: 'نشاط',
   course: 'دورة',
-};
-
-const programTypeLabel = {
-  bachelor: 'بكالوريوس',
-  diploma: 'دبلوم',
-  master_executive: 'ماجستير تنفيذي',
-  master_academic: 'ماجستير أكاديمي',
 };
 
 function shorten(text, max = 120) {
