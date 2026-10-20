@@ -810,7 +810,7 @@ export default function Settings() {
               {field('address', contact.address, setC, 'العنوان')}
               {field('phone', contact.phone, setC, 'الهاتف', 'input', 'ltr')}
               {field('email', contact.email, setC, 'البريد الإلكتروني', 'input', 'ltr')}
-              {field('whatsapp', contact.whatsapp, setC, 'رقم واتساب (بصيغة دولية دون +)', 'input', 'ltr')}
+              {field('whatsapp', contact.whatsapp, setC, 'رقم واتساب بصيغة دولية (يبدأ بـ ‎+967)', 'input', 'ltr')}
               {field('hours', contact.hours, setC, 'أوقات العمل')}
             </div>
           </AdminFormSection>

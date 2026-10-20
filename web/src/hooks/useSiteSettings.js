@@ -30,7 +30,7 @@ const DEFAULTS = {
     address: 'أمانة العاصمة صنعاء — شارع العدل',
     phone: '01222537',
     email: 'nias@nias-ye.academy',
-    whatsapp: '9671222537',
+    whatsapp: '+9677772476351',
     hours: '',
     social_telegram: 'https://t.me/nias_academy',
     social_facebook: 'https://www.facebook.com/nias.academy',
