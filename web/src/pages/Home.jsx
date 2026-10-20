@@ -175,6 +175,7 @@ export default function Home() {
   const [courses, setCourses] = useState([]);
   const [news, setNews] = useState([]);
   const [activities, setActivities] = useState([]);
+  const [gallery, setGallery] = useState([]);
   const [colleges, setColleges] = useState([]);
   const [heroIndex, setHeroIndex] = useState(0);
   const settings = useSiteSettings();
@@ -195,6 +196,7 @@ export default function Home() {
       (d ?? []).filter((n) => n.content_type === 'event' || n.content_type === 'activity').slice(0, 6),
     )).catch(() => {});
     api.get('/public/colleges').then((d) => setColleges(d ?? [])).catch(() => {});
+    api.get('/public/gallery').then((d) => setGallery(d ?? [])).catch(() => {});
   }, []);
 
   const heroImages = heroImagesFrom(home);
@@ -420,6 +422,27 @@ export default function Home() {
                     <Link to={`/news/${item.id}`} className="news-link">اقرأ المزيد ←</Link>
                   </div>
                 </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {gallery.length > 0 && (
+        <section className="section">
+          <div className="container">
+            <SectionHeading
+              title={home.gallery_title || 'معرض الصور والإعلانات'}
+              subtitle={home.gallery_subtitle || 'لقطات من فعاليات وأنشطة المعهد الوطني للعلوم الإدارية'}
+              to="/gallery"
+              linkText="عرض المعرض"
+            />
+            <div className="home-gallery">
+              {gallery.slice(0, 6).map((g) => (
+                <Link key={g.id} to="/gallery" className="home-gallery-item">
+                  <img src={g.image} alt={g.title || 'صورة من المعرض'} loading="lazy" />
+                  {g.title && <span className="home-gallery-caption">{g.title}</span>}
+                </Link>
               ))}
             </div>
           </div>

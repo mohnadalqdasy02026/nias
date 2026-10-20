@@ -47,6 +47,8 @@ const emptyHome = {
   news_subtitle: '',
   activities_title: '',
   activities_subtitle: '',
+  gallery_title: '',
+  gallery_subtitle: '',
 };
 
 const emptyStats = {
@@ -603,6 +605,8 @@ export default function Settings() {
               {field('news_subtitle', home.news_subtitle, setH, 'الأخبار — الوصف')}
               {field('activities_title', home.activities_title, setH, 'الفعاليات والأنشطة — العنوان')}
               {field('activities_subtitle', home.activities_subtitle, setH, 'الفعاليات والأنشطة — الوصف')}
+              {field('gallery_title', home.gallery_title, setH, 'معرض الصور — العنوان')}
+              {field('gallery_subtitle', home.gallery_subtitle, setH, 'معرض الصور — الوصف')}
             </div>
           </AdminFormSection>
 

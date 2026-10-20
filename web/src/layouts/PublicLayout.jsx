@@ -42,6 +42,7 @@ function Header() {
   const settings = useSiteSettings();
   const isAdmin = user?.permissions?.includes('dashboard.access');
   const general = settings?.general ?? {};
+  const contact = settings?.contact ?? {};
   const navCfg = settings?.navigation ?? {};
   const navItems = resolveNav(DEFAULT_MAIN, navCfg.main).filter((i) => i.visible);
   const moreItems = resolveNav(DEFAULT_MORE, navCfg.more).filter((i) => i.visible);
@@ -195,6 +196,28 @@ function Header() {
             <Link to="/login" className="btn btn-outline btn-light nav-login" onClick={() => setOpen(false)}>تسجيل الدخول</Link>
           ) : null}
         </nav>
+
+        {(contact.social_facebook || contact.whatsapp) && (
+          <div className="header-social">
+            {contact.social_facebook && (
+              <a className="header-social-link" href={contact.social_facebook} target="_blank" rel="noopener noreferrer" aria-label="فيسبوك" title="فيسبوك">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h2V5h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8z" /></svg>
+              </a>
+            )}
+            {contact.whatsapp && (
+              <a
+                className="header-social-link"
+                href={`https://wa.me/${String(contact.whatsapp).replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="واتساب"
+                title="واتساب"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3zm-3.5 5.3c.2 0 .4.2.5.4l.5 1.1c.1.2.1.4 0 .6L9 11.2a.5.5 0 0 0 0 .6c.2.4.6 1 1.3 1.7.9.9 1.6 1.2 2.1 1.4.2.1.4.1.5 0l1-1c.2-.2.4-.2.6-.1l1.2.6c.2.1.4.2.4.4 0 .7-.6 1.7-1.3 1.7-1 0-3.6-1.9-5-3.6-1-1.2-1.5-2.2-1.6-2.9 0-.8.4-1.4.9-1.6l.4-.2z" /></svg>
+              </a>
+            )}
+          </div>
+        )}
 
         <button
           ref={toggleRef}

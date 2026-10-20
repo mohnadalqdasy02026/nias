@@ -113,6 +113,36 @@ export default function Training() {
           </div>
         </div>
       </section>
+
+      <section className="section section-alt">
+        <div className="container">
+          <div className="section-head">
+            <h2 className="section-title">برامجنا التأهيلية</h2>
+            <p className="section-subtitle">
+              نحن نقدم برامج تأهيلية شاملة مصممة لتزويد المتدربين بالمهارات اللازمة لسوق العمل،
+              وتغطي مجالات متنوعة في الإدارة والتكنولوجيا والمهارات المهنية.
+            </p>
+          </div>
+          <div className="rehab-grid">
+            {[
+              { title: 'مدربون معتمدون', text: 'كوادر تدريبية متخصصة ذات خبرة عملية معتمدة.' },
+              { title: 'مناهج حديثة', text: 'محتوى تعليمي محدّث يواكب متطلبات سوق العمل.' },
+              { title: 'تدريب عملي', text: 'ورش عمل وتطبيقات عملية تُرسّخ المهارات.' },
+            ].map((f) => (
+              <article key={f.title} className="card rehab-card">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
+                <div>
+                  <h3>{f.title}</h3>
+                  <p>{f.text}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="rehab-actions">
+            <Link to="/training/register" className="btn btn-primary">عرض التفاصيل والتسجيل</Link>
+          </div>
+        </div>
+      </section>
     </>
   );
 }
