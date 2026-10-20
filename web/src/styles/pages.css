@@ -47,6 +47,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  flex: 0 0 auto;
   color: var(--color-text);
 }
 
@@ -64,6 +65,7 @@
   font-family: var(--font-heading);
   font-size: 1.06rem;
   font-weight: 800;
+  white-space: nowrap;
   color: var(--color-primary-deep);
 }
 
@@ -72,6 +74,10 @@
   font-family: var(--font-latin);
   font-size: 0.76rem;
   font-weight: 600;
+  white-space: nowrap;
+  max-width: 36ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
   letter-spacing: 0.02em;
 }
 
@@ -4080,7 +4086,9 @@ code {
   }
 }
 
-@media (max-width: 900px) {
+/* Below this width the bar switches to the slide-in menu so the full
+   institute name always keeps a single unbroken line next to it. */
+@media (max-width: 1360px) {
   /* NOTE: no backdrop-filter/filter here on purpose. A filter on the
      header turns it into the containing block for its position:fixed
      children, which collapses the side drawer to the header's height.
@@ -4134,6 +4142,7 @@ code {
 
   .nav-brand .brand-text strong {
     font-size: 0.98rem;
+    white-space: normal;
   }
 
   .nav-brand .brand-text small {
@@ -4212,7 +4221,7 @@ code {
     display: flex;
     flex-direction: column;
     gap: 4px;
-    width: min(52vw, 214px);
+    width: min(76vw, 340px);
     margin: 0;
     padding: 20px 10px 32px;
     background: rgba(255, 255, 255, 0.93);
@@ -4250,6 +4259,32 @@ code {
     box-shadow: inset 3px 0 0 var(--color-primary);
   }
 
+  /* Branches dropdown within the drawer: open it as an inline block
+     instead of an absolute overlay so nothing hides behind the navbar
+     / needs scrolling to be seen. */
+  .nav-drop {
+    width: 100%;
+  }
+
+  .nav-drop-toggle {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav-drop--open .nav-drop-menu {
+    position: static;
+    width: 100%;
+    min-width: 0;
+    box-shadow: none;
+    border: 1px solid var(--color-border);
+  }
+
+  .nav-drop--open .nav-drop-menu::before {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
   .programs-hero h1 {
     font-size: 2.2rem;
   }
@@ -4283,30 +4318,6 @@ code {
 
   .programs-tier-title {
     font-size: 1.25rem;
-  }
-
-  /* Branches dropdown within the mobile drawer: open it as an inline
-     block instead of an absolute overlay so nothing hides behind the
-     navbar / needs scrolling to be seen. */
-  .nav-drop {
-    width: 100%;
-  }
-
-  .nav-drop-toggle {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .nav-drop--open .nav-drop-menu {
-    position: static;
-    width: 100%;
-    min-width: 0;
-    box-shadow: none;
-    border: 1px solid var(--color-border);
-  }
-
-  .nav-drop--open .nav-drop-menu::before {
-    display: none;
   }
 
   .hero h1 {
@@ -7560,7 +7571,11 @@ button,
   white-space: nowrap;
 }
 
-@media (min-width: 901px) and (max-width: 1320px) {
+/* Inline navigation from 1301px up. The bar's content is capped by
+   --container-max, so the links always use the compact sizing that fits
+   next to the full-width institute name; below 1301px the header uses
+   the slide-in menu instead. */
+@media (min-width: 1361px) {
   .header-inner {
     gap: 12px;
   }
@@ -7571,36 +7586,14 @@ button,
 
   .nav-link,
   .nav-drop-toggle {
-    padding: 10px 9px;
+    padding: 10px 8px;
     font-size: 0.9rem;
-  }
-
-  .header-inner .brand-text small {
-    display: none;
-  }
-}
-
-@media (min-width: 901px) and (max-width: 1080px) {
-  .header-inner {
-    gap: 8px;
-  }
-
-  .nav-link,
-  .nav-drop-toggle {
-    padding: 10px 6px;
-    font-size: 0.85rem;
-  }
-}
-
-@media (min-width: 901px) and (max-width: 980px) {
-  .header-inner .brand-text {
-    display: none;
   }
 }
 
 /* The two leftmost dropdowns (RTL) would otherwise overflow the left edge
    of the viewport, so open them toward the inside instead. */
-@media (min-width: 901px) {
+@media (min-width: 1361px) {
   .main-nav > .nav-drop:nth-last-child(-n + 2) .nav-drop-menu {
     left: 0;
     right: auto;
