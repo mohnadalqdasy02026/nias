@@ -41,14 +41,38 @@ const detectQuestion = (text) => {
   return null;
 };
 
+const WELCOME = { role: 'bot', text: 'مرحباً 👋 أنا المساعد الذكي، اسألني عن المعهد أو أي موضوع عام وسأساعدك.' };
+
+const escapeHtml = (s) =>
+  String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+// Very small, safe formatting for AI replies: **bold**, *italic*,
+// `code`, inline [label](/path) links, and bulleted lines. Input is
+// HTML-escaped first, so no raw markup can leak through.
+const formatReply = (text) => {
+  let s = escapeHtml(text);
+  s = s.replace(/\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
+  s = s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>');
+  s = s.replace(/`([^`]+)`/g, '<code>$1</code>');
+  const lines = s.split(/\n+/).map((line) => {
+    const bullet = line.match(/^\s*[-•*]\s+(.*)$/);
+    if (bullet) return `<span class="smart-line smart-line--bullet">${bullet[1]}</span>`;
+    return `<span class="smart-line">${line}</span>`;
+  });
+  return lines.join('');
+};
+
 export default function SmartAssistant() {
   const settings = useSiteSettings();
   const [open, setOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { role: 'bot', text: 'مرحباً 👋 أنا المساعد الذكي، كيف يمكنني مساعدتك اليوم؟' },
-  ]);
+  const [messages, setMessages] = useState([WELCOME]);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [aiEnabled, setAiEnabled] = useState(true);
   const bodyRef = useRef(null);
   const cache = useRef({});
 
@@ -57,12 +81,25 @@ export default function SmartAssistant() {
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing, open]);
 
+  useEffect(() => {
+    let alive = true;
+    api
+      .get('/public/assistant/status')
+      .then((d) => {
+        if (alive) setAiEnabled(Boolean(d?.enabled));
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
   const load = async (path) => {
     if (!cache.current[path]) cache.current[path] = await api.get(path);
     return cache.current[path] ?? [];
   };
 
-  const buildReply = async (key) => {
+  const buildLocalReply = async (key) => {
     const contact = settings?.contact ?? {};
     const siteName = settings?.general?.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية';
 
@@ -156,15 +193,49 @@ export default function SmartAssistant() {
     };
   };
 
+  const linkify = (reply, key) => {
+    const local = typeof key === 'string' ? key : detectQuestion(reply);
+    return local;
+  };
+
   const ask = async (key, label) => {
     if (typing) return;
-    setMessages((m) => [...m, { role: 'user', text: label }]);
+    const userTurn = { role: 'user', text: label };
+    const prior = messages.filter((m) => !m.typing);
+    setMessages((m) => [...m, userTurn]);
+    setInput('');
     setTyping(true);
     try {
-      const reply = await buildReply(key);
-      setMessages((m) => [...m, { role: 'bot', ...reply }]);
-    } catch {
-      setMessages((m) => [...m, { role: 'bot', text: 'تعذّر جلب البيانات الآن، حاول مرة أخرى بعد قليل.' }]);
+      if (aiEnabled) {
+        const history = prior.slice(-10).map((m) => ({ role: m.role, text: m.text }));
+        const data = await api.post('/public/assistant', { message: label, history });
+        setMessages((m) => [...m, { role: 'bot', text: data?.reply ?? 'تعذّر توليد رد.' }]);
+      } else {
+        const reply = await buildLocalReply(key);
+        setMessages((m) => [...m, { role: 'bot', ...reply }]);
+      }
+    } catch (err) {
+      // If the AI endpoint fails, gracefully fall back to the local engine.
+      const fallbackKey = linkify(label, detectQuestion(label));
+      if (aiEnabled) {
+        try {
+          const reply = await buildLocalReply(fallbackKey);
+          setMessages((m) => [...m, { role: 'bot', ...reply }]);
+          return;
+        } catch {
+          /* ignore */
+        }
+      }
+      const busy = err?.status === 429;
+      setMessages((m) => [
+        ...m,
+        {
+          role: 'bot',
+          text: busy
+            ? 'الرسائل كثيرة الآن، جرّب بعد قليل.'
+            : 'تعذّر جلب البيانات الآن، حاول مرة أخرى بعد قليل.',
+        },
+      ]);
     } finally {
       setTyping(false);
     }
@@ -174,9 +245,7 @@ export default function SmartAssistant() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    setInput('');
-    const key = detectQuestion(text) ?? 'unknown';
-    ask(key, text);
+    ask(detectQuestion(text) ?? 'unknown', text);
   };
 
   return (
@@ -186,7 +255,7 @@ export default function SmartAssistant() {
           <div className="smart-assistant-head">
             <div>
               <strong>المساعد الذكي</strong>
-              <span>نساعدك في الوصول للمعلومة بسرعة</span>
+              <span>اسأل عن أي شيء — نرد عليك فوراً</span>
             </div>
             <button type="button" className="smart-assistant-close" aria-label="إغلاق المساعد" onClick={() => setOpen(false)}>×</button>
           </div>
@@ -194,7 +263,11 @@ export default function SmartAssistant() {
           <div className="smart-assistant-body" ref={bodyRef}>
             {messages.map((m, i) => (
               <div key={i} className={`smart-msg smart-msg--${m.role}`}>
-                <p>{m.text}</p>
+                {m.role === 'bot' ? (
+                  <p className="smart-msg-text" dangerouslySetInnerHTML={{ __html: formatReply(m.text) }} />
+                ) : (
+                  <p className="smart-msg-text">{m.text}</p>
+                )}
                 {m.items?.length > 0 && (
                   <ul>
                     {m.items.map((item, j) => <li key={j}>{item}</li>)}

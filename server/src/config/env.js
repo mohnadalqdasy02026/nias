@@ -51,4 +51,10 @@ export const env = {
   EMAIL_FROM: process.env.EMAIL_FROM || 'NIAS Academy <no-reply@nias-academy.onrender.com>',
   CONTACT_NOTIFY_TO: process.env.CONTACT_NOTIFY_TO || '',
   PUBLIC_BASE_URL: process.env.PUBLIC_BASE_URL || 'https://nias-academy.onrender.com',
+
+  // Smart assistant (Google Gemini). When GEMINI_API_KEY is empty the
+  // assistant endpoint reports unavailable and the frontend falls back to
+  // its local keyword engine.
+  GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',
+  GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
 };

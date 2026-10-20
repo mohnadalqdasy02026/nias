@@ -68,3 +68,15 @@ export const contactSchema = {
     message: z.string().trim().min(5).max(5000),
   }),
 };
+
+const assistantTurnSchema = z.object({
+  role: z.enum(['user', 'bot']),
+  text: z.string().trim().min(1).max(2000),
+});
+
+export const assistantSchema = {
+  body: z.object({
+    message: z.string().trim().min(1).max(2000),
+    history: z.array(assistantTurnSchema).max(20).optional().default([]),
+  }),
+};

@@ -7387,6 +7387,51 @@ button,
   margin: 0;
 }
 
+.smart-msg-text {
+  display: block;
+  white-space: normal;
+}
+
+.smart-msg-text .smart-line {
+  display: block;
+}
+
+.smart-msg-text .smart-line + .smart-line {
+  margin-top: 4px;
+}
+
+.smart-msg-text .smart-line--bullet {
+  position: relative;
+  padding-inline-start: 14px;
+}
+
+.smart-msg-text .smart-line--bullet::before {
+  content: '•';
+  position: absolute;
+  inset-inline-start: 2px;
+  color: var(--color-primary, #0e7c66);
+  font-weight: 700;
+}
+
+.smart-msg-text a {
+  color: var(--color-primary, #0e7c66);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.smart-msg-text code {
+  background: rgba(15, 23, 42, 0.07);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 0.82em;
+}
+
+.smart-msg--user .smart-msg-text a,
+.smart-msg--user .smart-msg-text code {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .smart-msg ul {
   margin: 8px 0 0;
   padding-inline-start: 18px;

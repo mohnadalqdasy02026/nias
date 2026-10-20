@@ -1,14 +1,17 @@
 import { asyncHandler, success, created } from '../utils/asyncHandler.js';
 import { PublicService } from '../services/public.service.js';
 import { ContactService } from '../services/contact.service.js';
+import { AssistantService } from '../services/assistant.service.js';
 
 export class PublicController {
   constructor(
     publicService = new PublicService(),
     contactService = new ContactService(),
+    assistantService = new AssistantService(),
   ) {
     this.publicService = publicService;
     this.contactService = contactService;
+    this.assistantService = assistantService;
   }
 
   listNews = asyncHandler(async (req, res) => success(res, await this.publicService.listNews(req.query)));
@@ -39,4 +42,10 @@ export class PublicController {
   stats = asyncHandler(async (_req, res) => success(res, await this.publicService.stats()));
 
   submitContact = asyncHandler(async (req, res) => created(res, await this.contactService.submit(req.body)));
+
+  assistantChat = asyncHandler(async (req, res) =>
+    success(res, await this.assistantService.reply({ message: req.body.message, history: req.body.history })));
+
+  assistantStatus = asyncHandler(async (_req, res) =>
+    success(res, { enabled: this.assistantService.isConfigured() }));
 }

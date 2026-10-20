@@ -16,6 +16,7 @@ import {
   getPageParams,
   searchSchema,
   contactSchema,
+  assistantSchema,
 } from '../validators/public.validators.js';
 import { trainingRegisterSchema } from '../validators/training.validators.js';
 import { publicLimiter } from '../middleware/rateLimit.js';
@@ -66,6 +67,11 @@ router.get('/settings', settingsController.getPublic);
 
 // Contact
 router.post('/contact', publicLimiter, validate(contactSchema), publicController.submitContact);
+
+// Smart assistant (AI). Uses the general API limiter (not the strict
+// public form limiter) so normal conversation isn't throttled harshly.
+router.get('/assistant/status', publicController.assistantStatus);
+router.post('/assistant', validate(assistantSchema), publicController.assistantChat);
 
 // Training registration
 router.get('/training/register/config', trainingController.captcha);
