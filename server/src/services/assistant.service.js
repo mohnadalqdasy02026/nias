@@ -6,6 +6,12 @@ import { AppError } from '../utils/AppError.js';
 const MAX_HISTORY = 12;
 const MAX_MESSAGE_LENGTH = 2000;
 const TIMEOUT_MS = 25000;
+const MAX_ATTEMPTS = 3;
+const RETRY_BASE_DELAY_MS = 700;
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 
 let cachedContext = null;
 let cachedAt = 0;
@@ -186,55 +192,70 @@ export class AssistantService {
       env.GEMINI_MODEL,
     )}:generateContent?key=${encodeURIComponent(env.GEMINI_API_KEY)}`;
 
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    let res;
-    try {
-      res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        signal: controller.signal,
-        body: JSON.stringify({
-          systemInstruction: { role: 'system', parts: [{ text: systemPrompt }] },
-          contents,
-          generationConfig: {
-            temperature: 0.7,
-            topP: 0.95,
-            maxOutputTokens: 1024,
-          },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
-          ],
-        }),
-      });
-    } catch (err) {
-      if (err.name === 'AbortError') throw new AppError(504, 'ASSISTANT_TIMEOUT', 'تأخر رد المساعد، حاول مرة أخرى.');
-      throw new AppError(502, 'ASSISTANT_UPSTREAM', 'تعذّر الاتصال بخدمة المساعد الذكي.');
-    } finally {
+    const requestBody = JSON.stringify({
+      systemInstruction: { role: 'system', parts: [{ text: systemPrompt }] },
+      contents,
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+      },
+      safetySettings: [
+        { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+        { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' },
+      ],
+    });
+
+    let lastError;
+    for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
+      if (attempt > 0) await delay(RETRY_BASE_DELAY_MS * 2 ** (attempt - 1));
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+      let res;
+      try {
+        res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: controller.signal,
+          body: requestBody,
+        });
+      } catch (err) {
+        clearTimeout(timer);
+        lastError =
+          err.name === 'AbortError'
+            ? new AppError(504, 'ASSISTANT_TIMEOUT', 'تأخر رد المساعد، حاول مرة أخرى.')
+            : new AppError(502, 'ASSISTANT_UPSTREAM', 'تعذّر الاتصال بخدمة المساعد الذكي.');
+        continue;
+      }
       clearTimeout(timer);
-    }
 
-    const data = await res.json().catch(() => null);
+      const data = await res.json().catch(() => null);
 
-    if (!res.ok) {
+      const candidate = data?.candidates?.[0];
+      const reply = (candidate?.content?.parts ?? [])
+        .map((p) => p?.text ?? '')
+        .join('')
+        .trim();
+
+      if (res.ok && reply) return { reply };
+
+      if (res.ok && !reply) {
+        lastError = new AppError(502, 'ASSISTANT_EMPTY', 'لم يتمكن المساعد من توليد رد، جرّب صياغة أخرى.', {
+          finishReason: candidate?.finishReason,
+        });
+        continue;
+      }
+
       const upstream = data?.error?.message || `Gemini HTTP ${res.status}`;
-      throw new AppError(502, 'ASSISTANT_UPSTREAM', 'تعذّر الحصول على رد من المساعد الذكي.', { upstream });
+      lastError = new AppError(502, 'ASSISTANT_UPSTREAM', 'تعذّر الحصول على رد من المساعد الذكي.', { upstream });
+
+      const retriable = res.status === 429 || res.status === 500 || res.status === 503 || res.status === 504;
+      if (!retriable) break;
     }
 
-    const candidate = data?.candidates?.[0];
-    const reply = (candidate?.content?.parts ?? [])
-      .map((p) => p?.text ?? '')
-      .join('')
-      .trim();
-
-    if (!reply) {
-      const blocked = candidate?.finishReason;
-      throw new AppError(502, 'ASSISTANT_EMPTY', 'لم يتمكن المساعد من توليد رد، جرّب صياغة أخرى.', { finishReason: blocked });
-    }
-
-    return { reply };
+    throw lastError;
   }
 }
