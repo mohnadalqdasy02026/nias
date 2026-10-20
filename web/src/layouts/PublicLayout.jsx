@@ -37,6 +37,7 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [linksOpen, setLinksOpen] = useState(false);
   const [branches, setBranches] = useState([]);
   const { user } = useAuth();
   const settings = useSiteSettings();
@@ -47,6 +48,18 @@ function Header() {
   const navItems = resolveNav(DEFAULT_MAIN, navCfg.main).filter((i) => i.visible);
   const moreItems = resolveNav(DEFAULT_MORE, navCfg.more).filter((i) => i.visible);
   const navLabels = { ...DEFAULT_NAV_LABELS, ...(navCfg.labels ?? {}) };
+  const serviceLinks = [
+    general.portal_student_url && { label: 'بوابة الطالب', href: general.portal_student_url },
+    general.portal_training_url && { label: 'التسجيل في الدورات', href: general.portal_training_url },
+    general.ministry_admission_url && { label: 'بوابة التنسيق الموحد', href: general.ministry_admission_url },
+    general.ministry_results_url && { label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url },
+  ].filter(Boolean);
+  const socialLinks = [
+    contact.social_telegram && { label: 'تليجرام', href: contact.social_telegram },
+    contact.social_facebook && { label: 'فيسبوك', href: contact.social_facebook },
+    contact.whatsapp && { label: 'واتساب', href: `https://wa.me/${String(contact.whatsapp).replace(/\D/g, '')}` },
+    contact.social_youtube && { label: 'يوتيوب', href: contact.social_youtube },
+  ].filter(Boolean);
   const navRef = useRef(null);
   const toggleRef = useRef(null);
   const headerRef = useRef(null);
@@ -78,6 +91,7 @@ function Header() {
     setOpen(false);
     setBranchOpen(false);
     setMoreOpen(false);
+    setLinksOpen(false);
   };
 
   // Tapping outside the drawer closes it, and Escape closes it too.
@@ -129,7 +143,7 @@ function Header() {
               <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
             </span>
           </div>
-          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); setMoreOpen(false); }}>×</button>
+          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); setMoreOpen(false); setLinksOpen(false); }}>×</button>
           {navItems.map((item) => (
             <NavLink
               key={item.to}
@@ -141,7 +155,7 @@ function Header() {
               {item.label}
             </NavLink>
           ))}
-          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); }}>
+          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); setLinksOpen(false); }}>
             {branches.length === 0 && <span className="nav-drop-empty">لا توجد فروع مسجلة.</span>}
             {branches.map((b) => (
               <Link
@@ -155,7 +169,7 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
-          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); }}>
+          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); setLinksOpen(false); }}>
             {moreItems.map((item) => (
               <Link
                 key={item.to}
@@ -167,57 +181,51 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
-          {general.portal_training_url && (
-            <a
-              className="btn btn-outline btn-light nav-portal"
-              href={general.portal_training_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-            >
-              التسجيل في الدورات
-            </a>
-          )}
-          {general.portal_student_url && (
-            <a
-              className="btn btn-primary nav-portal"
-              href={general.portal_student_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setOpen(false)}
-            >
-              بوابة الطالب
-            </a>
-          )}
-          {isAdmin && (
-            <Link to="/admin" className="btn btn-primary nav-login" onClick={() => setOpen(false)}>لوحة التحكم</Link>
-          )}
-          {!isAdmin ? (
-            <Link to="/login" className="btn btn-outline btn-light nav-login" onClick={() => setOpen(false)}>تسجيل الدخول</Link>
-          ) : null}
+          <NavDropdown label={navLabels.links} open={linksOpen} onToggle={() => { setLinksOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); }}>
+            {serviceLinks.length > 0 && (
+              <>
+                <span className="nav-drop-group">خدمات إلكترونية</span>
+                {serviceLinks.map((l) => (
+                  <a
+                    key={l.href}
+                    className="nav-drop-link"
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { setLinksOpen(false); setOpen(false); }}
+                  >
+                    {l.label}
+                    <span className="nav-drop-ext" aria-hidden="true">↗</span>
+                  </a>
+                ))}
+              </>
+            )}
+            {socialLinks.length > 0 && (
+              <>
+                <span className="nav-drop-group">تابعنا</span>
+                {socialLinks.map((l) => (
+                  <a
+                    key={l.href}
+                    className="nav-drop-link"
+                    href={l.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => { setLinksOpen(false); setOpen(false); }}
+                  >
+                    {l.label}
+                    <span className="nav-drop-ext" aria-hidden="true">↗</span>
+                  </a>
+                ))}
+              </>
+            )}
+            <span className="nav-drop-group">الحساب</span>
+            {isAdmin ? (
+              <Link to="/admin" className="nav-drop-link" onClick={() => { setLinksOpen(false); setOpen(false); }}>لوحة التحكم</Link>
+            ) : (
+              <Link to="/login" className="nav-drop-link" onClick={() => { setLinksOpen(false); setOpen(false); }}>تسجيل الدخول</Link>
+            )}
+          </NavDropdown>
         </nav>
-
-        {(contact.social_facebook || contact.whatsapp) && (
-          <div className="header-social">
-            {contact.social_facebook && (
-              <a className="header-social-link" href={contact.social_facebook} target="_blank" rel="noopener noreferrer" aria-label="فيسبوك" title="فيسبوك">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8h2V5h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8z" /></svg>
-              </a>
-            )}
-            {contact.whatsapp && (
-              <a
-                className="header-social-link"
-                href={`https://wa.me/${String(contact.whatsapp).replace(/\D/g, '')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="واتساب"
-                title="واتساب"
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3a9 9 0 0 0-7.8 13.5L3 21l4.7-1.2A9 9 0 1 0 12 3zm-3.5 5.3c.2 0 .4.2.5.4l.5 1.1c.1.2.1.4 0 .6L9 11.2a.5.5 0 0 0 0 .6c.2.4.6 1 1.3 1.7.9.9 1.6 1.2 2.1 1.4.2.1.4.1.5 0l1-1c.2-.2.4-.2.6-.1l1.2.6c.2.1.4.2.4.4 0 .7-.6 1.7-1.3 1.7-1 0-3.6-1.9-5-3.6-1-1.2-1.5-2.2-1.6-2.9 0-.8.4-1.4.9-1.6l.4-.2z" /></svg>
-              </a>
-            )}
-          </div>
-        )}
 
         <button
           ref={toggleRef}

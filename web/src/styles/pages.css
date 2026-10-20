@@ -80,10 +80,6 @@
   gap: 2px;
 }
 
-.nav-login {
-  display: inline-flex;
-}
-
 .nav-toggle {
   display: none;
 }
@@ -4103,10 +4099,6 @@ code {
     gap: 10px;
   }
 
-  .nav-login {
-    display: inline-flex;
-  }
-
   .nav-close {
     align-self: flex-end;
     display: inline-flex;
@@ -4256,12 +4248,6 @@ code {
   .nav-link.active {
     background: linear-gradient(135deg, rgba(14, 124, 102, 0.16), rgba(12, 84, 69, 0.12));
     box-shadow: inset 3px 0 0 var(--color-primary);
-  }
-
-  .nav-login {
-    width: 100%;
-    justify-content: center;
-    margin-top: 6px;
   }
 
   .programs-hero h1 {
@@ -7549,47 +7535,80 @@ button,
   display: block;
 }
 
-/* Header portal buttons */
-.nav-portal {
-  display: inline-flex;
+/* Header: grouped "quick links" dropdown (portals, socials, account) */
+.nav-drop-group {
+  padding: 10px 14px 2px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--color-text-muted, #5c6b66);
+  letter-spacing: 0.05em;
 }
 
-@media (max-width: 900px) {
-  .nav-portal {
-    width: 100%;
-    justify-content: center;
-    margin-top: 6px;
+.nav-drop-ext {
+  font-size: 0.8em;
+  opacity: 0.55;
+}
+
+/* Header: every item stays on one single line */
+.main-nav {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.nav-link,
+.nav-drop-toggle {
+  white-space: nowrap;
+}
+
+@media (min-width: 901px) and (max-width: 1320px) {
+  .header-inner {
+    gap: 12px;
+  }
+
+  .main-nav {
+    gap: 0;
+  }
+
+  .nav-link,
+  .nav-drop-toggle {
+    padding: 10px 9px;
+    font-size: 0.9rem;
+  }
+
+  .header-inner .brand-text small {
+    display: none;
   }
 }
 
-/* Header social icons */
-.header-social {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
+@media (min-width: 901px) and (max-width: 1080px) {
+  .header-inner {
+    gap: 8px;
+  }
+
+  .nav-link,
+  .nav-drop-toggle {
+    padding: 10px 6px;
+    font-size: 0.85rem;
+  }
 }
 
-.header-social-link {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  color: var(--color-text-muted, #5c6b66);
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
-}
-
-.header-social-link:hover,
-.header-social-link:focus-visible {
-  background: rgba(14, 124, 102, 0.12);
-  color: var(--color-primary-dark, var(--color-primary, #0e7c66));
-  transform: translateY(-1px);
-}
-
-@media (max-width: 900px) {
-  .header-social {
+@media (min-width: 901px) and (max-width: 980px) {
+  .header-inner .brand-text {
     display: none;
+  }
+}
+
+/* The two leftmost dropdowns (RTL) would otherwise overflow the left edge
+   of the viewport, so open them toward the inside instead. */
+@media (min-width: 901px) {
+  .main-nav > .nav-drop:nth-last-child(-n + 2) .nav-drop-menu {
+    left: 0;
+    right: auto;
+  }
+
+  .main-nav > .nav-drop:nth-last-child(-n + 2) .nav-drop-menu::before {
+    left: 24px;
+    right: auto;
   }
 }
 

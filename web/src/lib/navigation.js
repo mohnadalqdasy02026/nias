@@ -23,6 +23,7 @@ export const DEFAULT_MORE = [
 export const DEFAULT_NAV_LABELS = {
   more: 'المزيد',
   branches: 'فروع المعهد',
+  links: 'روابط سريعة',
 };
 
 // Merge saved navigation (order + label + visibility) with the code defaults.
