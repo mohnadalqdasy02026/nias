@@ -16,9 +16,9 @@ services:
       - key: TRUST_PROXY
         value: "true"
       - key: DATABASE_URL
-        fromDatabase:
-          name: nias-postgres
-          property: connectionString
+        # Supabase (ap-southeast-1) replaces the expiring Render free Postgres.
+        # The transaction pooler is used because the service runs outside Supabase.
+        value: postgresql://postgres.ojimbwibjrhddsnxmpls:7htzy3y228%23A@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
@@ -30,6 +30,11 @@ services:
         value: "false"
       - key: PUBLIC_BASE_URL
         value: https://nias-academy.onrender.com
+      # Google Gemini (AI smart assistant)
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: GEMINI_MODEL
+        value: gemini-2.5-flash
 
 databases:
   - name: nias-postgres
