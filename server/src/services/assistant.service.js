@@ -41,6 +41,7 @@ function buildSystemPrompt(context) {
     downloads,
     training,
     faculty,
+    departments,
   } = context;
   const general = settings?.general ?? {};
   const contact = settings?.contact ?? {};
@@ -110,6 +111,25 @@ function buildSystemPrompt(context) {
       )}`
     : 'لا يوجد أعضاء هيئة تدريس مسجلون حالياً';
 
+  const departmentsBlock = departments.length
+    ? formatList(
+        departments,
+        (d) =>
+          `- ${d.name_ar}${d.college_name_ar ? ` — ${d.college_name_ar}` : ''}${
+            d.head_name_ar ? ` — رئيس القسم: ${d.head_name_ar}${d.head_title ? ` (${d.head_title})` : ''}` : ''
+          }${typeof d.faculty_count === 'number' ? ` — عدد أعضاء القسم: ${d.faculty_count}` : ''}${
+            typeof d.programs_count === 'number' ? ` — عدد البرامج: ${d.programs_count}` : ''
+          }`,
+      )
+    : '- لا توجد أقسام مسجلة حالياً';
+
+  const deansBlock = colleges.length
+    ? formatList(
+        colleges.filter((c) => c.dean_name || c.dean_name_ar),
+        (c) => `- ${c.name_ar}: العميد ${c.dean_name_ar || c.dean_name}`,
+      )
+    : '- لا توجد أسماء عمداء مسجلة حالياً';
+
   const contactBlock = [
     contact.phone ? `الهاتف: ${contact.phone}` : null,
     contact.email ? `البريد الرسمي: ${contact.email}` : null,
@@ -141,6 +161,8 @@ function buildSystemPrompt(context) {
     `ملفات للتحميل:\n${downloadsBlock}`,
     `الدورات التدريبية:\n${trainingBlock}`,
     `هيئة التدريس:\n${facultyBlock}`,
+    `الأقسام الأكاديمية:\n${departmentsBlock}`,
+    deansBlock && deansBlock !== '- لا توجد أسماء عمداء مسجلة حالياً' ? `العمداء:\n${deansBlock}` : '',
   ]
     .filter(Boolean)
     .join('\n');
@@ -150,7 +172,7 @@ async function getContext() {
   if (cachedContext && Date.now() - cachedAt < CONTEXT_TTL_MS) return cachedContext;
   const settingsService = new SettingsService();
   const publicService = new PublicService();
-  const [settings, programs, colleges, branches, newsPage, journal, conferences, trustees, downloads, training, faculty] =
+  const [settings, programs, colleges, branches, newsPage, journal, conferences, trustees, downloads, training, faculty, departments] =
     await Promise.all([
       settingsService.getPublicSettings().catch(() => ({})),
       publicService.listPrograms({}).catch(() => []),
@@ -163,6 +185,7 @@ async function getContext() {
       publicService.listDownloads().catch(() => []),
       publicService.listTrainingCourses({}).catch(() => []),
       publicService.listFaculty().catch(() => []),
+      publicService.listDepartments().catch(() => []),
     ]);
   cachedContext = {
     settings,
@@ -176,6 +199,7 @@ async function getContext() {
     downloads: downloads ?? [],
     training: training ?? [],
     faculty: faculty ?? [],
+    departments: departments ?? [],
   };
   cachedAt = Date.now();
   return cachedContext;
