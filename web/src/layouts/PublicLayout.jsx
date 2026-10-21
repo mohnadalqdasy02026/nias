@@ -97,7 +97,6 @@ function Header() {
     setAboutOpen(false);
     setLinksOpen(false);
   };
-
   // Tapping outside the drawer closes it, and Escape closes it too.
   useEffect(() => {
     if (!open) return undefined;
@@ -147,19 +146,42 @@ function Header() {
               <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
             </span>
           </div>
-          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); setMoreOpen(false); setLinksOpen(false); }}>×</button>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === '/'}
-              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-              onClick={() => setOpen(false)}
-            >
-              {item.label}
-            </NavLink>
-          ))}
-          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); setLinksOpen(false); }}>
+          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); setMoreOpen(false); setAboutOpen(false); setLinksOpen(false); }}>×</button>
+          {navItems.map((item) =>
+            item.to === '/about' ? (
+              <NavDropdown
+                key={item.to}
+                label={item.label}
+                open={aboutOpen}
+                onToggle={() => { setAboutOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); setLinksOpen(false); }}
+              >
+                <Link to="/about" className="nav-drop-link nav-drop-link--lead" onClick={() => { setAboutOpen(false); setOpen(false); }}>
+                  نظرة عامة
+                </Link>
+                {aboutItems.map((sub) => (
+                  <Link
+                    key={sub.to}
+                    to={sub.to}
+                    className="nav-drop-link"
+                    onClick={() => { setAboutOpen(false); setOpen(false); }}
+                  >
+                    {sub.label}
+                  </Link>
+                ))}
+              </NavDropdown>
+            ) : (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === '/'}
+                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+                onClick={() => setOpen(false)}
+              >
+                {item.label}
+              </NavLink>
+            ),
+          )}
+          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); setAboutOpen(false); setLinksOpen(false); }}>
             {branches.length === 0 && <span className="nav-drop-empty">لا توجد فروع مسجلة.</span>}
             {branches.map((b) => (
               <Link
@@ -173,32 +195,7 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
-          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); setLinksOpen(false); }}>
-            {aboutItems.length > 0 && (
-              <div className={`nav-drop-sub${aboutOpen ? ' nav-drop-sub--open' : ''}`}>
-                <button
-                  type="button"
-                  className="nav-drop-link nav-drop-sub-toggle"
-                  aria-expanded={aboutOpen}
-                  onClick={() => setAboutOpen((v) => !v)}
-                >
-                  <span>{navLabels.about}</span>
-                  <span className="nav-drop-caret" aria-hidden="true">▾</span>
-                </button>
-                <div className="nav-drop-submenu">
-                  {aboutItems.map((item) => (
-                    <Link
-                      key={item.to}
-                      to={item.to}
-                      className="nav-drop-link nav-drop-sub-link"
-                      onClick={() => { setAboutOpen(false); setMoreOpen(false); setOpen(false); }}
-                    >
-                      {item.label}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); setAboutOpen(false); setLinksOpen(false); }}>
             {otherMoreItems.map((item) => (
               <Link
                 key={item.to}
@@ -210,7 +207,7 @@ function Header() {
               </Link>
             ))}
           </NavDropdown>
-          <NavDropdown label={navLabels.links} open={linksOpen} onToggle={() => { setLinksOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); }}>
+          <NavDropdown label={navLabels.links} open={linksOpen} onToggle={() => { setLinksOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); setAboutOpen(false); }}>
             {serviceLinks.length > 0 && (
               <>
                 <span className="nav-drop-group">خدمات إلكترونية</span>
