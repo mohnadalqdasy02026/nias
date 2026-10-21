@@ -5,7 +5,7 @@ const USER_COLUMNS = `u.id, u.full_name_ar, u.full_name_en, u.email, u.phone, u.
 
 export class AdminUserRepository {
   async list({ search, status, role, page = 1, limit = 20 } = {}) {
-    const conditions = ['u.deleted_at IS NULL'];
+    const conditions = ['u.deleted_at IS NULL', 'u.is_hidden = FALSE'];
     const params = [];
 
     if (search) {
@@ -40,7 +40,7 @@ export class AdminUserRepository {
   }
 
   async count({ search, status, role } = {}) {
-    const conditions = ['deleted_at IS NULL'];
+    const conditions = ['deleted_at IS NULL', 'is_hidden = FALSE'];
     const params = [];
     if (search) {
       params.push(`%${search}%`);
@@ -70,7 +70,7 @@ export class AdminUserRepository {
               ), '') AS roles_list
          FROM users u
          LEFT JOIN institute_branches b ON b.id = u.branch_id
-         WHERE u.id = $1 AND u.deleted_at IS NULL`,
+        WHERE u.id = $1 AND u.deleted_at IS NULL AND u.is_hidden = FALSE`,
       [id],
     );
     return rows[0] ?? null;
@@ -174,7 +174,7 @@ export class AdminUserRepository {
     if (sets.length === 0) return this.findById(id);
     params.push(id);
     const { rows } = await pool.query(
-      `UPDATE users SET ${sets.join(', ')} WHERE id = $${params.length} AND deleted_at IS NULL RETURNING id`,
+      `UPDATE users SET ${sets.join(', ')} WHERE id = $${params.length} AND deleted_at IS NULL AND is_hidden = FALSE RETURNING id`,
       params,
     );
     return rows[0] ?? null;
@@ -183,7 +183,7 @@ export class AdminUserRepository {
   async softDelete(id) {
     const { rows } = await pool.query(
       `UPDATE users SET deleted_at = now(), status = 'banned'
-        WHERE id = $1 AND deleted_at IS NULL RETURNING id`,
+        WHERE id = $1 AND deleted_at IS NULL AND is_hidden = FALSE RETURNING id`,
       [id],
     );
     return rows[0] ?? null;
