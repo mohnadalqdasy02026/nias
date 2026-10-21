@@ -5,7 +5,7 @@ import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
 import { initReveal } from '../lib/reveal.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../lib/navigation.js';
+import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, ABOUT_GROUP_ITEMS, resolveNav } from '../lib/navigation.js';
 import SmartAssistant from '../components/SmartAssistant.jsx';
 
 function Logo({ small, src }) {
@@ -37,6 +37,7 @@ function Header() {
   const [open, setOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
   const [branches, setBranches] = useState([]);
   const { user } = useAuth();
@@ -47,6 +48,8 @@ function Header() {
   const navCfg = settings?.navigation ?? {};
   const navItems = resolveNav(DEFAULT_MAIN, navCfg.main).filter((i) => i.visible);
   const moreItems = resolveNav(DEFAULT_MORE, navCfg.more).filter((i) => i.visible);
+  const aboutItems = moreItems.filter((i) => ABOUT_GROUP_ITEMS.includes(i.to));
+  const otherMoreItems = moreItems.filter((i) => !ABOUT_GROUP_ITEMS.includes(i.to));
   const navLabels = { ...DEFAULT_NAV_LABELS, ...(navCfg.labels ?? {}) };
   const serviceLinks = [
     general.portal_student_url && { label: 'بوابة الطالب', href: general.portal_student_url },
@@ -91,6 +94,7 @@ function Header() {
     setOpen(false);
     setBranchOpen(false);
     setMoreOpen(false);
+    setAboutOpen(false);
     setLinksOpen(false);
   };
 
@@ -170,7 +174,32 @@ function Header() {
             ))}
           </NavDropdown>
           <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); setLinksOpen(false); }}>
-            {moreItems.map((item) => (
+            {aboutItems.length > 0 && (
+              <div className={`nav-drop-sub${aboutOpen ? ' nav-drop-sub--open' : ''}`}>
+                <button
+                  type="button"
+                  className="nav-drop-link nav-drop-sub-toggle"
+                  aria-expanded={aboutOpen}
+                  onClick={() => setAboutOpen((v) => !v)}
+                >
+                  <span>{navLabels.about}</span>
+                  <span className="nav-drop-caret" aria-hidden="true">▾</span>
+                </button>
+                <div className="nav-drop-submenu">
+                  {aboutItems.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className="nav-drop-link nav-drop-sub-link"
+                      onClick={() => { setAboutOpen(false); setMoreOpen(false); setOpen(false); }}
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            {otherMoreItems.map((item) => (
               <Link
                 key={item.to}
                 to={item.to}
@@ -314,7 +343,7 @@ function Footer() {
             </div>
           </div>
 
-          <nav className="footer-col" aria-label="روابط سريعة">
+          <nav className="footer-col footer-col--panel" aria-label="روابط سريعة">
             <h4 className="footer-col-title">روابط سريعة</h4>
             <ul className="footer-link-list">
               {quickLinks.map((l) => (
@@ -323,7 +352,7 @@ function Footer() {
             </ul>
           </nav>
 
-          <nav className="footer-col" aria-label="روابط رسمية وقانونية">
+          <nav className="footer-col footer-col--panel" aria-label="روابط رسمية وقانونية">
             <h4 className="footer-col-title">روابط رسمية</h4>
             <ul className="footer-link-list">
               {ministryLinks.map((m) => (
@@ -363,6 +392,17 @@ function Footer() {
           <span>{contact.footer_credits || 'حلول كود — مصمم ومطور الموقع  •  جميع الحقوق محفوظة للمعهد الوطني للعلوم الإدارية'}</span>
         </div>
       </div>
+      <div className="footer-bottom">
+        <div className="container footer-bottom-inner">
+          <span>© {new Date().getFullYear()} {general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'} — جميع الحقوق محفوظة</span>
+          <nav className="footer-bottom-links" aria-label="روابط قانونية">
+            <Link to="/terms">الشروط والأحكام</Link>
+            <Link to="/privacy">سياسة الخصوصية</Link>
+            <Link to="/accessibility">إمكانية الوصول</Link>
+            <Link to="/sitemap">خريطة الموقع</Link>
+          </nav>
+        </div>
+      </div>
     </footer>
   );
 }
@@ -384,7 +424,7 @@ export default function PublicLayout() {
           <Outlet />
         </div>
       </main>
-      {location.pathname === '/' && <Footer />}
+      <Footer />
       <SmartAssistant />
     </>
   );

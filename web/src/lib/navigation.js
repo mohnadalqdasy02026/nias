@@ -24,7 +24,12 @@ export const DEFAULT_NAV_LABELS = {
   more: 'المزيد',
   branches: 'فروع المعهد',
   links: 'روابط سريعة',
+  about: 'عن المعهد',
 };
+
+// The "More" dropdown groups the institute-introduction pages under one
+// collapsible "عن المعهد" entry instead of listing them flat.
+export const ABOUT_GROUP_ITEMS = ['/dean', '/structure', '/trustees', '/conferences'];
 
 // Merge saved navigation (order + label + visibility) with the code defaults.
 // Saved routes drive the order; any newly added default route is appended so
