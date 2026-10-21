@@ -7605,6 +7605,45 @@ button,
   }
 }
 
+/* Dean's page: the portrait keeps its own shape instead of being blown up
+   into a wide banner. */
+.dean-head {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin: 6px 0 30px;
+  flex-wrap: wrap;
+}
+
+.dean-photo {
+  width: 172px;
+  height: 172px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 12px 28px rgba(6, 74, 61, 0.16);
+}
+
+.dean-head-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dean-head-name {
+  margin: 0;
+  color: var(--color-primary, #0e7c66);
+  font-size: 1.35rem;
+  font-weight: 800;
+}
+
+.dean-head-role {
+  color: var(--color-text-muted, #5c6b66);
+  font-size: 0.95rem;
+}
+
 /* Header: grouped "quick links" dropdown (portals, socials, account) */
 .nav-drop-group {
   padding: 10px 14px 2px;
