@@ -280,30 +280,6 @@ function Footer() {
   const settings = useSiteSettings();
   const general = settings?.general ?? {};
   const contact = settings?.contact ?? {};
-  const ministryLinks = [
-    { label: 'بوابة التسجيل والتنسيق الإلكتروني', href: general.ministry_admission_url || 'https://oasyemen.net' },
-    ...(general.ministry_results_url
-      ? [{ label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url }]
-      : []),
-    ...(general.portal_student_url
-      ? [{ label: 'بوابة الطالب', href: general.portal_student_url }]
-      : []),
-    ...(general.portal_training_url
-      ? [{ label: 'التسجيل في الدورات', href: general.portal_training_url }]
-      : []),
-  ];
-  const quickLinks = [
-    { to: '/about', label: 'عن المعهد' },
-    { to: '/programs', label: 'البرامج الأكاديمية' },
-    { to: '/apply', label: 'التسجيل والقبول' },
-    { to: '/training', label: 'التدريب' },
-    { to: '/branches', label: 'فروع المعهد' },
-    { to: '/gallery', label: 'المعرض' },
-    { to: '/downloads', label: 'التحميلات' },
-    { to: '/faculty', label: 'هيئة التدريس' },
-    { to: '/contact', label: 'تواصل معنا' },
-    { to: '/faq', label: 'الأسئلة الشائعة' },
-  ];
   const socials = [
     contact.social_telegram && { key: 'telegram', label: 'تليجرام', href: contact.social_telegram, path: 'M21 9.3a23.4 23.4 0 0 0-11.2 3.9L9 15.8l-3.9.9a.8.8 0 0 1-.6-.1l-2.3-1.1a.8.8 0 0 1-.2-1.4l3.9-3.6h.6l1.9 1.1M11.8 15.8l.9 2.9c0 .4.5.6.9.3l1-2.2' },
     contact.social_facebook && { key: 'facebook', label: 'فيسبوك', href: contact.social_facebook, path: 'M14 8h2V5h-2c-1.7 0-3 1.3-3 3v2H9v3h2v6h3v-6h2l1-3h-3V8z' },
@@ -317,20 +293,22 @@ function Footer() {
       <div className="container">
         <div className="footer-main">
           <div className="footer-brand">
-            <Link to="/" className="footer-brand-link">
-              <Logo src={general.logo} />
-              <span className="footer-brand-text">
-                <strong>{general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'}</strong>
-                <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
-              </span>
-            </Link>
-            {(contact.address || contact.phone || contact.email) && (
-              <ul className="footer-contact">
-                {contact.address && <li>{contact.address}</li>}
-                {contact.phone && <li><a href={`tel:${contact.phone}`} dir="ltr">{contact.phone}</a></li>}
-                {contact.email && <li><a href={`mailto:${contact.email}`} dir="ltr">{contact.email}</a></li>}
-              </ul>
-            )}
+            <div className="footer-brand-main">
+              <Link to="/" className="footer-brand-link">
+                <Logo src={general.logo} />
+                <span className="footer-brand-text">
+                  <strong>{general.site_name_ar ?? 'المعهد الوطني للعلوم الإدارية'}</strong>
+                  <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
+                </span>
+              </Link>
+              {(contact.address || contact.phone || contact.email) && (
+                <ul className="footer-contact">
+                  {contact.address && <li>{contact.address}</li>}
+                  {contact.phone && <li><a href={`tel:${contact.phone}`} dir="ltr">{contact.phone}</a></li>}
+                  {contact.email && <li><a href={`mailto:${contact.email}`} dir="ltr">{contact.email}</a></li>}
+                </ul>
+              )}
+            </div>
             <div className="footer-social-links">
               {socials.map((s) => (
                 <a key={s.key} className="footer-social-link" href={s.href} target="_blank" rel="noopener noreferrer" aria-label={s.label} title={s.label}>
@@ -339,33 +317,6 @@ function Footer() {
               ))}
             </div>
           </div>
-
-          <nav className="footer-col footer-col--panel" aria-label="روابط سريعة">
-            <h4 className="footer-col-title">روابط سريعة</h4>
-            <ul className="footer-link-list">
-              {quickLinks.map((l) => (
-                <li key={l.to}><Link to={l.to}>{l.label}</Link></li>
-              ))}
-            </ul>
-          </nav>
-
-          <nav className="footer-col footer-col--panel" aria-label="روابط رسمية وقانونية">
-            <h4 className="footer-col-title">روابط رسمية</h4>
-            <ul className="footer-link-list">
-              {ministryLinks.map((m) => (
-                <li key={m.label}>
-                  <a href={m.href} target="_blank" rel="noopener noreferrer">
-                    {m.label}
-                    <svg className="footer-ext" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 3h7v7M21 3l-9 9M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5" /></svg>
-                  </a>
-                </li>
-              ))}
-              <li><Link to="/terms">الشروط والأحكام</Link></li>
-              <li><Link to="/privacy">سياسة الخصوصية</Link></li>
-              <li><Link to="/accessibility">إمكانية الوصول</Link></li>
-              <li><Link to="/sitemap">خريطة الموقع</Link></li>
-            </ul>
-          </nav>
         </div>
 
         {contact.map_url && (
@@ -421,7 +372,7 @@ export default function PublicLayout() {
           <Outlet />
         </div>
       </main>
-      <Footer />
+      {location.pathname === '/' && <Footer />}
       <SmartAssistant />
     </>
   );
