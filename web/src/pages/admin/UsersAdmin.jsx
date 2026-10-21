@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import { branchLabel } from '../../lib/branch.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const emptyForm = {
   full_name_ar: '',
@@ -132,7 +133,7 @@ export default function UsersAdmin() {
           <option value="active">نشط</option>
           <option value="banned">محظور</option>
         </select>
-        <Link to="new" className="btn btn-primary">+ مستخدم جديد</Link>
+        <Can perm="users.manage"><Link to="new" className="btn btn-primary">+ مستخدم جديد</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -164,13 +165,15 @@ export default function UsersAdmin() {
                   <td data-label="الحالة"><span className={`badge-msg badge-${u.status === 'active' ? 'success' : 'archived'}`}>{u.status === 'active' ? 'نشط' : 'محظور'}</span></td>
                   <td data-label="إجراءات" className="table-actions">
                     <div className="admin-action-row">
-                      <Link to={String(u.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                      {u.status === 'active' ? (
-                        <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => setStatus(u, 'banned')}>حظر</button>
-                      ) : (
-                        <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => setStatus(u, 'active')}>إلغاء الحظر</button>
-                      )}
-                      <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === u.id} onClick={() => remove(u)}>حذف</button>
+                      <Can perm="users.manage"><Link to={String(u.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                      <Can perm="users.manage">
+                        {u.status === 'active' ? (
+                          <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => setStatus(u, 'banned')}>حظر</button>
+                        ) : (
+                          <button type="button" className="btn btn-sm btn-soft" disabled={busy === u.id} onClick={() => setStatus(u, 'active')}>إلغاء الحظر</button>
+                        )}
+                      </Can>
+                      <Can perm="users.manage"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === u.id} onClick={() => remove(u)}>حذف</button></Can>
                     </div>
                   </td>
                 </tr>

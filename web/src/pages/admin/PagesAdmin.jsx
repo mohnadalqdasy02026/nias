@@ -5,6 +5,7 @@ import RichEditor from '../../components/admin/RichEditor.jsx';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const statusLabel = { draft: 'مسودة', published: 'منشور', archived: 'مؤرشف' };
 
@@ -73,7 +74,7 @@ export default function PagesAdmin() {
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
       <div className="admin-toolbar">
-        <Link to="new" className="btn btn-primary">+ صفحة جديدة</Link>
+        <Can perm="site_pages.create"><Link to="new" className="btn btn-primary">+ صفحة جديدة</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -100,8 +101,8 @@ export default function PagesAdmin() {
                 <td data-label="تاريخ التحديث">{new Date(p.updated_at).toLocaleString('ar-YE')}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(p.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button>
+                    <Can perm="site_pages.update"><Link to={String(p.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="site_pages.delete"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

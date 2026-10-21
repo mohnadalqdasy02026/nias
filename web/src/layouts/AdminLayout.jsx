@@ -1,67 +1,19 @@
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/auth.jsx';
-
-const navSections = [
-  {
-    title: 'عام',
-    items: [
-      { to: '/admin', label: 'لوحة الملخص', end: true, perm: 'dashboard.access' },
-    ],
-  },
-  {
-    title: 'المحتوى',
-    items: [
-      { to: '/admin/content/news', label: 'الأخبار', perm: 'news.read' },
-      { to: '/admin/content/pages', label: 'الصفحات الثابتة', perm: 'site_pages.read' },
-      { to: '/admin/gallery', label: 'ألبومات المعرض', perm: 'gallery.read' },
-      { to: '/admin/downloads', label: 'التحميلات', perm: 'downloads.read' },
-      { to: '/admin/journal', label: 'المجلة', perm: 'journal.read' },
-    ],
-  },
-  {
-    title: 'التدريب',
-    items: [
-      { to: '/admin/training/courses', label: 'الدورات', perm: 'training_courses.read' },
-      { to: '/admin/training/enrollments', label: 'التسجيلات', perm: 'training_enrollments.read' },
-    ],
-  },
-  {
-    title: 'التواصل',
-    items: [
-      { to: '/admin/messages', label: 'رسائل التواصل', perm: 'contact_messages.read' },
-    ],
-  },
-  {
-    title: 'البرامج',
-    items: [
-      { to: '/admin/programs', label: 'البرامج الأكاديمية', perm: 'academic_programs.read' },
-      { to: '/admin/colleges', label: 'الكليات', perm: 'colleges.read' },
-      { to: '/admin/departments', label: 'الأقسام العلمية', perm: 'colleges.read' },
-      { to: '/admin/faculty', label: 'الكادر الأكاديمي', perm: 'faculty_members.read' },
-    ],
-  },
-  {
-    title: 'الإعدادات',
-    items: [
-      { to: '/admin/settings/site', label: 'الصفحة الرئيسية', perm: 'site_settings.read' },
-      { to: '/admin/branches', label: 'إعدادات الفروع', perm: 'branches.read' },
-    ],
-  },
-  {
-    title: 'الحسابات',
-    items: [
-      { to: '/admin/users', label: 'المستخدمون', perm: 'users.view' },
-      { to: '/admin/roles', label: 'الأدوار والصلاحيات', perm: 'roles.manage' },
-    ],
-  },
-];
+import { ADMIN_NAV } from '../lib/adminNav.js';
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
+
+  const permissions = user?.permissions ?? [];
+  const visibleSections = ADMIN_NAV.map((section) => ({
+    ...section,
+    items: section.items.filter((item) => !item.perm || permissions.includes(item.perm)),
+  })).filter((section) => section.items.length > 0);
 
   const handleLogout = async () => {
     await logout();
@@ -99,22 +51,20 @@ export default function AdminLayout() {
         </div>
 
         <nav className="admin-nav">
-          {navSections.map((section) => (
+          {visibleSections.map((section) => (
             <div key={section.title} className="admin-nav-section">
               <h4>{section.title}</h4>
               <ul>
                 {section.items.map((item) => (
                   <li key={item.to + item.label}>
-                    {!item.perm || user?.permissions?.includes(item.perm) ? (
-                      <NavLink
-                        to={item.to}
-                        end={item.end}
-                        className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
-                        onClick={() => setSidebarOpen(false)}
-                      >
-                        {item.label}
-                      </NavLink>
-                    ) : null}
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      className={({ isActive }) => `admin-nav-item${isActive ? ' active' : ''}`}
+                      onClick={() => setSidebarOpen(false)}
+                    >
+                      {item.label}
+                    </NavLink>
                   </li>
                 ))}
               </ul>

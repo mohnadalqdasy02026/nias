@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import { AREAS, TEMPLATES, areaOf, actionLabel, actionCode, EXISTING_CODES, AREA_ICON_PATHS } from '../../admin/permissions.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 function AreaIcon({ name, size = 16 }) {
   return (
@@ -112,7 +113,7 @@ export default function RolesAdmin() {
 
       <div className="admin-toolbar">
         <span className="muted">{roles.length} دور</span>
-        <Link to="new" className="btn btn-primary">+ دور جديد</Link>
+        <Can perm="roles.manage"><Link to="new" className="btn btn-primary">+ دور جديد</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -135,8 +136,8 @@ export default function RolesAdmin() {
                 <td data-label="المستخدمون">{r.members_count}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(r.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === r.id || isProtectedName(r.name) || r.members_count > 0} title={r.members_count > 0 ? 'الدور مُسند لمستخدمين' : ''} onClick={() => remove(r)}>حذف</button>
+                    <Can perm="roles.manage"><Link to={String(r.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="roles.manage"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === r.id || isProtectedName(r.name) || r.members_count > 0} title={r.members_count > 0 ? 'الدور مُسند لمستخدمين' : ''} onClick={() => remove(r)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

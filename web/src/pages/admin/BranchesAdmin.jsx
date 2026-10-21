@@ -5,6 +5,7 @@ import RichEditor from '../../components/admin/RichEditor.jsx';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const emptyForm = {
   name_ar: '',
@@ -94,7 +95,7 @@ export default function BranchesAdmin() {
                 <td data-label="العنوان">{b.address ?? '—'}</td>
                 <td data-label="الهاتف" dir="ltr">{b.phone ?? '—'}</td>
                 <td data-label="إجراءات" className="table-actions">
-                  <Link to={String(b.id)} className="btn btn-sm btn-soft">تعديل</Link>
+                  <Can perm="branches.manage"><Link to={String(b.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
                 </td>
               </tr>
               );

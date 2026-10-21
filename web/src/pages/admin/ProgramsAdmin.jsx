@@ -5,6 +5,7 @@ import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFor
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 import StudyPlanEditor from './StudyPlanEditor.jsx';
+import Can from '../../components/admin/Can.jsx';
 
 const PROGRAM_TYPES = ['bachelor', 'diploma', 'master_executive', 'master_academic'];
 
@@ -90,7 +91,7 @@ export default function ProgramsAdmin() {
           <option value="active">نشط</option>
           <option value="inactive">غير نشط</option>
         </select>
-        <Link to="new" className="btn btn-primary">+ برنامج جديد</Link>
+        <Can perm="academic_programs.create"><Link to="new" className="btn btn-primary">+ برنامج جديد</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -125,8 +126,8 @@ export default function ProgramsAdmin() {
                 <td data-label="الحالة"><span className={`badge-msg badge-${p.status}`}>{p.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(p.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button>
+                    <Can perm="academic_programs.update"><Link to={String(p.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="academic_programs.delete"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === p.id} onClick={() => remove(p)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

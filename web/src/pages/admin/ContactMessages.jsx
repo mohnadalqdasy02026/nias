@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { api } from '../../api/client.js';
+import Can from '../../components/admin/Can.jsx';
 
 const statusLabel = { new: 'جديدة', read: 'مقروءة', replied: 'تم الرد' };
 
@@ -97,13 +98,17 @@ export default function ContactMessages() {
                 <td data-label="الحالة"><span className={`badge-msg badge-${m.status}`}>{statusLabel[m.status]}</span></td>
                 <td data-label="التاريخ">{new Date(m.created_at).toLocaleString('ar-YE')}</td>
                 <td data-label="إجراءات" className="table-actions">
-                  {m.status !== 'read' && (
-                    <button type="button" className="btn btn-sm btn-soft" disabled={busy === m.id} onClick={() => handleStatus(m.id, 'read')}>مقروءة</button>
-                  )}
-                  {m.status !== 'replied' && (
-                    <button type="button" className="btn btn-sm btn-soft" disabled={busy === m.id} onClick={() => handleStatus(m.id, 'replied')}>تم الرد</button>
-                  )}
-                  <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === m.id} onClick={() => handleDelete(m.id)}>حذف</button>
+                  <Can perm="contact_messages.update">
+                    {m.status !== 'read' && (
+                      <button type="button" className="btn btn-sm btn-soft" disabled={busy === m.id} onClick={() => handleStatus(m.id, 'read')}>مقروءة</button>
+                    )}
+                    {m.status !== 'replied' && (
+                      <button type="button" className="btn btn-sm btn-soft" disabled={busy === m.id} onClick={() => handleStatus(m.id, 'replied')}>تم الرد</button>
+                    )}
+                  </Can>
+                  <Can perm="contact_messages.delete">
+                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === m.id} onClick={() => handleDelete(m.id)}>حذف</button>
+                  </Can>
                 </td>
               </tr>
             ))}

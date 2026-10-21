@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, Fragment } from 'react';
 import { api } from '../../api/client.js';
+import Can from '../../components/admin/Can.jsx';
 
 const statusLabel = {
   pending: 'قيد المراجعة',
@@ -94,15 +95,17 @@ export default function TrainingEnrollments() {
                   <td data-label="الحالة"><span className={`badge-msg badge-${e.status === 'cancelled' ? 'archived' : 'draft'}`}>{statusLabel[e.status]}</span></td>
                   <td data-label="التاريخ">{new Date(e.enrolled_at).toLocaleString('ar-YE')}</td>
                   <td data-label="إجراءات" className="table-actions">
-                    {e.status !== 'cancelled' && workflow.map((w) => (
-                      <button key={w.value} type="button" className="btn btn-sm btn-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, w.value)}>{w.label}</button>
-                    ))}
-                    {e.status === 'cancelled' && (
-                      <button type="button" className="btn btn-sm btn-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, 'pending')}>إعادة فتح</button>
-                    )}
-                    {e.status !== 'cancelled' && (
-                      <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, 'cancelled')}>إلغاء</button>
-                    )}
+                    <Can perm="training_enrollments.review">
+                      {e.status !== 'cancelled' && workflow.map((w) => (
+                        <button key={w.value} type="button" className="btn btn-sm btn-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, w.value)}>{w.label}</button>
+                      ))}
+                      {e.status === 'cancelled' && (
+                        <button type="button" className="btn btn-sm btn-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, 'pending')}>إعادة فتح</button>
+                      )}
+                      {e.status !== 'cancelled' && (
+                        <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === e.id} onClick={() => setStatus(e.id, 'cancelled')}>إلغاء</button>
+                      )}
+                    </Can>
                     <button type="button" className="btn btn-sm btn-soft" onClick={() => setOpenId(openId === e.id ? null : e.id)}>{openId === e.id ? 'إخفاء' : 'تفاصيل'}</button>
                   </td>
                 </tr>

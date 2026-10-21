@@ -232,7 +232,7 @@ function Header() {
                 <span className="nav-drop-group">روابط حكومية</span>
                 {externalLinks.map((l) => (
                   <a
-                    key={l.href}
+                    key={`${l.label}-${l.href}`}
                     className="nav-drop-link"
                     href={l.href}
                     target="_blank"

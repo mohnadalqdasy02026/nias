@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const CATEGORY_LABELS = {
   admission: 'القبول والتسجيل',
@@ -74,7 +75,7 @@ export default function DownloadsAdmin() {
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
       <div className="admin-toolbar">
-        <Link to="new" className="btn btn-primary">ملف جديد</Link>
+        <Can perm="downloads.create"><Link to="new" className="btn btn-primary">ملف جديد</Link></Can>
         <button type="button" className="btn btn-soft" onClick={load}>تحديث</button>
       </div>
 
@@ -102,8 +103,8 @@ export default function DownloadsAdmin() {
                 </td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(d.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === d.id} onClick={() => remove(d)}>حذف</button>
+                    <Can perm="downloads.update"><Link to={String(d.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="downloads.delete"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === d.id} onClick={() => remove(d)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

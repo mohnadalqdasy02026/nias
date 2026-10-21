@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const dateOnly = (value) => (value ? String(value).slice(0, 10) : '');
 
@@ -65,7 +66,7 @@ export default function GalleryAdmin() {
       {error && <div className="alert alert-danger" role="alert">{error}</div>}
 
       <div className="admin-toolbar">
-        <Link to="new" className="btn btn-primary">ألبوم جديد</Link>
+        <Can perm="gallery.manage"><Link to="new" className="btn btn-primary">ألبوم جديد</Link></Can>
         <button type="button" className="btn btn-soft" onClick={load}>تحديث</button>
       </div>
 
@@ -100,9 +101,9 @@ export default function GalleryAdmin() {
                 <td data-label="الحالة" className="table-muted">{a.is_published ? 'منشور' : 'مخفي'}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={`${a.id}/images`} className="btn btn-sm btn-primary">الصور</Link>
-                    <Link to={String(a.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === a.id} onClick={() => remove(a)}>حذف</button>
+                    <Can perm="gallery.manage"><Link to={`${a.id}/images`} className="btn btn-sm btn-primary">الصور</Link></Can>
+                    <Can perm="gallery.manage"><Link to={String(a.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="gallery.manage"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === a.id} onClick={() => remove(a)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/auth.jsx';
 import { usePageMeta } from '../hooks/usePageMeta.js';
+import { canOpenPath, firstPermittedRoute } from '../lib/adminNav.js';
 
 const AR_ERRORS = {
   'Invalid credentials': 'بيانات الدخول غير صحيحة. تأكد من كتابة المعرف وكلمة المرور بشكل صحيح.',
@@ -29,7 +30,13 @@ export default function Login() {
     setSubmitting(true);
     try {
       const user = await login(identifier, password);
-      const redirectTo = from ?? (user?.permissions?.includes('dashboard.access') ? '/admin' : '/');
+      const permissions = user?.permissions ?? [];
+      // Land on the first screen this account is actually allowed to open.
+      const permitted = firstPermittedRoute(permissions);
+      const redirectTo =
+        from && canOpenPath(permissions, from)
+          ? from
+          : permitted ?? '/';
       navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(translateError(err.message ?? 'فشل تسجيل الدخول'));

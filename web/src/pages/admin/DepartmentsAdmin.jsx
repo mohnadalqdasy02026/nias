@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const emptyForm = {
   college_id: '',
@@ -69,7 +70,7 @@ export default function DepartmentsAdmin() {
           <option value="">كل الكليات</option>
           {colleges.map((c) => <option key={c.id} value={c.id}>{c.name_ar}</option>)}
         </select>
-        <Link to="new" className="btn btn-primary">+ قسم جديد</Link>
+        <Can perm="colleges.manage"><Link to="new" className="btn btn-primary">+ قسم جديد</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -94,8 +95,8 @@ export default function DepartmentsAdmin() {
                 <td data-label="الكادر">{d.faculty_count}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(d.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === d.id} onClick={() => remove(d)}>حذف</button>
+                    <Can perm="colleges.manage"><Link to={String(d.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="colleges.manage"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === d.id} onClick={() => remove(d)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

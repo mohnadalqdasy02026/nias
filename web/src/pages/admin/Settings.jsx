@@ -7,6 +7,7 @@ import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, resolveNav } from '../.
 import { DEFAULT_APPLY, bodyToText, textToBody } from '../../lib/applyContent.js';
 import { DEFAULT_ADMISSION, linesToText, textToLines } from '../../lib/admissionContent.js';
 import { DEFAULT_IMAGES } from '../../lib/imagesContent.js';
+import Can from '../../components/admin/Can.jsx';
 
 const emptyGeneral = {
   site_name_ar: '',
@@ -504,9 +505,9 @@ export default function Settings() {
           </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'general' || logoUpload.busyKey === 'logo'}>
+            <Can perm="site_settings.update"><button type="submit" className="btn btn-primary" disabled={busy === 'general' || logoUpload.busyKey === 'logo'}>
               {busy === 'general' ? 'جارٍ الحفظ…' : 'حفظ الإعدادات العامة'}
-            </button>
+            </button></Can>
           </div>
         </form>
       )}
@@ -611,9 +612,9 @@ export default function Settings() {
           </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'home' || heroUpload.busyKey === 'hero'}>
+            <Can perm="site_settings.update"><button type="submit" className="btn btn-primary" disabled={busy === 'home' || heroUpload.busyKey === 'hero'}>
               {busy === 'home' ? 'جارٍ الحفظ…' : 'حفظ إعدادات الصفحة الرئيسية'}
-            </button>
+            </button></Can>
           </div>
         </form>
       )}
@@ -631,9 +632,9 @@ export default function Settings() {
           </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
+            <Can perm="site_settings.update"><button type="submit" className="btn btn-primary" disabled={busy === 'stats'}>
               {busy === 'stats' ? 'جارٍ الحفظ…' : 'حفظ عدادات الإحصائيات'}
-            </button>
+            </button></Can>
           </div>
         </form>
       )}
@@ -659,9 +660,9 @@ export default function Settings() {
           </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'images' || imagesUpload.busyKey}>
+            <Can perm="site_settings.update"><button type="submit" className="btn btn-primary" disabled={busy === 'images' || imagesUpload.busyKey}>
               {busy === 'images' ? 'جارٍ الحفظ…' : 'حفظ الصور الافتراضية'}
-            </button>
+            </button></Can>
           </div>
         </form>
       )}
@@ -685,9 +686,9 @@ export default function Settings() {
           </AdminFormSection>
 
           <div className="admin-form-actions">
-            <button type="submit" className="btn btn-primary" disabled={busy === 'admission'}>
+            <Can perm="site_settings.update"><button type="submit" className="btn btn-primary" disabled={busy === 'admission'}>
               {busy === 'admission' ? 'جارٍ الحفظ…' : 'حفظ شروط القبول'}
-            </button>
+            </button></Can>
           </div>
         </form>
       )}

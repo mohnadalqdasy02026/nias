@@ -4,6 +4,7 @@ import { api } from '../../api/client.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
+import Can from '../../components/admin/Can.jsx';
 
 const emptyForm = {
   department_id: '',
@@ -82,7 +83,7 @@ export default function FacultyAdmin() {
           <option value="active">نشط</option>
           <option value="inactive">غير نشط</option>
         </select>
-        <Link to="new" className="btn btn-primary">+ عضو جديد</Link>
+        <Can perm="faculty_members.create"><Link to="new" className="btn btn-primary">+ عضو جديد</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -118,8 +119,8 @@ export default function FacultyAdmin() {
                 <td data-label="الحالة"><span className={`badge-msg badge-${m.status}`}>{m.status === 'active' ? 'نشط' : 'غير نشط'}</span></td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(m.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === m.id} onClick={() => remove(m)}>حذف</button>
+                    <Can perm="faculty_members.update"><Link to={String(m.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="faculty_members.delete"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === m.id} onClick={() => remove(m)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>

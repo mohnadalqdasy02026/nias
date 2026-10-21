@@ -7,6 +7,7 @@ import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFor
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 import { TRAINING_CATEGORY_LABELS } from '../../lib/training.js';
+import Can from '../../components/admin/Can.jsx';
 
 const statusLabel = { draft: 'مسودة', open: 'مفتوحة', closed: 'مغلقة', completed: 'مكتملة' };
 
@@ -91,7 +92,7 @@ export default function TrainingCourses() {
           <option value="">كل الفروع</option>
           {branches.map((b) => <option key={b.id} value={b.id}>{branchLabel(b.name_ar) ?? b.name_ar}</option>)}
         </select>
-        <Link to="new" className="btn btn-primary">+ دورة جديدة</Link>
+        <Can perm="training_courses.create"><Link to="new" className="btn btn-primary">+ دورة جديدة</Link></Can>
       </div>
 
       <div className="admin-table-wrap">
@@ -128,8 +129,8 @@ export default function TrainingCourses() {
                 <td data-label="المدرب">{c.trainer ?? '—'}</td>
                 <td data-label="إجراءات" className="table-actions">
                   <div className="admin-action-row">
-                    <Link to={String(c.id)} className="btn btn-sm btn-soft">تعديل</Link>
-                    <button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button>
+                    <Can perm="training_courses.update"><Link to={String(c.id)} className="btn btn-sm btn-soft">تعديل</Link></Can>
+                    <Can perm="training_courses.delete"><button type="button" className="btn btn-sm btn-danger-soft" disabled={busy === c.id} onClick={() => remove(c)}>حذف</button></Can>
                   </div>
                 </td>
               </tr>
