@@ -51,9 +51,13 @@ function Header() {
   const aboutItems = moreItems.filter((i) => ABOUT_GROUP_ITEMS.includes(i.to));
   const otherMoreItems = moreItems.filter((i) => !ABOUT_GROUP_ITEMS.includes(i.to));
   const navLabels = { ...DEFAULT_NAV_LABELS, ...(navCfg.labels ?? {}) };
+  // The student portal and the training sign-up live inside this site, so the
+  // quick links open the site's own pages instead of the old domain.
   const serviceLinks = [
-    general.portal_student_url && { label: 'بوابة الطالب', href: general.portal_student_url },
-    general.portal_training_url && { label: 'التسجيل في الدورات', href: general.portal_training_url },
+    { label: 'بوابة الطالب', to: '/student-portal' },
+    { label: 'التسجيل في الدورات', to: '/training/register' },
+  ];
+  const externalLinks = [
     general.ministry_admission_url && { label: 'بوابة التنسيق الموحد', href: general.ministry_admission_url },
     general.ministry_results_url && { label: 'الاستعلام عن نتائج القبول', href: general.ministry_results_url },
   ].filter(Boolean);
@@ -212,6 +216,21 @@ function Header() {
               <>
                 <span className="nav-drop-group">خدمات إلكترونية</span>
                 {serviceLinks.map((l) => (
+                  <Link
+                    key={l.to}
+                    className="nav-drop-link"
+                    to={l.to}
+                    onClick={() => { setLinksOpen(false); setOpen(false); }}
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </>
+            )}
+            {externalLinks.length > 0 && (
+              <>
+                <span className="nav-drop-group">روابط حكومية</span>
+                {externalLinks.map((l) => (
                   <a
                     key={l.href}
                     className="nav-drop-link"
@@ -318,22 +337,6 @@ function Footer() {
             </div>
           </div>
         </div>
-
-        {contact.map_url && (
-          <div className="footer-map-wrap">
-            <h4 className="footer-col-title">الموقع الجغرافي</h4>
-            <div className="footer-map-frame">
-              <iframe
-                src={contact.map_url}
-                title="موقع المعهد الوطني للعلوم الإدارية على الخريطة"
-                loading="lazy"
-                style={{ border: 0 }}
-                allowFullScreen=""
-                referrerPolicy="no-referrer-when-downgrade"
-              />
-            </div>
-          </div>
-        )}
       </div>
       <div className="footer-ticker" aria-hidden="true">
         <div className="footer-ticker-track">
