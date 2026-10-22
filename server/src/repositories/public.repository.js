@@ -149,7 +149,7 @@ p.name_ar, p.name_en, p.program_type,
 
   async getDepartmentById(id) {
     const { rows } = await pool.query(
-      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description,
+      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description, d.vision, d.mission, d.goals,
               d.head_name_ar, d.head_title, d.head_photo, d.image,
               c.name_ar AS college_name_ar, c.name_en AS college_name_en,
               c.about AS college_about, c.vision AS college_vision, c.mission AS college_mission,
