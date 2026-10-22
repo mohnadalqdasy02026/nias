@@ -1,0 +1,3 @@
+ALTER TABLE departments
+  DROP COLUMN IF EXISTS vision,
+  DROP COLUMN IF EXISTS mission;

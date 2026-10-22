@@ -25,6 +25,7 @@ const emptyForm = {
   program_type: 'bachelor',
   description: '',
   outcomes: '',
+  goals: '',
   image_url: '',
   admission_open: false,
   status: 'active',
@@ -167,6 +168,7 @@ export function ProgramForm() {
     setForm({
       college_id: record.college_id ? String(record.college_id) : '',
       department_id: record.department_id ? String(record.department_id) : '',
+      goals: record.goals ?? '',
       branch_id: record.branch_id ? String(record.branch_id) : '',
       name_ar: record.name_ar ?? '',
       name_en: record.name_en ?? '',
@@ -270,6 +272,10 @@ export function ProgramForm() {
             <div className="form-field form-field--full">
               <label>مخرجات التعلم</label>
               <textarea rows={3} value={form.outcomes} onChange={(e) => setForm({ ...form, outcomes: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>الأهداف</label>
+              <textarea rows={3} value={form.goals} onChange={(e) => setForm({ ...form, goals: e.target.value })} placeholder="اكتب كل هدف في سطر منفصل" />
             </div>
             <ImageField
               label="صورة البرنامج"

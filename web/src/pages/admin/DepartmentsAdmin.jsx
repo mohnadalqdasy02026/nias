@@ -11,6 +11,8 @@ const emptyForm = {
   name_ar: '',
   name_en: '',
   description: '',
+  vision: '',
+  mission: '',
   head_name_ar: '',
   head_title: '',
   head_photo: '',
@@ -132,6 +134,8 @@ export function DepartmentForm() {
       name_ar: record.name_ar ?? '',
       name_en: record.name_en ?? '',
       description: record.description ?? '',
+      vision: record.vision ?? '',
+      mission: record.mission ?? '',
       head_name_ar: record.head_name_ar ?? '',
       head_title: record.head_title ?? '',
       head_photo: record.head_photo ?? '',
@@ -201,6 +205,14 @@ export function DepartmentForm() {
             <div className="form-field form-field--full">
               <label>وصف القسم</label>
               <textarea rows={4} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>الرؤية</label>
+              <textarea rows={3} value={form.vision} onChange={(e) => setForm({ ...form, vision: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>الرسالة</label>
+              <textarea rows={3} value={form.mission} onChange={(e) => setForm({ ...form, mission: e.target.value })} />
             </div>
           </div>
         </AdminFormSection>
