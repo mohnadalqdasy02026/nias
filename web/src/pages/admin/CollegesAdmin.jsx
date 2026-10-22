@@ -20,6 +20,7 @@ const emptyForm = {
   dean_image: '',
   vision: '',
   mission: '',
+  goals: '',
   about: '',
   status: 'active',
 };
@@ -37,6 +38,7 @@ const toForm = (c) => ({
   dean_image: c?.dean_image ?? '',
   vision: c?.vision ?? '',
   mission: c?.mission ?? '',
+  goals: c?.goals ?? '',
   about: c?.about ?? '',
   status: c?.status ?? 'active',
 });
@@ -179,6 +181,7 @@ export function CollegeForm() {
       dean_image: form.dean_image.trim() || null,
       vision: form.vision.trim() || null,
       mission: form.mission.trim() || null,
+      goals: form.goals ?? null,
       about: form.about.trim() || null,
       status: form.status,
     };
@@ -293,6 +296,10 @@ export function CollegeForm() {
             <div className="form-field form-field--full">
               <label>الرسالة</label>
               <textarea rows={2} value={form.mission ?? ''} onChange={(e) => setForm({ ...form, mission: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>الأهداف</label>
+              <textarea rows={3} value={form.goals ?? ''} onChange={(e) => setForm({ ...form, goals: e.target.value })} placeholder="اكتب كل هدف في سطر منفصل" />
             </div>
           </div>
         </AdminFormSection>

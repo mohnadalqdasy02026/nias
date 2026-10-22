@@ -1,0 +1,5 @@
+ALTER TABLE colleges
+  DROP COLUMN IF EXISTS goals;
+
+ALTER TABLE departments
+  DROP COLUMN IF EXISTS goals;

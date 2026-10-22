@@ -13,6 +13,7 @@ const emptyForm = {
   description: '',
   vision: '',
   mission: '',
+  goals: '',
   head_name_ar: '',
   head_title: '',
   head_photo: '',
@@ -136,6 +137,7 @@ export function DepartmentForm() {
       description: record.description ?? '',
       vision: record.vision ?? '',
       mission: record.mission ?? '',
+      goals: record.goals ?? '',
       head_name_ar: record.head_name_ar ?? '',
       head_title: record.head_title ?? '',
       head_photo: record.head_photo ?? '',
@@ -213,6 +215,10 @@ export function DepartmentForm() {
             <div className="form-field form-field--full">
               <label>الرسالة</label>
               <textarea rows={3} value={form.mission} onChange={(e) => setForm({ ...form, mission: e.target.value })} />
+            </div>
+            <div className="form-field form-field--full">
+              <label>الأهداف</label>
+              <textarea rows={3} value={form.goals} onChange={(e) => setForm({ ...form, goals: e.target.value })} placeholder="اكتب كل هدف في سطر منفصل" />
             </div>
           </div>
         </AdminFormSection>
