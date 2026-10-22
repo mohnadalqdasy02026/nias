@@ -93,7 +93,7 @@ p.name_ar, p.name_en, p.program_type,
     const { rows } = await pool.query(
       `SELECT c.id, c.branch_id,
               b.name_ar AS branch_name_ar, b.slug AS branch_slug,
-              c.name_ar, c.name_en, c.vision, c.mission, c.about,
+              c.name_ar, c.name_en, c.vision, c.mission, c.goals, c.about,
               c.dean_name, c.dean_name_ar, c.dean_name_en,
               c.dean_message_ar, c.dean_message_en,
               c.image, c.dean_image
@@ -109,7 +109,7 @@ p.name_ar, p.name_en, p.program_type,
     const { rows } = await pool.query(
       `SELECT c.id, c.branch_id,
               b.name_ar AS branch_name_ar, b.slug AS branch_slug,
-              c.name_ar, c.name_en, c.vision, c.mission, c.about,
+              c.name_ar, c.name_en, c.vision, c.mission, c.goals, c.about,
               c.dean_name, c.dean_name_ar, c.dean_name_en,
               c.dean_message_ar, c.dean_message_en,
               c.image, c.dean_image
