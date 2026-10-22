@@ -48,20 +48,20 @@ export class PublicRepository {
     return rows;
   }
 
-  async listPrograms({ onlyOpen = false } = {}) {
+async listPrograms({ onlyOpen = false } = {}) {
     const where = [`p.status = 'active'`];
     if (onlyOpen) where.push(`p.admission_open = TRUE`);
     const { rows } = await pool.query(
       `SELECT p.id, p.college_id, p.department_id, p.branch_id,
               c.name_ar AS college_name_ar, d.name_ar AS department_name_ar, b.name_ar AS branch_name_ar,
               p.name_ar, p.name_en, p.program_type,
-              p.description, p.admission_open, p.image_url
-       FROM academic_programs p
-       LEFT JOIN colleges c ON c.id = p.college_id
-       LEFT JOIN departments d ON d.id = p.department_id
-       LEFT JOIN institute_branches b ON b.id = p.branch_id
-       WHERE p.deleted_at IS NULL AND ${where.join(' AND ')}
-       ORDER BY p.id`,
+              p.description, p.outcomes, p.goals, p.admission_open, p.image_url
+         FROM academic_programs p
+         LEFT JOIN colleges c ON c.id = p.college_id
+         LEFT JOIN departments d ON d.id = p.department_id
+         LEFT JOIN institute_branches b ON b.id = p.branch_id
+        WHERE p.deleted_at IS NULL AND ${where.join(' AND ')}
+        ORDER BY p.id`,
     );
     return rows;
   }
@@ -71,13 +71,13 @@ export class PublicRepository {
       `SELECT p.id, p.college_id, p.department_id, p.branch_id,
               c.name_ar AS college_name_ar, d.name_ar AS department_name_ar,
               b.name_ar AS branch_name_ar, b.is_headquarters AS branch_is_hq, b.slug AS branch_slug,
-p.name_ar, p.name_en, p.program_type,
-               p.description, p.outcomes, p.admission_open, p.image_url, c.dean_name
-       FROM academic_programs p
-       LEFT JOIN colleges c ON c.id = p.college_id
-       LEFT JOIN departments d ON d.id = p.department_id
-       LEFT JOIN institute_branches b ON b.id = p.branch_id
-       WHERE p.id = $1 AND p.status = 'active' AND p.deleted_at IS NULL`,
+              p.name_ar, p.name_en, p.program_type,
+              p.description, p.outcomes, p.goals, p.admission_open, p.image_url, c.dean_name
+         FROM academic_programs p
+         LEFT JOIN colleges c ON c.id = p.college_id
+         LEFT JOIN departments d ON d.id = p.department_id
+         LEFT JOIN institute_branches b ON b.id = p.branch_id
+        WHERE p.id = $1 AND p.status = 'active' AND p.deleted_at IS NULL`,
       [id],
     );
     return rows[0] ?? null;
