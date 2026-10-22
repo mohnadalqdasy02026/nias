@@ -3,12 +3,12 @@ import { pool } from '../config/db.js';
 const SELECT_COLLEGE = `
   SELECT c.id, c.branch_id,
          b.name_ar AS branch_name_ar, b.name_en AS branch_name_en, b.slug AS branch_slug,
-         c.name_ar, c.name_en, c.vision, c.mission, c.about,
+         c.name_ar, c.name_en, c.vision, c.mission, c.goals, c.about,
          c.dean_name, c.dean_name_ar, c.dean_name_en,
          c.dean_message_ar, c.dean_message_en,
          c.image, c.dean_image, c.status, c.created_at, c.updated_at
-    FROM colleges c
-    LEFT JOIN institute_branches b ON b.id = c.branch_id`;
+     FROM colleges c
+     LEFT JOIN institute_branches b ON b.id = c.branch_id`;
 
 export class CollegesRepository {
   async list() {
@@ -29,11 +29,11 @@ export class CollegesRepository {
   async create(data) {
     const { rows } = await pool.query(
       `INSERT INTO colleges
-         (branch_id, name_ar, name_en, vision, mission, about,
+         (branch_id, name_ar, name_en, vision, mission, goals, about,
           dean_name, dean_name_ar, dean_name_en,
           dean_message_ar, dean_message_en,
           image, dean_image, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
        RETURNING id`,
       [
         data.branch_id ?? null,
@@ -41,6 +41,7 @@ export class CollegesRepository {
         data.name_en?.trim() ? data.name_en : null,
         data.vision?.trim() ? data.vision : null,
         data.mission?.trim() ? data.mission : null,
+        data.goals ?? null,
         data.about?.trim() ? data.about : null,
         data.dean_name?.trim() ? data.dean_name : null,
         data.dean_name_ar?.trim() ? data.dean_name_ar : null,
@@ -57,7 +58,7 @@ export class CollegesRepository {
 
   async update(id, data) {
     const fields = [
-      'branch_id', 'name_ar', 'name_en', 'vision', 'mission', 'about',
+      'branch_id', 'name_ar', 'name_en', 'vision', 'mission', 'goals', 'about',
       'dean_name', 'dean_name_ar', 'dean_name_en',
       'dean_message_ar', 'dean_message_en',
       'image', 'dean_image', 'status',
@@ -92,7 +93,7 @@ export class CollegesRepository {
       where = 'd.college_id = $1';
     }
     const { rows } = await pool.query(
-      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description,
+      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description, d.vision, d.mission, d.goals,
               d.head_name_ar, d.head_title, d.head_photo, d.image,
               c.name_ar AS college_name_ar,
               (SELECT count(*)::int FROM academic_programs p
@@ -109,7 +110,7 @@ export class CollegesRepository {
 
   async findDepartmentById(id) {
     const { rows } = await pool.query(
-      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description,
+      `SELECT d.id, d.college_id, d.name_ar, d.name_en, d.description, d.vision, d.mission, d.goals,
               d.head_name_ar, d.head_title, d.head_photo, d.image, d.created_at, d.updated_at
          FROM departments d WHERE d.id = $1`,
       [id],
@@ -120,14 +121,18 @@ export class CollegesRepository {
   async createDepartment(data) {
     const { rows } = await pool.query(
       `INSERT INTO departments
-         (college_id, name_ar, name_en, description, head_name_ar, head_title, head_photo, image)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+         (college_id, name_ar, name_en, description, vision, mission, goals,
+          head_name_ar, head_title, head_photo, image)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        RETURNING id`,
       [
         data.college_id,
         data.name_ar,
         data.name_en?.trim() ? data.name_en : null,
         data.description?.trim() ? data.description : null,
+        data.vision?.trim() ? data.vision : null,
+        data.mission?.trim() ? data.mission : null,
+        data.goals ?? null,
         data.head_name_ar?.trim() ? data.head_name_ar : null,
         data.head_title?.trim() ? data.head_title : null,
         data.head_photo?.trim() ? data.head_photo : null,
@@ -143,6 +148,9 @@ export class CollegesRepository {
       'name_ar',
       'name_en',
       'description',
+      'vision',
+      'mission',
+      'goals',
       'head_name_ar',
       'head_title',
       'head_photo',
