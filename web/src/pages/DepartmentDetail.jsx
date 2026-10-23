@@ -38,6 +38,9 @@ const paths = {
   list: 'M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01',
   locations: 'M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
   left: 'M3 21h18M5 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M15 9h4a2 2 0 0 1 2 2v10M9 7h2M9 11h2M9 15h2',
+  eye: 'M1 12s4-8 11-8 11 8 11 8-4 8-11-8zM12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+  flag: 'M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 15V3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3h5a3 3 0 0 0 3-3V12l3-3',
+  target: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8zM12 8a4 4 0 1 1 0 8 4 4 0 0 1 0-8z',
 };
 
 export default function DepartmentDetail() {
@@ -141,6 +144,31 @@ export default function DepartmentDetail() {
                 <div className="card department-page-card">
                   <h2><span className="department-page-h-icon"><IconSVG d={paths.book} size={17} /></span> نظرة عامة على القسم</h2>
                   <p>{department.description}</p>
+                </div>
+              )}
+
+              {department.vision && (
+                <div className="card department-page-card">
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.eye} size={17} /></span> الرؤية</h2>
+                  <p>{department.vision}</p>
+                </div>
+              )}
+
+              {department.mission && (
+                <div className="card department-page-card">
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.flag} size={17} /></span> الرسالة</h2>
+                  <p>{department.mission}</p>
+                </div>
+              )}
+
+              {department.goals && department.goals.length > 0 && (
+                <div className="card department-page-card">
+                  <h2><span className="department-page-h-icon"><IconSVG d={paths.target} size={17} /></span> الأهداف</h2>
+                  <ul className="department-goals-list">
+                    {department.goals.map((goal, i) => (
+                      <li key={i}>{goal}</li>
+                    ))}
+                  </ul>
                 </div>
               )}
 
