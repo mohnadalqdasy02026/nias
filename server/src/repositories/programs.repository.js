@@ -23,7 +23,7 @@ export class ProgramRepository {
       `SELECT p.id, p.college_id, p.department_id, p.branch_id,
               c.name_ar AS college_name_ar, d.name_ar AS department_name_ar, b.name_ar AS branch_name_ar,
               p.name_ar, p.name_en, p.program_type,
-              p.description, p.outcomes, p.admission_open, p.status, p.image_url, p.created_at, p.updated_at
+              p.description, p.outcomes, p.goals, p.admission_open, p.status, p.image_url, p.created_at, p.updated_at
          FROM academic_programs p
          LEFT JOIN colleges c ON c.id = p.college_id
          LEFT JOIN departments d ON d.id = p.department_id
@@ -81,7 +81,7 @@ export class ProgramRepository {
       `SELECT p.id, p.college_id, p.department_id, p.branch_id,
               c.name_ar AS college_name_ar, d.name_ar AS department_name_ar, b.name_ar AS branch_name_ar,
               p.name_ar, p.name_en, p.program_type,
-              p.description, p.outcomes, p.admission_open, p.status, p.image_url, p.created_at, p.updated_at
+              p.description, p.outcomes, p.goals, p.admission_open, p.status, p.image_url, p.created_at, p.updated_at
          FROM academic_programs p
          LEFT JOIN colleges c ON c.id = p.college_id
          LEFT JOIN departments d ON d.id = p.department_id
@@ -96,8 +96,8 @@ export class ProgramRepository {
     const { rows } = await pool.query(
       `INSERT INTO academic_programs
          (college_id, department_id, branch_id, name_ar, name_en, program_type,
-          description, outcomes, image_url, admission_open, status)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+          description, outcomes, goals, image_url, admission_open, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
        RETURNING *`,
       [
         data.college_id ?? null,
@@ -108,6 +108,7 @@ export class ProgramRepository {
         data.program_type,
         data.description ?? null,
         data.outcomes ?? null,
+        data.goals ?? null,
         data.image_url ?? null,
         data.admission_open ?? false,
         data.status ?? 'active',
@@ -126,6 +127,7 @@ export class ProgramRepository {
       'program_type',
       'description',
       'outcomes',
+      'goals',
       'image_url',
       'admission_open',
       'status',

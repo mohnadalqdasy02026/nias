@@ -25,6 +25,8 @@ server/login-diag.mjs
 server/programs-*.ps1
 server/tmp_*.mjs
 shots/
+shots_public/
+shots_req/
 
 # Uploads / runtime data
 server/uploads/
