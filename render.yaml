@@ -18,11 +18,14 @@ services:
       - key: DATABASE_URL
         # Supabase (ap-southeast-1) replaces the expiring Render free Postgres.
         # The transaction pooler is used because the service runs outside Supabase.
-        value: postgresql://postgres.ojimbwibjrhddsnxmpls:7htzy3y228%23A@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=no-verify
+        # Never commit the connection string: set it once in the Render dashboard.
+        sync: false
       - key: JWT_ACCESS_SECRET
         generateValue: true
       - key: JWT_REFRESH_SECRET
         generateValue: true
+      - key: CORS_ORIGINS
+        value: https://nias-academy.onrender.com
       - key: UPLOAD_DIR
         value: uploads
       # Demo seed scripts (passwords/academic content) run ONLY when SEED_DEMO is true.
@@ -35,7 +38,3 @@ services:
         sync: false
       - key: GEMINI_MODEL
         value: gemini-2.5-flash
-
-databases:
-  - name: nias-postgres
-    plan: free
