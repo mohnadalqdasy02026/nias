@@ -46,6 +46,22 @@ function buildSystemPrompt(context) {
   const general = settings?.general ?? {};
   const contact = settings?.contact ?? {};
   const siteName = general.site_name_ar || 'المعهد الوطني للعلوم الإدارية';
+// NIAS restriction: only answer questions about the institute
+const NIAS_KEYWORDS = [
+  'program', 'programs', 'college', 'colleges', 'branch', 'branches',
+  'faculty', 'faculties', 'department', 'departments', 'admission',
+  'registration', 'fees', 'tuition', 'master', 'diploma',
+  'study', 'study plan', 'curriculum', 'news', 'activity', 'conference',
+  'trustee', 'trustees', 'download', 'upload', 'journal', 'issue',
+  'nias', 'الوطني', ' المعهد', 'dean', 'عميد'
+];
+
+function isNiasQuestion(text) {
+  if (!text) return false;
+  const t = text.trim().toLowerCase();
+  return NIAS_KEYWORDS.some((kw) => t.includes(kw));
+}
+
 
   const programsBlock = programs.length
     ? formatList(
@@ -227,6 +243,11 @@ export class AssistantService {
     if (text.length > MAX_MESSAGE_LENGTH) throw AppError.badRequest('الرسالة طويلة جداً.');
     if (!this.isConfigured()) {
       throw new AppError(503, 'ASSISTANT_UNAVAILABLE', 'المساعد الذكي غير مفعّل حالياً.');
+    }
+
+    // NIAS restriction: only answer questions about the institute
+    if (text && !isNiasQuestion(text)) {
+      return { reply: 'أنا مخصص للإجابة عن أسئلة المعهد الوطني فقط. اسألني عن البرامج، الكليات، الفروع، القبول، أو أي موضوع يتعلق بالمعهد.' };
     }
 
     const context = await getContext();

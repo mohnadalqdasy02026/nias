@@ -59,17 +59,54 @@
   color: #c8dcd6;
   font-weight: 600;
   margin-bottom: 4px;
+  transition: all 0.15s ease;
 }
 
 .admin-nav-item:hover {
   color: #fff;
   background: rgba(255, 255, 255, 0.1);
+  transform: translateX(4px);
 }
 
 .admin-nav-item.active {
   color: #fff;
   background: var(--color-primary);
+  box-shadow: inset 4px 0 0 var(--color-primary-deep);
 }
+
+.admin-nav-section {
+  margin-bottom: 24px;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: box-shadow 0.2s ease;
+}
+
+.admin-nav-section:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.admin-nav-section h4 {
+  color: var(--color-accent);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 10px;
+  margin-bottom: 8px;
+  background: var(--color-nav);
+  padding-top: 8px;
+  padding-bottom: 4px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .admin-nav-item:hover {
+    transform: none;
+  }
+}
+
 
 .admin-nav-item.disabled {
   color: #6b8a82;
@@ -1852,4 +1889,66 @@
 .album-image-actions .btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+
+/* Entrance animations */
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+/* Entrance animations applied via React */
+.admin-welcome,
+.admin-stat-grid--main,
+.admin-stat-grid--nested,
+.admin-dash-grid,
+.admin-table-wrap {
+  opacity: 0;
+  animation: fadeSlideUp 0.8s ease forwards;
+}
+
+.admin-stat-grid--main { animation-delay: 0.1s; }
+.admin-stat-grid--nested { animation-delay: 0.2s; }
+.admin-dash-grid { animation-delay: 0.3s; }
+.admin-table-wrap { animation-delay: 0.4s; }
+
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Pulse animation for active items */
+.pulse {
+  animation: pulse 2s ease infinite;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .admin-welcome,
+  .admin-stat-grid--main,
+  .admin-stat-grid--nested,
+  .admin-dash-grid,
+  .admin-table-wrap {
+    animation: none;
+    opacity: 1;
+  }
+  .hover-lift:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }

@@ -276,3 +276,53 @@ h6 {
 .skip-link:focus {
   top: 0;
 }
+
+/* Floating AI assistant icon */
+.smart-assistant-floating-icon {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 1000;
+  touch-action: none;
+}
+
+.smart-assistant-floating-icon svg {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.smart-assistant-floating-icon:hover svg {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px rgba(14, 124, 102, 0.3);
+}
+
+.smart-assistant-floating-icon:focus-visible svg {
+  outline: 3px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .smart-assistant-floating-icon svg {
+    transition: none;
+  }
+}
+
+/* Skip link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -999px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-primary);
+  color: #fff;
+  padding: 12px 24px;
+  z-index: 9999;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+}
+
+.skip-link:focus {
+  top: 0;
+}

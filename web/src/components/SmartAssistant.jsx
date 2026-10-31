@@ -14,6 +14,22 @@ const QUICK_QUESTIONS = [
   { key: 'branches', label: 'فروع المعهد' },
 ];
 
+// NIAS-only restriction keywords (Arabic & English)
+const NIAS_KEYWORDS = [
+  'nias', 'الوطني', ' المعهد', 'nias-academy',
+  'program', 'برنامج', 'برامج', 'specialization', 'تخصص',
+  'college', 'كلية', 'kليات', 'department', 'قسم', 'أقسام',
+  'faculty', 'أستاذ', 'عضو هيئة', 'training', 'دورة', 'دورات',
+  'admission', 'قبول', 'registration', 'تسجيل',
+];
+
+function isNiasQuestion(text) {
+  if (!text) return false;
+  const t = text.trim().toLowerCase();
+  return NIAS_KEYWORDS.some((kw) => t.includes(kw));
+}
+
+
 const PROGRAM_TYPE_LABELS = {
   bachelor: 'بكالوريوس',
   master_academic: 'ماجستير أكاديمي',
@@ -41,7 +57,7 @@ const detectQuestion = (text) => {
   return null;
 };
 
-const WELCOME = { role: 'bot', text: 'مرحباً 👋 أنا المساعد الذكي، اسألني عن المعهد أو أي موضوع عام وسأساعدك.' };
+const WELCOME = { role: 'bot', text: 'مرحباً 👋 أنا المساعد الذكي، مخصص للإجابة عن أسئلة المعهد الوطني للعلوم الإدارية. اسألني عن البرامج، الكليات، الفروع، القبول، أو أي موضوع يتعلق بالمعهد.' };
 
 const escapeHtml = (s) =>
   String(s)
@@ -245,6 +261,17 @@ export default function SmartAssistant() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
+    // Restrict to NIAS questions only
+    if (!isNiasQuestion(text)) {
+      setMessages((m) => [
+        ...m,
+        {
+          role: 'bot',
+          text: 'أنا مخصص للإجابة عن أسئلة المعهد الوطني فقط. اسألني عن البرامج، الكليات، الفروع، القبول، أو أي موضوع يتعلق بالمعهد.',
+        },
+      ]);
+      return;
+    }
     ask(detectQuestion(text) ?? 'unknown', text);
   };
 
@@ -314,13 +341,19 @@ export default function SmartAssistant() {
       >
         {open ? '×' : (
           <>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0e7c66" stroke="none" aria-hidden="true">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" />
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
             </svg>
             <span>المساعد الذكي</span>
           </>
         )}
       </button>
+      <div className="smart-assistant-floating-icon" aria-label="المساعد الذكي" role="button" tabindex="0" onClick={() => setOpen(true)}>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="#0e7c66" aria-hidden="true">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+        </svg>
+      </div>
     </div>
   );
 }
