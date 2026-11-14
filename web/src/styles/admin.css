@@ -74,32 +74,6 @@
   box-shadow: inset 4px 0 0 var(--color-primary-deep);
 }
 
-.admin-nav-section {
-  margin-bottom: 24px;
-  border-radius: var(--radius-md);
-  padding: 16px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  transition: box-shadow 0.2s ease;
-}
-
-.admin-nav-section:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-.admin-nav-section h4 {
-  color: var(--color-accent);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 0 10px;
-  margin-bottom: 8px;
-  background: var(--color-nav);
-  padding-top: 8px;
-  padding-bottom: 4px;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-}
-
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .admin-nav-item:hover {
