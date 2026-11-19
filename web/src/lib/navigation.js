@@ -7,6 +7,19 @@ export const DEFAULT_MAIN = [
   { to: '/training', label: 'التدريب' },
 ];
 
+export const ACADEMIC_ITEMS = [
+  { to: '/programs', label: 'البرامج الأكاديمية' },
+  { to: '/colleges', label: 'الكليات والأقسام' },
+  { to: '/faculty', label: 'هيئة التدريس' },
+  { to: '/journal', label: 'المجلة العلمية' },
+];
+
+export const TRAINING_ITEMS = [
+  { to: '/training', label: 'الدورات والبرامج التدريبية' },
+  { to: '/apply?track=trainee', label: 'التسجيل كمتدرب' },
+  { to: '/apply?track=trainee#track', label: 'تتبع طلب التدريب' },
+];
+
 export const DEFAULT_MORE = [
   { to: '/dean', label: 'كلمة العميد' },
   { to: '/structure', label: 'الهيكل التنظيمي' },
@@ -14,7 +27,7 @@ export const DEFAULT_MORE = [
   { to: '/conferences', label: 'المؤتمرات العلمية' },
   { to: '/news', label: 'الأخبار والفعاليات' },
   { to: '/gallery', label: 'المعرض' },
-  { to: '/downloads', label: 'التحميلات' },
+  { to: '/downloads', label: 'المكتبة والموارد' },
   { to: '/journal', label: 'المجلة العلمية' },
   { to: '/faculty', label: 'هيئة التدريس' },
   { to: '/contact', label: 'تواصل معنا' },
@@ -25,6 +38,8 @@ export const DEFAULT_NAV_LABELS = {
   branches: 'فروع المعهد',
   links: 'روابط سريعة',
   about: 'عن المعهد',
+  academic: 'الأكاديمية',
+  training: 'التدريب',
 };
 
 // The "More" dropdown groups the institute-introduction pages under one

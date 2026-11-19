@@ -11,7 +11,7 @@ export default function Training() {
 
   usePageMeta(
     'التدريب',
-    'قسم البرامج التدريبية المستقل في المعهد الوطني للعلوم الإدارية: الدورات التدريبية والبرامج التأهيلية والندوات والأنشطة التدريبية.',
+    'قسم البرامج التدريبية المستقل في المعهد الوطني للعلوم الإدارية: الدورات والبرامج والندوات والأنشطة التدريبية المتاحة للتسجيل.',
   );
 
   useEffect(() => {
@@ -45,12 +45,16 @@ export default function Training() {
     <>
       <section className="programs-hero training-hero">
         <div className="container programs-hero-inner">
-          <p className="programs-hero-eyebrow">{courses.length} من البرامج التدريبية المفتوحة للتسجيل</p>
-          <h1>البرامج التدريبية</h1>
+          <p className="programs-hero-eyebrow">{courses.length} من البرامج والدورات التدريبية النشطة والمتاحة للتسجيل</p>
+          <h1>التدريب والتأهيل المهني</h1>
           <p className="programs-hero-sub">
-            قسم مستقل عن البرامج الأكاديمية يضم الدورات التدريبية والبرامج التأهيلية والندوات
-            والأنشطة التدريبية التي يقدمها المعهد لتطوير مهارات الكوادر.
+            مسار تدريبي مستقل عن المسار الأكاديمي، يضم الدورات والبرامج والندوات والأنشطة التدريبية
+            لتطوير مهارات الكوادر. سجّل كمتدرب وتابع حالة طلبك بسهولة.
           </p>
+          <div className="hero-actions" style={{ marginTop: 16, display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Link to="/apply?track=trainee" className="btn btn-primary">سجّل كمتدرب</Link>
+            <Link to="/apply?track=trainee#track" className="btn btn-soft">تتبع طلب التدريب</Link>
+          </div>
           <div className="programs-hero-strip">
             {TRAINING_TABS.map((t) => (
               <div className="ph-stat" key={t.key}>
@@ -104,7 +108,7 @@ export default function Training() {
                   </div>
                   <div className="course-card-actions">
                     <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
-                    <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+                    <Link to={`/apply?track=trainee&course=${c.id}`} className="btn btn-primary">التسجيل</Link>
                   </div>
                 </div>
               </article>
@@ -117,17 +121,17 @@ export default function Training() {
       <section className="section section-alt">
         <div className="container">
           <div className="section-head">
-            <h2 className="section-title">برامجنا التأهيلية</h2>
+            <h2 className="section-title">برامجنا التدريبية</h2>
             <p className="section-subtitle">
-              نحن نقدم برامج تأهيلية شاملة مصممة لتزويد المتدربين بالمهارات اللازمة لسوق العمل،
-              وتغطي مجالات متنوعة في الإدارة والتكنولوجيا والمهارات المهنية.
+              نقدم برامج ودورات تدريبية عملية مصممة لتزويد المتدربين بالمهارات اللازمة لسوق العمل،
+              مع إمكانية التسجيل الإلكتروني ومتابعة حالة الطلب.
             </p>
           </div>
           <div className="rehab-grid">
             {[
               { title: 'مدربون معتمدون', text: 'كوادر تدريبية متخصصة ذات خبرة عملية معتمدة.' },
               { title: 'مناهج حديثة', text: 'محتوى تعليمي محدّث يواكب متطلبات سوق العمل.' },
-              { title: 'تدريب عملي', text: 'ورش عمل وتطبيقات عملية تُرسّخ المهارات.' },
+              { title: 'تسجيل ومتابعة', text: 'سجّل كمتدرب عبر الموقع وتابع حالة طلبك برقم التسجيل والجوال.' },
             ].map((f) => (
               <article key={f.title} className="card rehab-card">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="m9 12 2 2 4-4" /></svg>
@@ -139,7 +143,8 @@ export default function Training() {
             ))}
           </div>
           <div className="rehab-actions">
-            <Link to="/training/register" className="btn btn-primary">عرض التفاصيل والتسجيل</Link>
+            <Link to="/apply?track=trainee" className="btn btn-primary">التسجيل كمتدرب</Link>
+            <Link to="/apply?track=trainee#track" className="btn btn-soft">تتبع الطلب</Link>
           </div>
         </div>
       </section>

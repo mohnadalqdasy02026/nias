@@ -324,7 +324,7 @@ async listPrograms({ onlyOpen = false } = {}) {
 
   async listTrainingCourses({ branchId = null, category = null } = {}) {
     const params = [];
-    let where = "c.status = 'open'";
+    let where = "c.status = 'active'";
     if (branchId) {
       params.push(branchId);
       where += ` AND c.branch_id = $${params.length}`;

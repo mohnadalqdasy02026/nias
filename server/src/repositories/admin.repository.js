@@ -8,7 +8,7 @@ export class AdminRepository {
       newsPublished: `SELECT count(*)::int AS count FROM news WHERE status = 'published'`,
       newsDrafts: `SELECT count(*)::int AS count FROM news WHERE status = 'draft'`,
       pagesPublished: `SELECT count(*)::int AS count FROM site_pages WHERE status = 'published'`,
-      trainingCourses: `SELECT count(*)::int AS count FROM training_courses WHERE status = 'open'`,
+      trainingCourses: `SELECT count(*)::int AS count FROM training_courses WHERE status = 'active'`,
       trainingEnrollments: `SELECT count(*)::int AS count FROM training_enrollments`,
       contactNew: `SELECT count(*)::int AS count FROM contact_messages WHERE status = 'new'`,
       contactTotal: `SELECT count(*)::int AS count FROM contact_messages`,

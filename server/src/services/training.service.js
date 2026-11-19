@@ -96,9 +96,18 @@ export class TrainingService {
     return updated;
   }
 
-  // ---------- Public registration ----------
+  // ---------- Public registration & tracking ----------
   buildCaptcha() {
     return storeCaptcha();
+  }
+
+  async trackEnrollment({ enrollmentId, phone }) {
+    const normalized = normalizePhone(phone);
+    const enrollment = await this.repo.findEnrollmentForTracking(enrollmentId, normalized);
+    if (!enrollment) {
+      throw AppError.notFound('لم يتم العثور على طلب بهذا الرقم والجوال. تأكد من البيانات وحاول مرة أخرى.');
+    }
+    return enrollment;
   }
 
   async registerForCourse({ first_name, father_name, grandfather_name, family_name, phone, branch_id, course_id, signature_data, challenge_id, answer }) {
@@ -121,7 +130,7 @@ export class TrainingService {
     // 2) Course must exist (open + capacity enforced atomically at insert)
     const course = await this.repo.getCourse(course_id);
     if (!course) throw AppError.badRequest('Course does not exist');
-    if (course.status !== 'open') throw AppError.badRequest('Registration for this course is closed');
+    if (course.status !== 'active') throw AppError.badRequest('التسجيل في هذا البرنامج غير متاح حاليًا.');
 
     // 3) Branch must exist (FK guard -> friendly 400 instead of a raw 500)
     if (!(await this.repo.getBranch(branch_id))) {

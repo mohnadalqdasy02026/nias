@@ -18,7 +18,7 @@ import {
   contactSchema,
   assistantSchema,
 } from '../validators/public.validators.js';
-import { trainingRegisterSchema } from '../validators/training.validators.js';
+import { trainingRegisterSchema, trainingTrackSchema } from '../validators/training.validators.js';
 import { publicLimiter } from '../middleware/rateLimit.js';
 import { SettingsController } from '../controllers/settings.controller.js';
 
@@ -73,8 +73,9 @@ router.post('/contact', publicLimiter, validate(contactSchema), publicController
 router.get('/assistant/status', publicController.assistantStatus);
 router.post('/assistant', validate(assistantSchema), publicController.assistantChat);
 
-// Training registration
+// Training registration & tracking
 router.get('/training/register/config', trainingController.captcha);
 router.post('/training/register', publicLimiter, validate(trainingRegisterSchema), trainingController.register);
+router.get('/training/track', publicLimiter, validate(trainingTrackSchema), trainingController.trackEnrollment);
 
 export default router;

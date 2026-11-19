@@ -23,9 +23,10 @@ export class TrainingController {
     success(res, await this.service.updateEnrollmentStatus(req.params.id, req.body.status)),
   );
 
-  // public registration
+  // public registration & tracking
   captcha = asyncHandler(async (_req, res) => success(res, this.service.buildCaptcha()));
   register = asyncHandler(async (req, res) => created(res, await this.service.registerForCourse(req.body)));
+  trackEnrollment = asyncHandler(async (req, res) => success(res, await this.service.trackEnrollment(req.query)));
 
   // Default a course to the actor's branch when none is sent.
   withDefaultBranch(req) {

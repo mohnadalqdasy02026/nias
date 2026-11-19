@@ -84,7 +84,14 @@ function StepIcon({ name, size = 22 }) {
   );
 }
 
-export default function RegistrationSteps({ steps, heading, subtitle, tone = 'light' }) {
+export default function RegistrationSteps({
+  steps,
+  heading,
+  subtitle,
+  tone = 'light',
+  finalCta,
+  footnote,
+}) {
   const [active, setActive] = useState(0);
   const settings = useSiteSettings();
   const a = settings?.apply ?? {};
@@ -92,7 +99,15 @@ export default function RegistrationSteps({ steps, heading, subtitle, tone = 'li
   const resolvedHeading = heading ?? a.steps_heading ?? 'خطوات التسجيل والقبول';
   const resolvedSubtitle = subtitle ?? a.steps_subtitle;
   const admissionUrl = settings?.general?.ministry_admission_url || 'https://oasyemen.net';
-  const step = list[active];
+  const step = list[active] ?? list[0];
+  if (!step) return null;
+
+  const resolvedFinalCta = finalCta === undefined
+    ? { label: 'أكمل التقديم عبر البوابة', href: admissionUrl, external: true }
+    : finalCta;
+  const resolvedFootnote = footnote === undefined
+    ? { text: 'التقديم يتم إلكترونيًا بالكامل عبر', label: 'بوابة التنسيق الموحد ←', href: admissionUrl, external: true }
+    : footnote;
 
   return (
     <section className={`regsteps regsteps--${tone}`} aria-labelledby="regsteps-title">
@@ -105,14 +120,14 @@ export default function RegistrationSteps({ steps, heading, subtitle, tone = 'li
         <div className="regsteps-inner">
           <ol className="regsteps-list">
             {list.map((s, i) => (
-              <li key={s.key}>
+              <li key={s.key ?? i}>
                 <button
                   type="button"
                   className={`regsteps-item${i === active ? ' is-active' : ''}${i < active ? ' is-done' : ''}`}
                   onClick={() => setActive(i)}
                   aria-current={i === active ? 'step' : undefined}
                 >
-                  <span className="regsteps-num" aria-hidden="true">{i < active ? '✓' : s.num}</span>
+                  <span className="regsteps-num" aria-hidden="true">{i < active ? '✓' : (s.num ?? i + 1)}</span>
                   <span className="regsteps-item-text">
                     <strong>{s.title}</strong>
                     <small>{s.short}</small>
@@ -126,7 +141,7 @@ export default function RegistrationSteps({ steps, heading, subtitle, tone = 'li
             <div className="regsteps-panel-head">
               <span className="regsteps-panel-icon"><StepIcon name={step.icon} /></span>
               <div>
-                <span className="regsteps-panel-step">الخطوة {step.num} من {list.length}</span>
+                <span className="regsteps-panel-step">الخطوة {(step.num ?? active + 1)} من {list.length}</span>
                 <h3>{step.title}</h3>
               </div>
             </div>
@@ -150,16 +165,33 @@ export default function RegistrationSteps({ steps, heading, subtitle, tone = 'li
                 >
                   الخطوة التالية ←
                 </button>
-              ) : (
-                <a className="btn btn-primary" href={admissionUrl} target="_blank" rel="noopener noreferrer">
-                  أكمل التقديم عبر البوابة
-                </a>
-              )}
+              ) : resolvedFinalCta ? (
+                resolvedFinalCta.href ? (
+                  <a
+                    className="btn btn-primary"
+                    href={resolvedFinalCta.href}
+                    {...(resolvedFinalCta.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    onClick={resolvedFinalCta.onClick}
+                  >
+                    {resolvedFinalCta.label}
+                  </a>
+                ) : (
+                  <button type="button" className="btn btn-primary" onClick={resolvedFinalCta.onClick}>
+                    {resolvedFinalCta.label}
+                  </button>
+                )
+              ) : null}
             </div>
-            <div className="regsteps-cta">
-              <span>التقديم يتم إلكترونيًا بالكامل عبر</span>
-              <a href={admissionUrl} target="_blank" rel="noopener noreferrer">بوابة التنسيق الموحد ←</a>
-            </div>
+            {resolvedFootnote ? (
+              <div className="regsteps-cta">
+                <span>{resolvedFootnote.text}</span>
+                {resolvedFootnote.href ? (
+                  <a href={resolvedFootnote.href} {...(resolvedFootnote.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+                    {resolvedFootnote.label}
+                  </a>
+                ) : resolvedFootnote.label ? <span>{resolvedFootnote.label}</span> : null}
+              </div>
+            ) : null}
           </div>
         </div>
       </div>

@@ -326,3 +326,31 @@ h6 {
 .skip-link:focus {
   top: 0;
 }
+
+/* Apply gateway (student/trainee) */
+.apply-track-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 18px 0 8px;
+}
+
+.trainee-apply-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.trainee-apply-grid .card {
+  height: 100%;
+}
+
+.captcha-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}

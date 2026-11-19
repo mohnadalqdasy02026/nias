@@ -57,7 +57,7 @@ export class StatsRepository {
       colleges: "SELECT count(*)::int AS c FROM colleges WHERE status = 'active'",
       branches: "SELECT count(*)::int AS c FROM institute_branches WHERE status = 'active'",
       faculty: "SELECT count(*)::int AS c FROM faculty_members WHERE status = 'active'",
-      trainingCourses: "SELECT count(*)::int AS c FROM training_courses WHERE status = 'open'",
+      trainingCourses: "SELECT count(*)::int AS c FROM training_courses WHERE status = 'active'",
       students: "SELECT count(*)::int AS c FROM students",
       journalIssues: "SELECT count(*)::int AS c FROM journal_issues WHERE status = 'published'",
     };

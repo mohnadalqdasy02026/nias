@@ -70,3 +70,11 @@ same Express process.
 
 Free Render services sleep after idle periods; `.github/workflows/keep-alive.yml`
 pings `/healthz` every 5 minutes to keep the demo awake.
+
+
+## Security & rollout notes (current stage)
+
+- **Secrets / database credentials:** A previous Supabase DATABASE_URL was committed in git history (public repo). Rotate the database password/connection string out-of-band in Supabase and update Render environment variables immediately. Never commit .env or credentials; keep all secrets in environment variables only.
+- **Production hardening in place:** Helmet, CORS allowlist, API/public rate limiting, login throttling/lockout, and limited public tracking responses (enrollment status lookup returns only non-sensitive enrollment/course/branch/date fields and requires enrollment number + phone). Continue reviewing access controls for admin actions.
+- **Phone/SMS features (planned):** Login alerts via phone and SMS tracking links require an external SMS/OTP provider and credentials (not configured). Current MVP uses web-based trainee tracking at /apply?track=trainee#track and /api/v1/public/training/track.
+- **Staged rollout:** Academic (student/ministry flow) and training (trainee registration + tracking) paths are separated in navigation and registration. Library/resources, assistant guidance, and content can be expanded incrementally as data is added.

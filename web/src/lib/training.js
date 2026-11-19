@@ -1,14 +1,14 @@
 export const TRAINING_CATEGORY_LABELS = {
   course: 'دورة تدريبية',
-  qualifying: 'برنامج تأهيلي',
+  qualifying: 'برنامج تدريبي',
   seminar: 'ندوة',
-  activity: 'نشاط تدريبى',
+  activity: 'نشاط تدريبي',
 };
 
 // تبويبات قسم التدريب على الموقع العام، بالترتيب المعتمد.
 export const TRAINING_TABS = [
   { key: 'course', label: 'الدورات التدريبية' },
-  { key: 'qualifying', label: 'البرامج التأهيلية' },
+  { key: 'qualifying', label: 'البرامج التدريبية' },
   { key: 'seminar', label: 'الندوات' },
   { key: 'activity', label: 'الأنشطة التدريبية' },
 ];
@@ -18,9 +18,9 @@ export const trainingCategoryLabel = (key) => TRAINING_CATEGORY_LABELS[key] ?? T
 // صيغة المفرد للتصنيف مع أداة الإشارة، لاستخدامها في نصوص صفحة التفاصيل.
 const CATEGORY_NOUNS = {
   course: { text: 'الدورة', demo: 'هذه الدورة' },
-  qualifying: { text: 'البرنامج التأهيلي', demo: 'هذا البرنامج التأهيلي' },
+  qualifying: { text: 'البرنامج التدريبي', demo: 'هذا البرنامج التدريبي' },
   seminar: { text: 'الندوة', demo: 'هذه الندوة' },
-  activity: { text: 'النشاط التدريبى', demo: 'هذا النشاط التدريبى' },
+  activity: { text: 'النشاط التدريبي', demo: 'هذا النشاط التدريبي' },
 };
 
 export const trainingCategoryNoun = (key) => CATEGORY_NOUNS[key] ?? CATEGORY_NOUNS.course;

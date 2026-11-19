@@ -4,10 +4,10 @@ import { usePageMeta } from '../hooks/usePageMeta.js';
 
 const CATEGORY_LABELS = {
   admission: 'القبول والتسجيل',
-  forms: 'النماذج',
+  forms: 'النماذج والطلبات',
   regulations: 'اللوائح والأنظمة',
-  brochures: 'البرشورات',
-  publications: 'الإصدارات',
+  brochures: 'الأدلة والبرشورات',
+  publications: 'الإصدارات والمراجع',
 };
 
 export default function DownloadsPage() {
@@ -15,7 +15,7 @@ export default function DownloadsPage() {
   const [active, setActive] = useState('all');
   const [error, setError] = useState(null);
 
-  usePageMeta('التحميلات والملفات', 'تحميل نماذج القبول واللوائح والبرشورات والإصدارات من المعهد الوطني للعلوم الإدارية.');
+  usePageMeta('المكتبة والموارد', 'المكتبة والموارد: نماذج، لوائح، أدلة، ومراجع قابلة للتحميل من المعهد الوطني للعلوم الإدارية.');
 
   useEffect(() => {
     api.get('/public/downloads').then(setItems).catch((e) => setError(e.message));
@@ -28,18 +28,22 @@ export default function DownloadsPage() {
     <>
       <section className="subpage-hero">
         <div className="container subpage-hero-inner">
-          <p className="subpage-eyebrow">مركز الوثائق</p>
-          <h1>التحميلات والملفات</h1>
-          <p className="subpage-sub">النماذج واللوائح والإصدارات الرسمية للمعهد — تحميل مباشر.</p>
+          <p className="subpage-eyebrow">المكتبة والموارد</p>
+          <h1>المكتبة والموارد</h1>
+          <p className="subpage-sub">نماذج، لوائح، أدلة، وإصدارات رسمية للطلاب والباحثين والمتدربين — متاحة للتحميل المباشر.</p>
         </div>
       </section>
 
       <section className="section">
         <div className="container">
           {error && <div className="alert alert-danger">{error}</div>}
-          {items.length === 0 && !error && <p className="muted admin-empty">لا توجد ملفات مرفوعة بعد.</p>}
+          {items.length === 0 && !error && (
+            <div className="card admin-empty" style={{ padding: 20 }}>
+              <p className="muted" style={{ margin: 0 }}>لا توجد موارد متاحة للتحميل حاليًا. ستتم إضافة النماذج واللوائح والمراجع هنا بشكل تدريجي.</p>
+            </div>
+          )}
 
-          {cats.length > 1 && (
+          {cats.length > 0 && (
             <div className="programs-tabs" style={{ marginBottom: 24 }}>
               <button type="button" className={`programs-tab${active === 'all' ? ' programs-tab--active' : ''}`} onClick={() => setActive('all')}>الكل</button>
               {cats.map((c) => (
@@ -64,7 +68,7 @@ export default function DownloadsPage() {
                 </div>
               </div>
             ))}
-            {visible.length === 0 && <p className="muted">لا توجد ملفات في هذا التصنيف.</p>}
+            {items.length > 0 && visible.length === 0 && <p className="muted">لا توجد موارد في هذا التصنيف.</p>}
           </div>
         </div>
       </section>

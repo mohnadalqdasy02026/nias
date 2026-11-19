@@ -7,7 +7,7 @@ export const TRAINING_CATEGORIES = ['course', 'qualifying', 'seminar', 'activity
 
 export const listTrainingCoursesSchema = {
   query: z.object({
-    status: z.enum(['draft', 'open', 'closed', 'completed']).optional(),
+    status: z.enum(['active', 'inactive']).optional(),
     branchId: z.coerce.number().int().positive().optional(),
     category: z.enum(TRAINING_CATEGORIES).optional(),
     page: z.coerce.number().int().positive().default(1),
@@ -27,7 +27,7 @@ const courseBody = z.object({
   trainer: z.string().trim().max(190).nullable().optional(),
   category: z.enum(TRAINING_CATEGORIES).nullable().optional(),
   image_url: z.string().trim().max(500).nullable().optional(),
-  status: z.enum(['draft', 'open', 'closed', 'completed']).default('draft'),
+  status: z.enum(['active', 'inactive']).default('inactive'),
 });
 export const createCourseSchema = { body: courseBody };
 export const updateCourseSchema = { params: idParams, body: courseBody.partial() };
@@ -67,5 +67,12 @@ export const trainingRegisterSchema = {
     signature_data: z.string().trim().max(500).optional().nullable(),
     challenge_id: z.string().trim().min(1),
     answer: z.coerce.number().int(),
+  }),
+};
+
+export const trainingTrackSchema = {
+  query: z.object({
+    enrollmentId: z.coerce.number().int().positive(),
+    phone: z.string().trim().min(7).max(20),
   }),
 };

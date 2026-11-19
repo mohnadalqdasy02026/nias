@@ -9,7 +9,7 @@ import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 import { TRAINING_CATEGORY_LABELS } from '../../lib/training.js';
 import Can from '../../components/admin/Can.jsx';
 
-const statusLabel = { draft: 'مسودة', open: 'مفتوحة', closed: 'مغلقة', completed: 'مكتملة' };
+const statusLabel = { active: 'نشط', inactive: 'غير نشط' };
 
 const emptyForm = {
   title: '',
@@ -23,7 +23,7 @@ const emptyForm = {
   trainer: '',
   category: 'course',
   image_url: '',
-  status: 'draft',
+  status: 'inactive',
 };
 
 export default function TrainingCourses() {
@@ -83,10 +83,8 @@ export default function TrainingCourses() {
       <div className="admin-toolbar">
         <select value={status} onChange={(e) => { setStatus(e.target.value); load(e.target.value, branchFilter, 1); }}>
           <option value="">كل الحالات</option>
-          <option value="draft">مسودة</option>
-          <option value="open">مفتوحة</option>
-          <option value="closed">مغلقة</option>
-          <option value="completed">مكتملة</option>
+          <option value="active">نشط</option>
+          <option value="inactive">غير نشط</option>
         </select>
         <select value={branchFilter} onChange={(e) => { setBranchFilter(e.target.value); load(status, e.target.value, 1); }}>
           <option value="">كل الفروع</option>
@@ -122,7 +120,7 @@ export default function TrainingCourses() {
                 <td data-label="العنوان">{c.title}</td>
                 <td data-label="التصنيف">{TRAINING_CATEGORY_LABELS[c.category] ?? TRAINING_CATEGORY_LABELS.course}</td>
                 <td data-label="الفرع">{c.branch_name_ar ? <span className="badge-msg badge-success">{branchLabel(c.branch_name_ar)}</span> : '—'}</td>
-                <td data-label="الحالة"><span className={`badge-msg badge-${c.status === 'open' ? 'success' : 'draft'}`}>{statusLabel[c.status]}</span></td>
+                <td data-label="الحالة"><span className={`badge-msg badge-${c.status === 'active' ? 'success' : 'draft'}`}>{statusLabel[c.status] ?? c.status}</span></td>
                 <td data-label="التسجيلات">{c.enrollments_count}</td>
                 <td data-label="المقاعد">{c.capacity ?? '—'}</td>
                 <td data-label="الرسوم">{c.fees != null ? c.fees : '—'}</td>
@@ -180,7 +178,7 @@ export function CourseForm() {
       trainer: record.trainer ?? '',
       category: record.category ?? 'course',
       image_url: record.image_url ?? '',
-      status: record.status ?? 'draft',
+      status: record.status === 'active' ? 'active' : 'inactive',
     });
   }, [record]);
 
@@ -248,10 +246,8 @@ export function CourseForm() {
             <div className="form-field">
               <label>الحالة</label>
               <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                <option value="draft">مسودة</option>
-                <option value="open">مفتوحة</option>
-                <option value="closed">مغلقة</option>
-                <option value="completed">مكتملة</option>
+                <option value="active">نشط (متاح للتسجيل)</option>
+                <option value="inactive">غير نشط</option>
               </select>
             </div>
             <div className="form-field form-field--full">

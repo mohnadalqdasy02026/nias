@@ -4,31 +4,23 @@ import { api } from '../api/client.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
 
 const QUICK_QUESTIONS = [
-  { key: 'programs', label: 'الأقسام والتخصصات' },
-  { key: 'about', label: 'عن المعهد' },
-  { key: 'colleges', label: 'كليات المعهد' },
-  { key: 'master', label: 'الدراسات العليا' },
-  { key: 'fees', label: 'رسوم الدراسة' },
-  { key: 'contact', label: 'أرقام التواصل' },
-  { key: 'address', label: 'عنوان المعهد' },
-  { key: 'branches', label: 'فروع المعهد' },
+  { key: 'programs', label: 'البرامج الأكاديمية' },
+  { key: 'training', label: 'التدريب والتسجيل كمتدرب' },
+  { key: 'track', label: 'تتبع طلب التدريب' },
+  { key: 'apply', label: 'خطوات القبول الأكاديمي' },
+  { key: 'branches', label: 'الفروع' },
+  { key: 'library', label: 'المكتبة والموارد' },
+  { key: 'contact', label: 'التواصل' },
+  { key: 'news', label: 'الأخبار والفعاليات' },
 ];
 
-// NIAS-only restriction keywords (Arabic & English)
-const NIAS_KEYWORDS = [
-  'nias', 'الوطني', ' المعهد', 'nias-academy',
-  'program', 'برنامج', 'برامج', 'specialization', 'تخصص',
-  'college', 'كلية', 'kليات', 'department', 'قسم', 'أقسام',
-  'faculty', 'أستاذ', 'عضو هيئة', 'training', 'دورة', 'دورات',
-  'admission', 'قبول', 'registration', 'تسجيل',
+const NIAS_HINTS = [
+  'معهد', 'وطني', 'برنامج', 'برامج', 'تخصص', 'كلية', 'كليات', 'قسم', 'أقسام',
+  'قبول', 'تسجيل', 'تنسيق', 'رسوم', 'دراسة', 'بكالوريوس', 'ماجستير', 'دبلوم',
+  'تدريب', 'دورة', 'دورات', 'متدرب', 'تتبع', 'طلب', 'مكتبة', 'موارد', 'لوائح', 'نماذج',
+  'فرع', 'فروع', 'أخبار', 'فعالية', 'تواصل', 'هاتف', 'بريد', 'عنوان', 'مجلة', 'هيئة',
+  'nias',
 ];
-
-function isNiasQuestion(text) {
-  if (!text) return false;
-  const t = text.trim().toLowerCase();
-  return NIAS_KEYWORDS.some((kw) => t.includes(kw));
-}
-
 
 const PROGRAM_TYPE_LABELS = {
   bachelor: 'بكالوريوس',
@@ -38,10 +30,15 @@ const PROGRAM_TYPE_LABELS = {
 };
 
 const KEYWORDS = [
+  ['track', ['تتبع', 'متابعة طلب', 'حالة الطلب', 'رقم التسجيل']],
+  ['training', ['تدريب', 'متدرب', 'دورة', 'دورات', 'برنامج تدريبي', 'نشاط تدريبي', 'ندوة']],
+  ['apply', ['قبول', 'تنسيق', 'سجل كطالب', 'تقديم', 'مستندات', 'شروط']],
   ['branches', ['فرع', 'فروع']],
   ['contact', ['تواصل', 'هاتف', 'رقم', 'واتساب', 'بريد', 'ايميل', 'إيميل']],
   ['address', ['عنوان', 'موقع', 'مكان']],
   ['master', ['ماجستير', 'دراسات عليا']],
+  ['library', ['مكتبة', 'موارد', 'نماذج', 'لوائح', 'تحميل', 'ملف', 'ملفات']],
+  ['news', ['خبر', 'أخبار', 'فعالية', 'فعاليات', 'نشاطات']],
   ['colleges', ['كلية', 'كليات']],
   ['programs', ['تخصص', 'تخصصات', 'برنامج', 'برامج', 'اقسام', 'أقسام', 'قسم']],
   ['fees', ['رسوم', 'تكلفة', 'سعر']],
@@ -49,7 +46,7 @@ const KEYWORDS = [
 ];
 
 const detectQuestion = (text) => {
-  const t = text.trim();
+  const t = String(text || '').trim();
   if (!t) return null;
   for (const [key, words] of KEYWORDS) {
     if (words.some((w) => t.includes(w))) return key;
@@ -57,7 +54,17 @@ const detectQuestion = (text) => {
   return null;
 };
 
-const WELCOME = { role: 'bot', text: 'مرحباً 👋 أنا المساعد الذكي، مخصص للإجابة عن أسئلة المعهد الوطني للعلوم الإدارية. اسألني عن البرامج، الكليات، الفروع، القبول، أو أي موضوع يتعلق بالمعهد.' };
+const isLikelyRelevant = (text) => {
+  const t = String(text || '').trim().toLowerCase();
+  if (!t) return false;
+  if (t.length <= 20) return true;
+  return NIAS_HINTS.some((k) => t.includes(String(k).toLowerCase()));
+};
+
+const WELCOME = {
+  role: 'bot',
+  text: 'مرحباً 👋 أنا المساعد الذكي للموقع. أساعدك في المسار الأكاديمي، ومسار التدريب (التسجيل كمتدرب وتتبّع الطلب)، الفروع، الأخبار، والمكتبة والموارد.',
+};
 
 const escapeHtml = (s) =>
   String(s)
@@ -66,8 +73,7 @@ const escapeHtml = (s) =>
     .replace(/>/g, '&gt;');
 
 // Very small, safe formatting for AI replies: **bold**, *italic*,
-// `code`, inline [label](/path) links, and bulleted lines. Input is
-// HTML-escaped first, so no raw markup can leak through.
+// `code`, inline [label](/path) links, and bulleted lines.
 const formatReply = (text) => {
   let s = escapeHtml(text);
   s = s.replace(/\[([^\]]+)\]\((\/[^\s)]+|https?:\/\/[^\s)]+)\)/g, '<a href="$2">$1</a>');
@@ -122,15 +128,60 @@ export default function SmartAssistant() {
     if (key === 'about') {
       return {
         text: `${siteName} مؤسسة وطنية معنية ببناء القدرات الإدارية وتأهيل الكوادر في الجمهورية اليمنية.`,
-        links: [{ to: '/about', label: 'اقرأ المزيد عن المعهد' }],
+        links: [{ to: '/about', label: 'عن المعهد' }],
+      };
+    }
+
+    if (key === 'apply') {
+      return {
+        text: 'المسار الأكاديمي: التقديم للبرامج الأكاديمية يتم عبر خطوات واضحة وبوابة التنسيق الموحد. راجع الشروط والخطوات والمستندات ثم انتقل للبوابة.',
+        links: [
+          { to: '/apply?track=student', label: 'التسجيل والقبول (أكاديمي)' },
+          { to: '/programs', label: 'البرامج الأكاديمية' },
+        ],
+      };
+    }
+
+    if (key === 'training') {
+      const courses = await load('/public/training-courses').catch(() => []);
+      return {
+        text: courses.length
+          ? `تتوفر حالياً ${courses.length} برامج/دورات تدريبية نشطة. يمكنك التسجيل كمتدرب عبر الموقع ومتابعة حالة طلبك.`
+          : 'يمكنك التسجيل كمتدرب في البرامج والدورات التدريبية النشطة عبر الموقع ومتابعة حالة طلبك برقم التسجيل والجوال.',
+        items: courses.slice(0, 6).map((c) => c.title),
+        links: [
+          { to: '/apply?track=trainee', label: 'سجّل كمتدرب' },
+          { to: '/training', label: 'صفحة التدريب' },
+        ],
+      };
+    }
+
+    if (key === 'track') {
+      return {
+        text: 'لمتابعة طلب التدريب أدخل رقم التسجيل ورقم الجوال المستخدم عند التسجيل. ستظهر لك الحالة والبرنامج والفرع والتواريخ المتاحة.',
+        links: [{ to: '/apply?track=trainee#track', label: 'تتبع طلب التدريب' }],
+      };
+    }
+
+    if (key === 'library') {
+      return {
+        text: 'تجد في المكتبة والموارد النماذج واللوائح والأدلة والإصدارات المتاحة للتحميل.',
+        links: [{ to: '/downloads', label: 'المكتبة والموارد' }],
+      };
+    }
+
+    if (key === 'news') {
+      return {
+        text: 'تابع آخر الأخبار والفعاليات والأنشطة عبر صفحة الأخبار.',
+        links: [{ to: '/news', label: 'الأخبار والفعاليات' }],
       };
     }
 
     if (key === 'programs') {
       const programs = await load('/public/programs');
       return {
-        text: `يقدّم المعهد ${programs.length} برنامجاً أكاديمياً في مختلف الكليات:`,
-        items: programs.map((p) => {
+        text: `يقدّم المعهد ${programs.length} برنامجاً أكاديمياً:`,
+        items: programs.slice(0, 10).map((p) => {
           const type = PROGRAM_TYPE_LABELS[p.program_type] ?? p.program_type;
           const college = p.college_name_ar ? ` — ${p.college_name_ar}` : '';
           return `${p.name_ar} (${type}${college})`;
@@ -142,9 +193,9 @@ export default function SmartAssistant() {
     if (key === 'colleges') {
       const colleges = await load('/public/colleges');
       return {
-        text: `كليات ومراكز المعهد (${colleges.length}):`,
+        text: `الكليات والمراكز (${colleges.length}):`,
         items: colleges.map((c) => c.name_ar),
-        links: [{ to: '/colleges', label: 'استعرض الكليات والأقسام' }],
+        links: [{ to: '/colleges', label: 'الكليات والأقسام' }],
       };
     }
 
@@ -152,9 +203,7 @@ export default function SmartAssistant() {
       const programs = await load('/public/programs');
       const masters = programs.filter((p) => String(p.program_type).startsWith('master'));
       return {
-        text: masters.length
-          ? `برامج الدراسات العليا (${masters.length}):`
-          : 'تُعلن برامج الدراسات العليا مع بداية كل فصل دراسي.',
+        text: masters.length ? `برامج الدراسات العليا (${masters.length}):` : 'تُعلن برامج الدراسات العليا وفق خطة القبول المعتمدة.',
         items: masters.map((p) => `${p.name_ar} (${PROGRAM_TYPE_LABELS[p.program_type] ?? p.program_type})`),
         links: [{ to: '/programs', label: 'البرامج الأكاديمية' }],
       };
@@ -162,10 +211,10 @@ export default function SmartAssistant() {
 
     if (key === 'fees') {
       return {
-        text: 'تُحدَّد رسوم الدراسة حسب البرنامج والدرجة العلمية، وتُعلن مع فتح باب القبول والتنسيق. يمكنك مراجعة شروط وخطوات التسجيل أو التواصل مع الإدارة للاستفسار.',
+        text: 'تُحدَّد الرسوم حسب البرنامج والدرجة، وتُعلن مع فتح القبول/التسجيل. للمعلومة الدقيقة تواصل مع الإدارة أو راجع صفحة البرنامج.',
         links: [
-          { to: '/apply', label: 'شروط وخطوات التسجيل' },
-          { to: '/contact', label: 'تواصل مع الإدارة' },
+          { to: '/apply', label: 'التسجيل والقبول' },
+          { to: '/contact', label: 'تواصل معنا' },
         ],
       };
     }
@@ -178,7 +227,7 @@ export default function SmartAssistant() {
         contact.hours ? `أوقات العمل: ${contact.hours}` : null,
       ].filter(Boolean);
       return {
-        text: lines.length ? 'قنوات التواصل الرسمية:' : 'تجد أرقام التواصل في صفحة «تواصل معنا».',
+        text: lines.length ? 'قنوات التواصل الرسمية:' : 'تجد قنوات التواصل في صفحة «تواصل معنا».',
         items: lines,
         links: [{ to: '/contact', label: 'صفحة التواصل' }],
       };
@@ -186,10 +235,10 @@ export default function SmartAssistant() {
 
     if (key === 'address') {
       return {
-        text: contact.address ? `عنوان المعهد: ${contact.address}` : 'تجد عنوان المعهد في صفحة التواصل وخرائط الفروع.',
+        text: contact.address ? `العنوان: ${contact.address}` : 'تجد العنوان والفروع في صفحات التواصل والفروع.',
         links: [
-          { to: '/contact', label: 'صفحة التواصل' },
-          { to: '/branches', label: 'فروع المعهد' },
+          { to: '/contact', label: 'تواصل معنا' },
+          { to: '/branches', label: 'الفروع' },
         ],
       };
     }
@@ -199,24 +248,24 @@ export default function SmartAssistant() {
       return {
         text: `فروع المعهد (${branches.length}):`,
         items: branches.map((b) => (b.address ? `${b.name_ar} — ${b.address}` : b.name_ar)),
-        links: [{ to: '/branches', label: 'تفاصيل الفروع والخرائط' }],
+        links: [{ to: '/branches', label: 'تفاصيل الفروع' }],
       };
     }
 
     return {
-      text: 'لم أفهم سؤالك تماماً. جرّب أحد الأسئلة السريعة بالأسفل، أو تواصل معنا مباشرة.',
-      links: [{ to: '/contact', label: 'تواصل معنا' }],
+      text: 'يمكنني مساعدتك في الأسئلة المتعلقة بالمعهد: البرامج الأكاديمية، التدريب والتسجيل كمتدرب، تتبع الطلب، الفروع، الأخبار، والمكتبة والموارد. اختر سؤالاً سريعاً أو اكتب سؤالك.',
+      links: [
+        { to: '/apply', label: 'التسجيل والقبول' },
+        { to: '/contact', label: 'تواصل معنا' },
+      ],
     };
-  };
-
-  const linkify = (reply, key) => {
-    const local = typeof key === 'string' ? key : detectQuestion(reply);
-    return local;
   };
 
   const ask = async (key, label) => {
     if (typing) return;
-    const userTurn = { role: 'user', text: label };
+    const text = String(label || '').trim();
+    if (!text) return;
+    const userTurn = { role: 'user', text };
     const prior = messages.filter((m) => !m.typing);
     setMessages((m) => [...m, userTurn]);
     setInput('');
@@ -224,15 +273,14 @@ export default function SmartAssistant() {
     try {
       if (aiEnabled) {
         const history = prior.slice(-10).map((m) => ({ role: m.role, text: m.text }));
-        const data = await api.post('/public/assistant', { message: label, history });
+        const data = await api.post('/public/assistant', { message: text, history });
         setMessages((m) => [...m, { role: 'bot', text: data?.reply ?? 'تعذّر توليد رد.' }]);
       } else {
-        const reply = await buildLocalReply(key);
+        const reply = await buildLocalReply(key ?? detectQuestion(text) ?? 'unknown');
         setMessages((m) => [...m, { role: 'bot', ...reply }]);
       }
     } catch (err) {
-      // If the AI endpoint fails, gracefully fall back to the local engine.
-      const fallbackKey = linkify(label, detectQuestion(label));
+      const fallbackKey = key ?? detectQuestion(text) ?? 'unknown';
       if (aiEnabled) {
         try {
           const reply = await buildLocalReply(fallbackKey);
@@ -261,16 +309,9 @@ export default function SmartAssistant() {
     e.preventDefault();
     const text = input.trim();
     if (!text) return;
-    // Restrict to NIAS questions only
-    if (!isNiasQuestion(text)) {
-      setMessages((m) => [
-        ...m,
-        {
-          role: 'bot',
-          text: 'أنا مخصص للإجابة عن أسئلة المعهد الوطني فقط. اسألني عن البرامج، الكليات، الفروع، القبول، أو أي موضوع يتعلق بالمعهد.',
-        },
-      ]);
-      return;
+    if (!isLikelyRelevant(text)) {
+      // Still allow, but nudge if clearly off-topic length-wise; server will also handle.
+      // We don't hard-block to keep UX smooth.
     }
     ask(detectQuestion(text) ?? 'unknown', text);
   };
@@ -282,7 +323,7 @@ export default function SmartAssistant() {
           <div className="smart-assistant-head">
             <div>
               <strong>المساعد الذكي</strong>
-              <span>اسأل عن أي شيء — نرد عليك فوراً</span>
+              <span>إرشاد حول الأكاديمية والتدريب والخدمات</span>
             </div>
             <button type="button" className="smart-assistant-close" aria-label="إغلاق المساعد" onClick={() => setOpen(false)}>×</button>
           </div>
@@ -303,7 +344,7 @@ export default function SmartAssistant() {
                 {m.links?.length > 0 && (
                   <div className="smart-msg-links">
                     {m.links.map((l) => (
-                      <Link key={l.to} to={l.to} onClick={() => setOpen(false)}>{l.label}</Link>
+                      <Link key={`${l.to}-${l.label}`} to={l.to} onClick={() => setOpen(false)}>{l.label}</Link>
                     ))}
                   </div>
                 )}
@@ -324,7 +365,7 @@ export default function SmartAssistant() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="اكتب سؤالك هنا…"
+              placeholder="اكتب سؤالك عن القبول، التدريب، الفروع..."
               aria-label="سؤالك"
             />
             <button type="submit" className="btn btn-primary btn-sm" disabled={typing || !input.trim()}>إرسال</button>
@@ -341,19 +382,13 @@ export default function SmartAssistant() {
       >
         {open ? '×' : (
           <>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0e7c66" stroke="none" aria-hidden="true">
-              <path d="M12 2L2 7l10 5 10-5-10-5z" />
-              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2a7 7 0 0 0-7 7v3.2a3 3 0 0 0-1 2.2V16a2 2 0 0 0 2 2h1v-6H6V9a6 6 0 1 1 12 0v3h-1v6h1a2 2 0 0 0 2-2v-1.6a3 3 0 0 0-1-2.2V9a7 7 0 0 0-7-7z" />
             </svg>
             <span>المساعد الذكي</span>
           </>
         )}
       </button>
-      <div className="smart-assistant-floating-icon" aria-label="المساعد الذكي" role="button" tabindex="0" onClick={() => setOpen(true)}>
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="#0e7c66" aria-hidden="true">
-          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
-        </svg>
-      </div>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { api } from '../api/client.js';
 import { branchTitle } from '../lib/branch.js';
 import { initReveal } from '../lib/reveal.js';
 import { useSiteSettings } from '../hooks/useSiteSettings.js';
-import { DEFAULT_MAIN, DEFAULT_MORE, DEFAULT_NAV_LABELS, ABOUT_GROUP_ITEMS, resolveNav } from '../lib/navigation.js';
+import { DEFAULT_MORE, DEFAULT_NAV_LABELS, ABOUT_GROUP_ITEMS, ACADEMIC_ITEMS, TRAINING_ITEMS, resolveNav } from '../lib/navigation.js';
 import SmartAssistant from '../components/SmartAssistant.jsx';
 
 function Logo({ small, src }) {
@@ -34,11 +34,14 @@ function NavDropdown({ label, open, onToggle, children }) {
 }
 
 function Header() {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
   const [branchOpen, setBranchOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [linksOpen, setLinksOpen] = useState(false);
+  const [academicOpen, setAcademicOpen] = useState(false);
+  const [trainingOpen, setTrainingOpen] = useState(false);
   const [branches, setBranches] = useState([]);
   const { user } = useAuth();
   const settings = useSiteSettings();
@@ -46,16 +49,12 @@ function Header() {
   const general = settings?.general ?? {};
   const contact = settings?.contact ?? {};
   const navCfg = settings?.navigation ?? {};
-  const navItems = resolveNav(DEFAULT_MAIN, navCfg.main).filter((i) => i.visible);
   const moreItems = resolveNav(DEFAULT_MORE, navCfg.more).filter((i) => i.visible);
   const aboutItems = moreItems.filter((i) => ABOUT_GROUP_ITEMS.includes(i.to));
-  const otherMoreItems = moreItems.filter((i) => !ABOUT_GROUP_ITEMS.includes(i.to));
+  const otherMoreItems = moreItems.filter((i) => !ABOUT_GROUP_ITEMS.includes(i.to) && !['/journal', '/faculty'].includes(i.to));
   const navLabels = { ...DEFAULT_NAV_LABELS, ...(navCfg.labels ?? {}) };
-  // The student portal and the training sign-up live inside this site, so the
-  // quick links open the site's own pages instead of the old domain.
   const serviceLinks = [
-    { label: 'بوابة الطالب', to: '/student-portal' },
-    { label: 'التسجيل في الدورات', to: '/training/register' },
+    { label: 'بوابة الطالب', to: '/apply?track=student' },
   ];
   const externalLinks = [
     general.ministry_admission_url && { label: 'بوابة التنسيق الموحد', href: general.ministry_admission_url },
@@ -75,7 +74,6 @@ function Header() {
     api.get('/public/branches').then((list) => setBranches(list ?? [])).catch(() => {});
   }, []);
 
-  // Elevate the header once the page is scrolled away from the top.
   useEffect(() => {
     const onScroll = () => {
       headerRef.current?.classList.toggle('is-scrolled', window.scrollY > 8);
@@ -100,8 +98,10 @@ function Header() {
     setMoreOpen(false);
     setAboutOpen(false);
     setLinksOpen(false);
+    setAcademicOpen(false);
+    setTrainingOpen(false);
   };
-  // Tapping outside the drawer closes it, and Escape closes it too.
+
   useEffect(() => {
     if (!open) return undefined;
     const onPointerDown = (e) => {
@@ -120,7 +120,6 @@ function Header() {
     };
   }, [open]);
 
-  // Freeze the page behind the drawer so it cannot scroll on touch.
   useEffect(() => {
     if (!open) return undefined;
     const prev = document.body.style.overflow;
@@ -129,6 +128,15 @@ function Header() {
       document.body.style.overflow = prev;
     };
   }, [open]);
+
+  const closeAllDrops = () => {
+    setBranchOpen(false);
+    setMoreOpen(false);
+    setAboutOpen(false);
+    setLinksOpen(false);
+    setAcademicOpen(false);
+    setTrainingOpen(false);
+  };
 
   return (
     <header className="site-header" ref={headerRef}>
@@ -150,80 +158,57 @@ function Header() {
               <small>{general.site_name_en ?? 'National Institute of Administrative Sciences'}</small>
             </span>
           </div>
-          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={() => { setOpen(false); setBranchOpen(false); setMoreOpen(false); setAboutOpen(false); setLinksOpen(false); }}>×</button>
-          {navItems.map((item) =>
-            item.to === '/about' ? (
-              <NavDropdown
-                key={item.to}
-                label={item.label}
-                open={aboutOpen}
-                onToggle={() => { setAboutOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); setLinksOpen(false); }}
-              >
-                <Link to="/about" className="nav-drop-link nav-drop-link--lead" onClick={() => { setAboutOpen(false); setOpen(false); }}>
-                  نظرة عامة
-                </Link>
-                {aboutItems.map((sub) => (
-                  <Link
-                    key={sub.to}
-                    to={sub.to}
-                    className="nav-drop-link"
-                    onClick={() => { setAboutOpen(false); setOpen(false); }}
-                  >
-                    {sub.label}
-                  </Link>
-                ))}
-              </NavDropdown>
-            ) : (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === '/'}
-                className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            ),
-          )}
-          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { setBranchOpen((v) => !v); setMoreOpen(false); setAboutOpen(false); setLinksOpen(false); }}>
+          <button type="button" className="nav-close" aria-label="إغلاق القائمة" onClick={closeMenu}>×</button>
+
+          <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setOpen(false)}>
+            الرئيسية
+          </NavLink>
+
+          <NavDropdown label={navLabels.about || 'عن المعهد'} open={aboutOpen} onToggle={() => { const v = !aboutOpen; closeAllDrops(); setAboutOpen(v); }}>
+            <Link to="/about" className="nav-drop-link nav-drop-link--lead" onClick={closeMenu}>نظرة عامة</Link>
+            {aboutItems.map((sub) => (
+              <Link key={sub.to} to={sub.to} className="nav-drop-link" onClick={closeMenu}>{sub.label}</Link>
+            ))}
+          </NavDropdown>
+
+          <NavDropdown label={navLabels.academic || 'الأكاديمية'} open={academicOpen} onToggle={() => { const v = !academicOpen; closeAllDrops(); setAcademicOpen(v); }}>
+            {ACADEMIC_ITEMS.map((item) => (
+              <Link key={item.to} to={item.to} className="nav-drop-link" onClick={closeMenu}>{item.label}</Link>
+            ))}
+          </NavDropdown>
+
+          <NavLink to="/apply" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setOpen(false)}>
+            التسجيل والقبول
+          </NavLink>
+
+          <NavDropdown label={navLabels.training || 'التدريب'} open={trainingOpen} onToggle={() => { const v = !trainingOpen; closeAllDrops(); setTrainingOpen(v); }}>
+            {TRAINING_ITEMS.map((item) => (
+              <Link key={item.to} to={item.to} className="nav-drop-link" onClick={closeMenu}>{item.label}</Link>
+            ))}
+          </NavDropdown>
+
+          <NavDropdown label={navLabels.branches} open={branchOpen} onToggle={() => { const v = !branchOpen; closeAllDrops(); setBranchOpen(v); }}>
             {branches.length === 0 && <span className="nav-drop-empty">لا توجد فروع مسجلة.</span>}
             {branches.map((b) => (
-              <Link
-                key={b.id}
-                to={`/branches/${b.slug}`}
-                className="nav-drop-link"
-                onClick={() => { setBranchOpen(false); setOpen(false); }}
-              >
+              <Link key={b.id} to={`/branches/${b.slug}`} className="nav-drop-link" onClick={closeMenu}>
                 <span className="nav-drop-label">{navBranchLabel(b)}</span>
                 {b.is_headquarters && <span className="nav-drop-mark">رئيسي</span>}
               </Link>
             ))}
           </NavDropdown>
-          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { setMoreOpen((v) => !v); setBranchOpen(false); setAboutOpen(false); setLinksOpen(false); }}>
+
+          <NavDropdown label={navLabels.more} open={moreOpen} onToggle={() => { const v = !moreOpen; closeAllDrops(); setMoreOpen(v); }}>
             {otherMoreItems.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="nav-drop-link"
-                onClick={() => { setMoreOpen(false); setOpen(false); }}
-              >
-                {item.label}
-              </Link>
+              <Link key={item.to} to={item.to} className="nav-drop-link" onClick={closeMenu}>{item.label}</Link>
             ))}
           </NavDropdown>
-          <NavDropdown label={navLabels.links} open={linksOpen} onToggle={() => { setLinksOpen((v) => !v); setBranchOpen(false); setMoreOpen(false); setAboutOpen(false); }}>
+
+          <NavDropdown label={navLabels.links} open={linksOpen} onToggle={() => { const v = !linksOpen; closeAllDrops(); setLinksOpen(v); }}>
             {serviceLinks.length > 0 && (
               <>
                 <span className="nav-drop-group">خدمات إلكترونية</span>
                 {serviceLinks.map((l) => (
-                  <Link
-                    key={l.to}
-                    className="nav-drop-link"
-                    to={l.to}
-                    onClick={() => { setLinksOpen(false); setOpen(false); }}
-                  >
-                    {l.label}
-                  </Link>
+                  <Link key={l.to} className="nav-drop-link" to={l.to} onClick={closeMenu}>{l.label}</Link>
                 ))}
               </>
             )}
@@ -231,16 +216,8 @@ function Header() {
               <>
                 <span className="nav-drop-group">روابط حكومية</span>
                 {externalLinks.map((l) => (
-                  <a
-                    key={`${l.label}-${l.href}`}
-                    className="nav-drop-link"
-                    href={l.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => { setLinksOpen(false); setOpen(false); }}
-                  >
-                    {l.label}
-                    <span className="nav-drop-ext" aria-hidden="true">↗</span>
+                  <a key={`${l.label}-${l.href}`} className="nav-drop-link" href={l.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
+                    {l.label}<span className="nav-drop-ext" aria-hidden="true">↗</span>
                   </a>
                 ))}
               </>
@@ -249,25 +226,17 @@ function Header() {
               <>
                 <span className="nav-drop-group">تابعنا</span>
                 {socialLinks.map((l) => (
-                  <a
-                    key={l.href}
-                    className="nav-drop-link"
-                    href={l.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={() => { setLinksOpen(false); setOpen(false); }}
-                  >
-                    {l.label}
-                    <span className="nav-drop-ext" aria-hidden="true">↗</span>
+                  <a key={l.href} className="nav-drop-link" href={l.href} target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
+                    {l.label}<span className="nav-drop-ext" aria-hidden="true">↗</span>
                   </a>
                 ))}
               </>
             )}
             <span className="nav-drop-group">الحساب</span>
             {isAdmin ? (
-              <Link to="/admin" className="nav-drop-link" onClick={() => { setLinksOpen(false); setOpen(false); }}>لوحة التحكم</Link>
+              <Link to="/admin" className="nav-drop-link" onClick={closeMenu}>لوحة التحكم</Link>
             ) : (
-              <Link to="/login" className="nav-drop-link" onClick={() => { setLinksOpen(false); setOpen(false); }}>تسجيل الدخول</Link>
+              <Link to="/login" className="nav-drop-link" onClick={closeMenu}>تسجيل الدخول</Link>
             )}
           </NavDropdown>
         </nav>
@@ -280,17 +249,11 @@ function Header() {
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
-          <span />
-          <span />
-          <span />
+          <span /><span /><span />
         </button>
       </div>
 
-      <div
-        className={`nav-scrim${open ? ' nav-scrim--open' : ''}`}
-        onClick={closeMenu}
-        aria-hidden="true"
-      />
+      <div className={`nav-scrim${open ? ' nav-scrim--open' : ''}`} onClick={closeMenu} aria-hidden="true" />
     </header>
   );
 }

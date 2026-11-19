@@ -151,18 +151,31 @@ function RegistrationCta({ general, home }) {
   return (
     <section className="section">
       <div className="container">
-        <div className="reg-cta">
-          <span className="reg-cta-icon" aria-hidden="true">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" /></svg>
-          </span>
-          <div className="reg-cta-text">
-            <h2>{home?.regcta_title || 'التسجيل والقبول'}</h2>
-            <p>{home?.regcta_text || 'خطوات التقديم والمستندات المطلوبة وشروط القبول — كلّها في صفحة واحدة.'}</p>
+        <div className="section-head">
+          <div>
+            <h2 className="section-title">{home?.regcta_title || 'التسجيل والقبول'}</h2>
+            <p className="section-subtitle">{home?.regcta_text || 'بوابة موحدة واضحة: اختر المسار الأكاديمي أو مسار التدريب والتأهيل.'}</p>
           </div>
-          <div className="reg-cta-actions">
-            <Link to="/apply" className="btn btn-primary">شروط وخطوات التسجيل ←</Link>
-            <a className="btn btn-soft" href={admission} target="_blank" rel="noopener noreferrer">بوابة التنسيق الموحد</a>
-          </div>
+        </div>
+        <div className="highlight-grid">
+          <article className="card highlight-card">
+            <span className="highlight-mark" aria-hidden="true">🎓</span>
+            <h3>المسار الأكاديمي (طالب)</h3>
+            <p>لبرامج البكالوريوس والماجستير والدبلوم — التقديم عبر خطوات واضحة وبوابة التنسيق الموحد.</p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+              <Link to="/apply?track=student" className="btn btn-primary btn-sm">سجّل كطالب</Link>
+              <a className="btn btn-soft btn-sm" href={admission} target="_blank" rel="noopener noreferrer">بوابة التنسيق</a>
+            </div>
+          </article>
+          <article className="card highlight-card">
+            <span className="highlight-mark" aria-hidden="true">🛠️</span>
+            <h3>مسار التدريب (متدرب)</h3>
+            <p>للدورات والبرامج والأنشطة التدريبية النشطة — سجّل مباشرة عبر الموقع وتابع حالة طلبك.</p>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 12 }}>
+              <Link to="/apply?track=trainee" className="btn btn-primary btn-sm">سجّل كمتدرب</Link>
+              <Link to="/apply?track=trainee#track" className="btn btn-soft btn-sm">تتبع الطلب</Link>
+            </div>
+          </article>
         </div>
       </div>
     </section>
@@ -243,6 +256,35 @@ export default function Home() {
 
       <RegistrationCta general={settings?.general} home={home} />
 
+      <section className="section section-alt">
+        <div className="container">
+          <div className="section-head">
+            <div>
+              <h2 className="section-title">خدمات وروابط سريعة</h2>
+              <p className="section-subtitle">وصول مباشر لأهم الخدمات والمصادر دون تكرار أو تعقيد.</p>
+            </div>
+          </div>
+          <div className="highlight-grid">
+            {[
+              { title: 'التسجيل الأكاديمي', text: 'خطوات القبول للبرامج الأكاديمية والمتطلبات.', to: '/apply?track=student', label: 'فتح' },
+              { title: 'التسجيل كمتدرب', text: 'التسجيل في البرامج والدورات التدريبية النشطة.', to: '/apply?track=trainee', label: 'سجّل الآن' },
+              { title: 'تتبع طلب التدريب', text: 'استعلام عن حالة طلبك برقم التسجيل والجوال.', to: '/apply?track=trainee#track', label: 'تتبع' },
+              { title: 'المكتبة والموارد', text: 'نماذج ولوائح وأدلة ومراجع قابلة للتحميل.', to: '/downloads', label: 'استعراض' },
+              { title: 'الأخبار والفعاليات', text: 'آخر المستجدات والأنشطة والمؤتمرات.', to: '/news', label: 'عرض' },
+              { title: 'تواصل معنا', text: 'قنوات التواصل الرسمية والاستفسارات.', to: '/contact', label: 'تواصل' },
+            ].map((item) => (
+              <article key={item.title} className="card highlight-card">
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+                <div style={{ marginTop: 12 }}>
+                  <Link to={item.to} className="btn btn-soft btn-sm">{item.label} ←</Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {colleges.length > 0 && (
         <section className="section">
           <div className="container">
@@ -314,13 +356,13 @@ export default function Home() {
 
       <section className="section section-alt">
         <div className="container">
-          <SectionHeading title={home.training_title || 'البرامج التدريبية'} subtitle={home.training_subtitle || 'برامج مفتوحة للتسجيل الآن'} />
+          <SectionHeading title={home.training_title || 'البرامج والدورات التدريبية'} subtitle={home.training_subtitle || 'برامج تدريبية نشطة متاحة للتسجيل الآن'} to="/training" linkText="كل برامج التدريب" />
           {courses.length > 0 ? (
             <Rail label="قائمة البرامج التدريبية" href="/training">
               {courses.slice(0, 10).map((c) => (
                 <article key={c.id} className="card course-card rail-card">
                   <div className="card-cover">
-                    <img src={c.cover_image || settings?.images?.course_cover} alt={c.title} loading="lazy" />
+                    <img src={c.image_url || c.cover_image || settings?.images?.course_cover} alt={c.title} loading="lazy" />
                     <span className="cover-badge">{trainingCategoryLabel(c.category)}</span>
                   </div>
                   <div className="card-body">
@@ -332,23 +374,23 @@ export default function Home() {
                     </div>
                     <div className="course-card-actions">
                       <Link to={`/training/${c.id}`} className="btn btn-soft">التفاصيل</Link>
-                      <Link to={`/training/register?course=${c.id}`} className="btn btn-primary">التسجيل</Link>
+                      <Link to={`/apply?track=trainee&course=${c.id}`} className="btn btn-primary">التسجيل</Link>
                     </div>
                   </div>
                 </article>
               ))}
             </Rail>
           ) : (
-            <p className="muted">لا توجد برامج تدريبية مفتوحة حاليًا.</p>
+            <p className="muted">لا توجد برامج تدريبية نشطة حاليًا. تابع صفحة التدريب للاطلاع على المستجدات.</p>
           )}
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <SectionHeading title={home.news_title || 'أخبار وفعاليات المعهد'} subtitle={home.news_subtitle || 'مستجدات وأنشطة المعهد'} />
+          <SectionHeading title={home.news_title || 'أخبار وفعاليات المعهد'} subtitle={home.news_subtitle || 'آخر المستجدات والأنشطة والفعاليات — تصفح المزيد للاطلاع على التفاصيل.'} to="/news" linkText="جميع الأخبار والفعاليات" />
           {news.length > 0 ? (
-            <Rail label="قائمة أخبار وفعاليات المعهد" href="/news">
+            <Rail label="قائمة أخبار وفعاليات المعهد" href="/news" moreLabel="عرض جميع الأخبار">
               {news.map((item) => (
                 <article key={item.id} className="card news-card rail-card">
                   {item.cover_image ? (
@@ -387,12 +429,12 @@ export default function Home() {
       <section className="cta-band">
         <div className="container cta-inner">
           <div>
-            <h2>{home.cta_title ?? 'انضم إلى صفوف كوادرنا المؤهلة'}</h2>
-            <p>{home.cta_text ?? 'سجّل الآن في أحد برامجنا الأكاديمية أو دوراتنا التدريبية وابدأ مسارك المهني.'}</p>
+            <h2>{home.cta_title ?? 'اختر مسارك: أكاديمي أو تدريبي'}</h2>
+            <p>{home.cta_text ?? 'المسار الأكاديمي عبر بوابة التنسيق الموحد، ومسار التدريب والتأهيل عبر التسجيل والمتابعة المباشرة في الموقع.'}</p>
           </div>
           <div className="cta-actions">
-            <Link to="/programs" className="btn btn-primary">سجّل عبر بوابة التنسيق</Link>
-            <Link to="/training/register" className="btn btn-outline btn-light">التدريب</Link>
+            <Link to="/apply?track=student" className="btn btn-primary">المسار الأكاديمي</Link>
+            <Link to="/apply?track=trainee" className="btn btn-outline btn-light">مسار التدريب</Link>
           </div>
         </div>
       </section>

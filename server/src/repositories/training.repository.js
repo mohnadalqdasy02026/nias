@@ -51,7 +51,7 @@ export class TrainingRepository {
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
       [data.title, data.description ?? null, data.fees ?? null, data.start_date ?? null,
        data.end_date ?? null, data.location ?? null, data.capacity ?? null,
-       data.trainer ?? null, data.category ?? 'course', data.status ?? 'draft', data.image_url ?? null, data.branch_id ?? null],
+       data.trainer ?? null, data.category ?? 'course', data.status ?? 'inactive', data.image_url ?? null, data.branch_id ?? null],
     );
     return this.getCourse(rows[0].id);
   }
@@ -184,6 +184,22 @@ export class TrainingRepository {
     return rows[0] ?? null;
   }
 
+  // Public tracking: match enrollment id with the trainee's phone (normalized).
+  async findEnrollmentForTracking(enrollmentId, phone) {
+    const { rows } = await pool.query(
+      `SELECT e.id, e.status, e.enrolled_at, e.created_at,
+              c.id AS course_id, c.title AS course_title, c.start_date, c.end_date, c.location,
+              b.name_ar AS branch_name
+       FROM training_enrollments e
+       JOIN training_users t ON t.id = e.trainee_id
+       JOIN training_courses c ON c.id = e.course_id
+       LEFT JOIN institute_branches b ON b.id = t.branch_id
+       WHERE e.id = $1 AND t.phone = $2`,
+      [enrollmentId, phone],
+    );
+    return rows[0] ?? null;
+  }
+
   async findActiveEnrollment(traineeId, courseId) {
     const { rows } = await pool.query(
       `SELECT * FROM training_enrollments
@@ -204,7 +220,7 @@ export class TrainingRepository {
         )
       ).rows[0];
       if (!course) throw AppError.badRequest('Course does not exist');
-      if (course.status !== 'open') throw AppError.badRequest('Registration for this course is closed');
+      if (course.status !== 'active') throw AppError.badRequest('التسجيل في هذا البرنامج غير متاح حاليًا.');
       const { rows } = await client.query(
         `SELECT count(*)::int AS count FROM training_enrollments
           WHERE course_id = $1 AND status <> 'cancelled'`,
