@@ -3,14 +3,14 @@
 --  - Normalises branch names against their slugs (local DB had
 --    names shifted between rows) and forces the address / coords
 --    to match each slug (addresses were also shifted in local DB).
---  - Sets correct Sana'a coordinates for HQ (was 0,0 -> ocean).
+--  - Sets correct headquarters (sanaa slug / الديوان العام) coordinates.
 --  - Deletes the audit test contact message id=4 (t@t.com).
 -- ============================================================
 
 -- 1. Normalise branch names + addresses so slug matches city ----
 UPDATE institute_branches SET
     name_ar = CASE slug
-        WHEN 'sanaa'    THEN 'صنعاء'
+        WHEN 'sanaa'    THEN 'الديوان العام'
         WHEN 'aden'     THEN 'عدن'
         WHEN 'taiz'     THEN 'تعز'
         WHEN 'hodeidah' THEN 'الحديدة'
@@ -18,7 +18,7 @@ UPDATE institute_branches SET
         WHEN 'mukalla'  THEN 'المكلا'
         ELSE name_ar END,
     name_en = CASE slug
-        WHEN 'sanaa'    THEN 'Sana''a'
+        WHEN 'sanaa'    THEN 'General Bureau'
         WHEN 'aden'     THEN 'Aden'
         WHEN 'taiz'     THEN 'Taiz'
         WHEN 'hodeidah' THEN 'Al Hudaydah'
@@ -26,7 +26,7 @@ UPDATE institute_branches SET
         WHEN 'mukalla'  THEN 'Mukalla'
         ELSE name_en END,
     address = CASE slug
-        WHEN 'sanaa'    THEN 'أمانة العاصمة صنعاء - شارع العدل'
+        WHEN 'sanaa'    THEN 'الديوان العام - شارع العدل، أمانة العاصمة'
         WHEN 'aden'     THEN 'مديرية خورمكسر - العاصمة عدن'
         WHEN 'taiz'     THEN 'محافظة تعز'
         WHEN 'hodeidah' THEN 'محافظة الحديدة'

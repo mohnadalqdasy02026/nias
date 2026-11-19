@@ -103,14 +103,21 @@ function Header() {
   };
 
   useEffect(() => {
-    if (!open) return undefined;
     const onPointerDown = (e) => {
-      if (navRef.current?.contains(e.target)) return;
-      if (toggleRef.current?.contains(e.target)) return;
-      closeMenu();
+      // Close any open dropdown when clicking outside dropdown areas.
+      if (!e.target.closest('.nav-drop')) {
+        closeAllDrops();
+      }
+      // When mobile menu is open, clicking outside the nav/toggle closes it.
+      if (open && !navRef.current?.contains(e.target) && !toggleRef.current?.contains(e.target)) {
+        closeMenu();
+      }
     };
     const onKeyDown = (e) => {
-      if (e.key === 'Escape') closeMenu();
+      if (e.key === 'Escape') {
+        closeAllDrops();
+        if (open) closeMenu();
+      }
     };
     document.addEventListener('pointerdown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
@@ -192,7 +199,7 @@ function Header() {
             {branches.map((b) => (
               <Link key={b.id} to={`/branches/${b.slug}`} className="nav-drop-link" onClick={closeMenu}>
                 <span className="nav-drop-label">{navBranchLabel(b)}</span>
-                {b.is_headquarters && <span className="nav-drop-mark">رئيسي</span>}
+                {b.is_headquarters && <span className="nav-drop-mark">الديوان العام</span>}
               </Link>
             ))}
           </NavDropdown>

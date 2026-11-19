@@ -52,12 +52,12 @@ INSERT INTO download_files (title, category, file_path) VALUES
 -- Demo training course (open)
 INSERT INTO training_courses (title, description, fees, capacity, start_date, end_date, location, status)
 SELECT 'دورة تدريبية تجريبية (مفتوحة)', 'دورة تجريبية مفتوحة للواجهة العامة.', 15000, 25,
-       now()::date + 7, now()::date + 21, 'صنعاء', 'open'
+       now()::date + 7, now()::date + 21, 'الديوان العام', 'open'
 WHERE NOT EXISTS (SELECT 1 FROM training_courses WHERE status = 'open');
 
 -- Demo conference + trustee
 INSERT INTO conferences (title, description, location, event_date, status) VALUES
-    ('مؤتمر تجريبي علمي', 'مؤتمر تجريبي مفتوح للتسجيل.', 'صنعاء', now()::date + 45, 'open');
+    ('مؤتمر تجريبي علمي', 'مؤتمر تجريبي مفتوح للتسجيل.', 'الديوان العام', now()::date + 45, 'open');
 
 INSERT INTO trustees (name, position, sort_order) VALUES
     ('عضو تجريبي لمجلس الأمناء', 'رئيس المجلس', 1);

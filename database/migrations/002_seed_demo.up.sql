@@ -335,12 +335,12 @@ WHERE u.email = 'editor@nias-academy.demo' AND r.name IN ('Content Editor', 'Jou
 -- 5) Branches (confirmed public data from the live site)
 -- ------------------------------------------------------------
 INSERT INTO institute_branches (name_ar, name_en, slug, is_headquarters, status) VALUES
-    ('صنعاء',   'Sana''a',   'sanaa',    TRUE,  'active'),
-    ('عدن',     'Aden',      'aden',     FALSE, 'active'),
-    ('تعز',     'Taiz',      'taiz',     FALSE, 'active'),
-    ('الحديدة', 'Hodeidah',  'hodeidah', FALSE, 'active'),
-    ('إب',      'Ibb',       'ibb',      FALSE, 'active'),
-    ('المكلا',  'Mukalla',   'mukalla',  FALSE, 'active');
+    ('الديوان العام', 'General Bureau', 'sanaa',    TRUE,  'active'),
+    ('عدن',           'Aden',           'aden',     FALSE, 'active'),
+    ('تعز',           'Taiz',           'taiz',     FALSE, 'active'),
+    ('الحديدة',       'Hodeidah',       'hodeidah', FALSE, 'active'),
+    ('إب',            'Ibb',            'ibb',      FALSE, 'active'),
+    ('المكلا',        'Mukalla',        'mukalla',  FALSE, 'active');
 
 -- ------------------------------------------------------------
 -- 6) Placeholder content (clearly marked, kept non-public)

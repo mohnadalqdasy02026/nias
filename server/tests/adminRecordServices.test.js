@@ -32,7 +32,7 @@ describe('CollegesService.get', () => {
 });
 
 describe('BranchesService.get', () => {
-  const branch = { id: 1, name_ar: 'صنعاء', dean_name_ar: 'د. عميد' };
+  const branch = { id: 1, name_ar: 'الديوان العام', dean_name_ar: 'د. عميد' };
 
   it('returns the branch with the admin edit fields', async () => {
     const service = new BranchesService({

@@ -139,12 +139,12 @@ export default function BranchesPage() {
     <>
       <section className={`subpage-hero${slug ? ' subpage-hero--branch' : ''}`}>
         <div className="container subpage-hero-inner">
-          <p className="subpage-eyebrow">{slug && hq ? 'المركز الرئيسي' : 'شبكة الفروع'}</p>
+          <p className="subpage-eyebrow">{slug && hq ? 'الديوان العام' : 'شبكة الفروع'}</p>
           <h1>{slug ? (title ?? 'الفرع') : 'فروع المعهد'}</h1>
 <p className="subpage-sub">
               {slug
                 ? (hq
-                  ? 'مدير المركز الرئيسي، وأخبار المركز الرئيسي وفعاليات المعهد وكلياته والبرامج التدريبية المعتمدة فيه.'
+                  ? 'مدير الديوان العام، وأخبار الديوان العام وفعاليات المعهد وكلياته والبرامج التدريبية المعتمدة فيه.'
                   : 'مدير الفرع وأخبار الفرع وفعالياته والبرامج التدريبية المعتمدة فيه.')
                 : `يمتد المعهد الوطني للعلوم الإدارية عبر ${branches.length} فروع في محافظات الجمهورية، ليكون قربًا من طلابنا ومتدربينا أينما كانوا.`}
             </p>
@@ -162,7 +162,7 @@ export default function BranchesPage() {
                 <Link key={b.id} to={`/branches/${b.slug}`} className={`branch-card${b.is_headquarters ? ' is-hq' : ''}`}>
                   <span className="branch-card-cover">
                     <img src={b.image_url || logo} alt={b.name_ar || 'المعهد الوطني للعلوم الإدارية'} loading="lazy" />
-                    {b.is_headquarters && <span className="branch-card-flag">المقر الرئيسي</span>}
+                    {b.is_headquarters && <span className="branch-card-flag">الديوان العام</span>}
                   </span>
                   <span className="branch-card-body">
                     <span className="branch-card-name">{b.name_ar}</span>
@@ -184,7 +184,7 @@ export default function BranchesPage() {
                   <span className="branch-page-city">{branch.name_en ?? branch.slug}</span>
                   <h2>{branch.name_ar}</h2>
                   <span className={`branch-page-badge${hq ? ' branch-page-badge--hq' : ''}`}>
-                    {hq ? 'المقر الرئيسي' : 'فرع'}
+                    {hq ? 'الديوان العام' : 'فرع'}
                   </span>
                   <div className="branch-page-details">
                     {branch.address && (

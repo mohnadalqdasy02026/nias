@@ -27,7 +27,7 @@ const DEFAULTS = {
   admission: DEFAULT_ADMISSION,
   images: DEFAULT_IMAGES,
   contact: {
-    address: 'أمانة العاصمة صنعاء — شارع العدل',
+    address: 'الديوان العام — شارع العدل، أمانة العاصمة',
     phone: '01222537',
     email: 'nias@nias-ye.academy',
     whatsapp: '+9677772476351',

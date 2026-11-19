@@ -245,7 +245,7 @@ INSERT INTO training_courses (title, description, fees, start_date, end_date,
                               location, capacity, trainer, status, image_url, branch_id)
 SELECT 'دورة الأمن السيبراني المتقدمة',
        'برنامج تدريبي متقدم في الأمن السيبراني يغطي حماية الأنظمة والشبكات، إدارة الثغرات، الاستجابة للحوادث، وأساسيات أمن المعلومات، مع تطبيقات عملية على بيئات حقيقية لبناء قدرات المتدربين في تأمين البنية التقنية للمؤسسات.',
-       50000, '2026-10-07', '2026-10-23', 'صنعاء — المعهد الوطني', 25,
+       50000, '2026-10-07', '2026-10-23', 'الديوان العام — المعهد الوطني', 25,
        'م. عبدالله الحوثي', 'open', '/uploads/design/site/course_cybersecurity.webp', 1
 WHERE NOT EXISTS (SELECT 1 FROM training_courses tc WHERE tc.title = 'دورة الأمن السيبراني المتقدمة');
 
@@ -253,7 +253,7 @@ INSERT INTO training_courses (title, description, fees, start_date, end_date,
                               location, capacity, trainer, status, image_url, branch_id)
 SELECT 'تطوير تطبيقات الويب',
        'دورة عملية في تطوير تطبيقات الويب تشمل أساسيات HTML/CSS/JavaScript، بناء الواجهات التفاعلية، الربط مع قواعد البيانات، ونشر التطبيقات، بما يؤهل المتدرب لإنتاج تطبيقات ويب متكاملة تواكب متطلبات سوق العمل.',
-       60000, '2026-10-07', '2026-10-23', 'صنعاء — المعهد الوطني', 25,
+       60000, '2026-10-07', '2026-10-23', 'الديوان العام — المعهد الوطني', 25,
        'م. عمر الشرعبي', 'open', '/uploads/design/site/course_webdev.webp', 1
 WHERE NOT EXISTS (SELECT 1 FROM training_courses tc WHERE tc.title = 'تطوير تطبيقات الويب');
 
@@ -261,7 +261,7 @@ INSERT INTO training_courses (title, description, fees, start_date, end_date,
                               location, capacity, trainer, status, image_url, branch_id)
 SELECT 'إدارة المشاريع PMP',
        'دورة إعداد لمحترفي إدارة المشاريع وفق منهجية معهد إدارة المشاريع PMI، تغطي نطاق المشروع والجدول الزمني والتكاليف والجودة والمخاطر وعمليات التواصل، مع تطبيقات عملية وحالات دراسية تمهيدًا لاجتياز شهادة PMP.',
-       80000, '2026-10-07', '2026-10-23', 'صنعاء — المعهد الوطني', 25,
+       80000, '2026-10-07', '2026-10-23', 'الديوان العام — المعهد الوطني', 25,
        'د. محمد العريقي', 'open', '/uploads/design/site/course_pmp.webp', 1
 WHERE NOT EXISTS (SELECT 1 FROM training_courses tc WHERE tc.title = 'إدارة المشاريع PMP');
 

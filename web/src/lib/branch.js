@@ -4,7 +4,7 @@
     .replace(/^المعهد الوطني للعلوم الإدارية\s*[—-]\s*/i, '')
     .replace(/^فرع\s*محافظة\s*/i, '')
     .replace(/^فرع\s*الرئيسي\s*/i, '')
-    .replace(/^المركز\s*الرئيسي\s*/i, '')
+    .replace(/^الديوان\s*العام\s*/i, '')
     .replace(/^فرع\s*/i, '')
     .trim();
   if (!s) s = nameAr;
@@ -12,7 +12,7 @@
 }
 
 export function isHeadquartersName(nameAr) {
-  return /المركز\s*الرئيسي|المقر\s*الرئيسي|المركز\s*الرئيسي/i.test(String(nameAr ?? ''));
+  return /الديوان\s*العام/i.test(String(nameAr ?? ''));
 }
 
 export function isHqBranch(branch) {
@@ -27,10 +27,10 @@ export function isHqBranch(branch) {
 export function branchTitle(branch) {
   const label = branchLabel(typeof branch === 'object' ? branch?.name_ar : branch);
   if (!label) return null;
-  if (isHqBranch(branch)) return 'المركز الرئيسي';
+  if (isHqBranch(branch)) return 'الديوان العام';
   return `فرع ${label}`;
 }
 
 export function branchHeadRole(branch) {
-  return isHqBranch(branch) ? 'مدير المركز الرئيسي' : 'مدير الفرع';
+  return isHqBranch(branch) ? 'مدير الديوان العام' : 'مدير الفرع';
 }

@@ -29,7 +29,7 @@ INSERT INTO site_pages (slug, title_ar, title_en, content_ar, content_en, primar
     </div>
     <h3>المؤتمر الوطني الخامس للعلوم الإدارية</h3>
     <p>يناقش المؤتمر أحدث الاتجاهات في الإدارة العامة والحوكمة الإلكترونية بمشاركة نخبة من الأكاديميين.</p>
-    <p class="conf-place">قاعة المؤتمرات الكبرى - صنعاء</p>
+    <p class="conf-place">قاعة المؤتمرات الكبرى - الديوان العام</p>
   </article>
   <article class="card conf-card">
     <div class="conf-meta">

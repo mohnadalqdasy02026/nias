@@ -23,7 +23,7 @@ const emptyForm = {
   dean_message_en: '',
 };
 
-const SUBTITLE = 'بيانات الفروع كاملة: الاسم، المقر الرئيسي، صورة المسؤول، موقع الخريطة، الاسم والكلمة. المسؤول في الديوان «عميد المعهد الوطني» وفي باقي الفروع «مدير الفرع»، وينعكس ذلك مباشرة على صفحة كل فرع في الموقع.';
+const SUBTITLE = 'بيانات الفروع كاملة: الاسم، الديوان العام، صورة المسؤول، موقع الخريطة، الاسم والكلمة. المسؤول في الديوان العام «عميد المعهد الوطني» وفي باقي الفروع «مدير الفرع»، وينعكس ذلك مباشرة على صفحة كل فرع في الموقع.';
 
 export default function BranchesAdmin() {
   const [items, setItems] = useState([]);
@@ -74,7 +74,7 @@ export default function BranchesAdmin() {
               <tr key={b.id}>
                 <td data-label="الفرع">
                   <strong>{b.name_ar}</strong>
-                  <div className="muted">{b.is_headquarters ? 'المقر الرئيسي — ' : ''}{b.slug}</div>
+                  <div className="muted">{b.is_headquarters ? 'الديوان العام — ' : ''}{b.slug}</div>
                 </td>
                 <td data-label={`صورة ${head}`}>
                   {b.dean_image ? (
@@ -199,7 +199,7 @@ export function BranchForm() {
             <div className="form-field form-field--full">
               <label className="checkbox-line">
                 <input type="checkbox" checked={form.is_headquarters} onChange={(e) => setForm({ ...form, is_headquarters: e.target.checked })} />
-                المقر الرئيسي (يظهر الأول وبتغليم مميز)
+                الديوان العام (يظهر الأول وبتغليم مميز)
               </label>
             </div>
             <div className="form-field">
