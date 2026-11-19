@@ -23,7 +23,6 @@ export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescrip
             {page.primary_image && (
               <img className="about-hero-image" src={page.primary_image} alt={page.title_ar ?? fallbackTitle} />
             )}
-            <div dangerouslySetInnerHTML={{ __html: renderRichText(page.content_ar) }} />
             {images.length > 0 && (
               <div className="static-page-images">
                 {images.map((src, i) => (
@@ -37,6 +36,7 @@ export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescrip
                 ))}
               </div>
             )}
+            <div dangerouslySetInnerHTML={{ __html: renderRichText(page.content_ar) }} />
           </article>
         ) : (
           <p className="muted">لم يتم نشر هذه الصفحة بعد.</p>

@@ -288,19 +288,10 @@ export function PageForm() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="المحتوى">
+        <AdminFormSection title="صور إضافية (تظهر فوق المحتوى بالتتابع)">
           <div className="form-grid">
             <div className="form-field form-field--full">
-              <label>المحتوى (عربي)</label>
-              <RichEditor value={form.content_ar} onChange={(html) => setForm({ ...form, content_ar: html })} rows={12} />
-            </div>
-          </div>
-        </AdminFormSection>
-
-        <AdminFormSection title="صور إضافية (تظهر أسفل المحتوى بالتتابع)">
-          <div className="form-grid">
-            <div className="form-field form-field--full">
-              <p className="admin-field-hint">أضف عدة صور (مثل مخططات مجلس الأمناء أو الهيكل التنظيمي) وستُعرض كل صورة تحت الأخرى في الصفحة.</p>
+              <p className="admin-field-hint">أضف عدة صور (مثل مخططات مجلس الأمناء أو الهيكل التنظيمي) وستُعرض كل صورة تحت الأخرى أعلى الصفحة قبل المحتوى.</p>
               <div className="admin-action-row" style={{ marginBottom: 12 }}>
                 <button
                   type="button"
@@ -342,6 +333,15 @@ export function PageForm() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection title="المحتوى">
+          <div className="form-grid">
+            <div className="form-field form-field--full">
+              <label>المحتوى (عربي)</label>
+              <RichEditor value={form.content_ar} onChange={(html) => setForm({ ...form, content_ar: html })} rows={12} />
             </div>
           </div>
         </AdminFormSection>
