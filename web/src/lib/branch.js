@@ -32,5 +32,5 @@ export function branchTitle(branch) {
 }
 
 export function branchHeadRole(branch) {
-  return isHqBranch(branch) ? 'مدير الديوان العام' : 'مدير الفرع';
+  return isHqBranch(branch) ? 'عميد المعهد الوطني' : 'مدير الفرع';
 }
