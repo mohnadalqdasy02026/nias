@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
+import { goalsToText } from '../../lib/goals.js';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
@@ -168,7 +169,7 @@ export function ProgramForm() {
     setForm({
       college_id: record.college_id ? String(record.college_id) : '',
       department_id: record.department_id ? String(record.department_id) : '',
-      goals: record.goals ?? '',
+      goals: goalsToText(record.goals),
       branch_id: record.branch_id ? String(record.branch_id) : '',
       name_ar: record.name_ar ?? '',
       name_en: record.name_en ?? '',

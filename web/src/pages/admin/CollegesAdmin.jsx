@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
+import { goalsToText } from '../../lib/goals.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
@@ -38,7 +39,7 @@ const toForm = (c) => ({
   dean_image: c?.dean_image ?? '',
   vision: c?.vision ?? '',
   mission: c?.mission ?? '',
-  goals: c?.goals ?? '',
+  goals: goalsToText(c?.goals),
   about: c?.about ?? '',
   status: c?.status ?? 'active',
 });

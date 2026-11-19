@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { goalsField } from './common.js';
 
 export const PROGRAM_TYPES = ['bachelor', 'diploma', 'master_executive', 'master_academic'];
 
@@ -24,6 +25,7 @@ const baseProgramFields = z.object({
   name_en: z.string().trim().max(255).optional().nullable(),
   program_type: z.enum(PROGRAM_TYPES),
   description: z.string().trim().max(5000).optional().nullable(),
+  goals: goalsField,
   outcomes: z.string().trim().max(5000).optional().nullable(),
   image_url: z.string().trim().max(500).optional().nullable(),
   admission_open: z.boolean().optional(),
