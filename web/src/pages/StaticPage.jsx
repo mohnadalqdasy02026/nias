@@ -12,6 +12,8 @@ export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescrip
     api.get(`/public/pages/${slug}`).then(setPage).catch(() => {});
   }, [slug]);
 
+  const images = Array.isArray(page?.images) ? page.images.filter(Boolean) : [];
+
   return (
     <section className="section">
       <div className="container page-content">
@@ -22,6 +24,19 @@ export default function StaticPage({ slug, fallbackTitle, metaTitle, metaDescrip
               <img className="about-hero-image" src={page.primary_image} alt={page.title_ar ?? fallbackTitle} />
             )}
             <div dangerouslySetInnerHTML={{ __html: renderRichText(page.content_ar) }} />
+            {images.length > 0 && (
+              <div className="static-page-images">
+                {images.map((src, i) => (
+                  <img
+                    key={`${src}-${i}`}
+                    className="static-page-image"
+                    src={src}
+                    alt={`${page.title_ar ?? fallbackTitle} - ${i + 1}`}
+                    loading="lazy"
+                  />
+                ))}
+              </div>
+            )}
           </article>
         ) : (
           <p className="muted">لم يتم نشر هذه الصفحة بعد.</p>

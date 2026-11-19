@@ -51,6 +51,7 @@ const pageBody = z.object({
   content_ar: z.string().max(50000).nullable().optional(),
   content_en: z.string().max(50000).nullable().optional(),
   primary_image: z.string().trim().max(500).nullable().optional(),
+  images: z.array(z.string().trim().max(500)).max(30).optional().default([]),
   status: z.enum(['draft', 'published', 'archived']).default('draft'),
 });
 export const createPageSchema = { body: pageBody };

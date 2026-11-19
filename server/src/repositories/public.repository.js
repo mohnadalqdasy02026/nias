@@ -360,7 +360,7 @@ async listPrograms({ onlyOpen = false } = {}) {
 
   async listPages() {
     const { rows } = await pool.query(
-      `SELECT id, slug, title_ar, title_en, content_ar, content_en, primary_image
+      `SELECT id, slug, title_ar, title_en, content_ar, content_en, primary_image, images
        FROM site_pages WHERE status = 'published' AND deleted_at IS NULL ORDER BY id`,
     );
     return rows;
@@ -368,7 +368,7 @@ async listPrograms({ onlyOpen = false } = {}) {
 
   async getPageBySlug(slug) {
     const { rows } = await pool.query(
-      `SELECT id, slug, title_ar, title_en, content_ar, content_en, primary_image
+      `SELECT id, slug, title_ar, title_en, content_ar, content_en, primary_image, images
        FROM site_pages WHERE slug = $1 AND status = 'published'`,
       [slug],
     );

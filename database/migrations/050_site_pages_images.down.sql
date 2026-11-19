@@ -1,0 +1,1 @@
+ALTER TABLE site_pages DROP COLUMN IF EXISTS images;

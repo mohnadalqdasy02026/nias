@@ -1926,3 +1926,40 @@
     box-shadow: none;
   }
 }
+
+/* Static page multiple images (admin) */
+.page-images-admin-list {
+  display: grid;
+  gap: 12px;
+}
+
+.page-images-admin-item {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 10px;
+}
+
+.page-images-admin-thumb {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--bg-soft, #f5f7fa);
+}
+
+.page-images-admin-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (max-width: 640px) {
+  .page-images-admin-item {
+    grid-template-columns: 1fr;
+  }
+  .page-images-admin-thumb {
+    height: 180px;
+  }
+}

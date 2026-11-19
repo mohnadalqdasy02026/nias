@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
@@ -6,6 +6,9 @@ import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFor
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
 import Can from '../../components/admin/Can.jsx';
+
+const MAX_IMAGE_WIDTH = 1280;
+const IMAGE_QUALITY = 0.85;
 
 const statusLabel = { draft: 'مسودة', published: 'منشور', archived: 'مؤرشف' };
 
@@ -15,6 +18,7 @@ const emptyForm = {
   title_en: '',
   content_ar: '',
   primary_image: '',
+  images: [],
   status: 'draft',
 };
 
@@ -132,6 +136,7 @@ export function PageForm() {
       title_en: record.title_en ?? '',
       content_ar: record.content_ar ?? '',
       primary_image: record.primary_image ?? '',
+      images: Array.isArray(record.images) ? record.images : [],
       status: record.status ?? 'draft',
     });
   }, [record]);
@@ -141,6 +146,87 @@ export function PageForm() {
     onError: setError,
     altText: () => form.title_ar || 'صفحة',
   });
+
+  const [imagesBusy, setImagesBusy] = useState(false);
+  const imagesInputRef = useRef(null);
+
+  const compressAndUploadImage = async (file) => {
+    if (!file) return null;
+    if (!file.type.startsWith('image/')) throw new Error('الرجاء اختيار ملف صورة.');
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(String(reader.result ?? ''));
+      reader.onerror = () => reject(new Error('تعذر قراءة الملف'));
+      reader.readAsDataURL(file);
+    });
+    const img = await new Promise((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => resolve(image);
+      image.onerror = () => reject(new Error('تعذر فتح الصورة'));
+      image.src = dataUrl;
+    });
+    const scale = Math.min(1, MAX_IMAGE_WIDTH / img.width);
+    const width = Math.max(1, Math.round(img.width * scale));
+    const height = Math.max(1, Math.round(img.height * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, width, height);
+    ctx.drawImage(img, 0, 0, width, height);
+    const isPng = file.type === 'image/png';
+    const outType = isPng ? 'image/webp' : 'image/jpeg';
+    const compressed = canvas.toDataURL(outType, IMAGE_QUALITY);
+    const base64 = compressed.slice(compressed.indexOf(',') + 1);
+    const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9_-]/g, '_') || 'page-image';
+    const saved = await api.post(
+      '/admin/media',
+      {
+        file_name: `${baseName}-${Date.now()}.${isPng ? 'webp' : 'jpg'}`,
+        mime_type: outType,
+        data_base64: base64,
+        alt_text: form.title_ar || 'صفحة',
+      },
+      { auth: true },
+    );
+    return saved.url;
+  };
+
+  const addImages = async (fileList) => {
+    const files = Array.from(fileList || []);
+    if (!files.length) return;
+    setImagesBusy(true);
+    setError(null);
+    try {
+      const urls = [];
+      for (const file of files) {
+        const url = await compressAndUploadImage(file);
+        if (url) urls.push(url);
+      }
+      if (urls.length) {
+        setForm((f) => ({ ...f, images: [...(Array.isArray(f.images) ? f.images : []), ...urls] }));
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setImagesBusy(false);
+    }
+  };
+
+  const removeImage = (index) => {
+    setForm((f) => ({ ...f, images: (f.images || []).filter((_, i) => i !== index) }));
+  };
+
+  const moveImage = (index, dir) => {
+    setForm((f) => {
+      const imgs = [...(f.images || [])];
+      const next = index + dir;
+      if (next < 0 || next >= imgs.length) return f;
+      [imgs[index], imgs[next]] = [imgs[next], imgs[index]];
+      return { ...f, images: imgs };
+    });
+  };
 
   const save = async (e) => {
     e.preventDefault();
@@ -207,6 +293,55 @@ export function PageForm() {
             <div className="form-field form-field--full">
               <label>المحتوى (عربي)</label>
               <RichEditor value={form.content_ar} onChange={(html) => setForm({ ...form, content_ar: html })} rows={12} />
+            </div>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection title="صور إضافية (تظهر أسفل المحتوى بالتتابع)">
+          <div className="form-grid">
+            <div className="form-field form-field--full">
+              <p className="admin-field-hint">أضف عدة صور (مثل مخططات مجلس الأمناء أو الهيكل التنظيمي) وستُعرض كل صورة تحت الأخرى في الصفحة.</p>
+              <div className="admin-action-row" style={{ marginBottom: 12 }}>
+                <button
+                  type="button"
+                  className="btn btn-outline btn-sm"
+                  onClick={() => imagesInputRef.current?.click()}
+                  disabled={imagesBusy}
+                >
+                  {imagesBusy ? 'جارٍ رفع الصور…' : '+ إضافة صور'}
+                </button>
+              </div>
+              <input
+                ref={imagesInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                hidden
+                onChange={(e) => {
+                  const files = e.target.files;
+                  e.target.value = '';
+                  addImages(files);
+                }}
+              />
+              {(form.images || []).length === 0 ? (
+                <p className="muted">لا توجد صور إضافية.</p>
+              ) : (
+                <div className="page-images-admin-list">
+                  {(form.images || []).map((src, idx) => (
+                    <div key={`${src}-${idx}`} className="page-images-admin-item card">
+                      <img src={src} alt={`صورة ${idx + 1}`} className="page-images-admin-thumb" />
+                      <div className="page-images-admin-meta">
+                        <span className="muted">صورة {idx + 1}</span>
+                        <div className="admin-action-row">
+                          <button type="button" className="btn btn-sm btn-soft" onClick={() => moveImage(idx, -1)} disabled={idx === 0}>↑</button>
+                          <button type="button" className="btn btn-sm btn-soft" onClick={() => moveImage(idx, 1)} disabled={idx === (form.images.length - 1)}>↓</button>
+                          <button type="button" className="btn btn-sm btn-danger-soft" onClick={() => removeImage(idx)}>حذف</button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </AdminFormSection>
