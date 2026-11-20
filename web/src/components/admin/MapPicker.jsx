@@ -15,9 +15,31 @@ const pinIcon = L.divIcon({
   iconAnchor: [11, 22],
 });
 
-const parseNum = (v) => {
-  const n = Number(String(v ?? '').trim());
-  return Number.isFinite(n) ? n : null;
+// Two independent tile providers: CARTO first (OpenStreetMap tiles are
+// unreachable from some networks — verified blocked on this deployment's
+// network), with plain OpenStreetMap as automatic fallback after a few
+// failed tiles. Both must be allowed by the CSP img-src header
+// (see server/src/app.js).
+const TILE_SOURCES = [
+  {
+    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
+    subdomains: 'abcd',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
+  {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+  },
+];
+
+// Empty strings must NOT become 0 (Number('') === 0 would open the map in
+// the middle of the ocean); out-of-range values are rejected too.
+const parseCoord = (v, min, max) => {
+  const s = String(v ?? '').trim();
+  if (!s) return null;
+  const n = Number(s);
+  return Number.isFinite(n) && n >= min && n <= max ? n : null;
 };
 
 const round6 = (n) => String(Number(n.toFixed(6)));
@@ -36,12 +58,15 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
   const containerRef = useRef(null);
   const markerRef = useRef(null);
   const [picked, setPicked] = useState(null);
+  const [tilesFailed, setTilesFailed] = useState(false);
 
   useEffect(() => {
     if (!open || !containerRef.current) return undefined;
 
-    const startLat = parseNum(initial?.lat);
-    const startLng = parseNum(initial?.lng);
+    setTilesFailed(false);
+
+    const startLat = parseCoord(initial?.lat, -90, 90);
+    const startLng = parseCoord(initial?.lng, -180, 180);
     const start = startLat != null && startLng != null ? { lat: startLat, lng: startLng } : null;
     const center = start ?? DEFAULT_VIEW;
 
@@ -49,10 +74,40 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       center: [center.lat, center.lng],
       zoom: start ? 14 : DEFAULT_VIEW.zoom,
     });
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+
+    // Tile layers with automatic provider fallback: after a few consecutive
+    // errors we switch source once; if both fail we tell the user instead
+    // of silently showing a blank area.
+    let sourceIndex = 0;
+    let errorStreak = 0;
+    let layer = null;
+
+    const attachLayer = () => {
+      const src = TILE_SOURCES[sourceIndex];
+      layer = L.tileLayer(src.url, {
+        maxZoom: 19,
+        attribution: src.attribution,
+        subdomains: src.subdomains,
+      });
+      layer.on('tileload', () => {
+        errorStreak = 0;
+        setTilesFailed(false);
+      });
+      layer.on('tileerror', () => {
+        errorStreak += 1;
+        if (errorStreak < 4) return;
+        if (sourceIndex < TILE_SOURCES.length - 1) {
+          sourceIndex += 1;
+          errorStreak = 0;
+          map.removeLayer(layer);
+          attachLayer();
+        } else {
+          setTilesFailed(true);
+        }
+      });
+      layer.addTo(map);
+    };
+    attachLayer();
 
     const placeMarker = (lat, lng) => {
       if (markerRef.current) {
@@ -72,6 +127,7 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
 
     const onMapClick = (e) => placeMarker(e.latlng.lat, e.latlng.lng);
     map.on('click', onMapClick);
+    map.whenReady(() => map.invalidateSize());
 
     return () => {
       map.off('click', onMapClick);
@@ -103,7 +159,14 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
           <span>اضغط على الخريطة لتحديد موقع الفرع، ويمكنك سحب العلامة لضبط الموضع ثم اضغط «موافق».</span>
         </div>
 
-        <div className="map-picker-canvas" ref={containerRef} dir="ltr" />
+        <div className="map-picker-canvas-wrap">
+          <div className="map-picker-canvas" ref={containerRef} dir="ltr" />
+          {tilesFailed && (
+            <div className="map-picker-tiles-error" role="alert">
+              تعذّر تحميل صور الخريطة. تحقق من اتصال الإنترنت ثم أعد فتح هذه النافذة.
+            </div>
+          )}
+        </div>
 
         <div className="map-picker-foot">
           <span className="map-picker-coords" dir="ltr">

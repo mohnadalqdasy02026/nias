@@ -13,7 +13,24 @@ export const app = express();
 
 if (env.TRUST_PROXY) app.set('trust proxy', 1);
 app.disable('x-powered-by');
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        // Map tiles for the branch location picker (Leaflet): OpenStreetMap
+        // with CARTO as automatic fallback. Helmet keeps every other default
+        // directive and only overrides img-src here (its default is
+        // 'self' data: which blocks all external map imagery).
+        imgSrc: [
+          "'self'",
+          'data:',
+          'https://tile.openstreetmap.org',
+          'https://*.basemaps.cartocdn.com',
+        ],
+      },
+    },
+  }),
+);
 app.use(cors({ origin: env.CORS_ORIGINS, credentials: true }));
 app.use(express.json({ limit: '16mb' }));
 app.use(createRequestLogger());

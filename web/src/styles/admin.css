@@ -714,12 +714,33 @@
   font-size: 0.86rem;
 }
 
+.map-picker-canvas-wrap {
+  position: relative;
+  flex: 0 0 auto; /* never collapse the map area inside the dialog */
+  z-index: 0; /* keep Leaflet panes painted inside the dialog */
+}
+
 .map-picker-canvas {
   height: 380px;
   direction: ltr;
   background: #e2e8f0;
   font-family: inherit;
-  z-index: 0; /* keep Leaflet panes painted inside the dialog */
+}
+
+.map-picker-tiles-error {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  max-width: calc(100% - 24px);
+  padding: 8px 14px;
+  border-radius: 8px;
+  background: rgba(127, 29, 29, 0.92);
+  color: #fff;
+  font-size: 0.85rem;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
 }
 
 .map-picker-foot {
@@ -767,7 +788,6 @@
   .map-picker-canvas {
     height: 300px;
   }
-
   .map-picker-foot {
     justify-content: center;
   }
