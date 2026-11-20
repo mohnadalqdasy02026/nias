@@ -63,21 +63,24 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
   const markerRef = useRef(null);
   const [picked, setPicked] = useState(null);
   const [tilesFailed, setTilesFailed] = useState(false);
+  const [initError, setInitError] = useState(null);
 
   useEffect(() => {
     if (!open || !containerRef.current) return undefined;
 
     setTilesFailed(false);
+    setInitError(null);
 
     const startLat = parseCoord(initial?.lat, -90, 90);
     const startLng = parseCoord(initial?.lng, -180, 180);
     const start = startLat != null && startLng != null ? { lat: startLat, lng: startLng } : null;
     const center = start ?? DEFAULT_VIEW;
 
-    const map = L.map(containerRef.current, {
-      center: [center.lat, center.lng],
-      zoom: start ? 14 : DEFAULT_VIEW.zoom,
-    });
+    // `disposed` guards the async Leaflet callbacks: once the dialog closes
+    // (map removed) a late tile event must not touch the dead map or set
+    // state on an unmounted tree.
+    let map = null;
+    let disposed = false;
 
     // Tile layers with automatic provider fallback: after a few consecutive
     // errors we switch source once; if both fail we tell the user instead
@@ -91,13 +94,18 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       layer = L.tileLayer(src.url, {
         maxZoom: 19,
         attribution: src.attribution,
-        subdomains: src.subdomains,
+        // Leaflet reads subdomains.length for EVERY tile URL — even when the
+        // template has no {s} — so it must never be undefined (that crashed
+        // the whole admin page via ErrorBoundary on this deployment).
+        subdomains: src.subdomains ?? 'abc',
       });
       layer.on('tileload', () => {
+        if (disposed) return;
         errorStreak = 0;
         setTilesFailed(false);
       });
       layer.on('tileerror', () => {
+        if (disposed) return;
         errorStreak += 1;
         if (errorStreak < 4) return;
         if (sourceIndex < TILE_SOURCES.length - 1) {
@@ -111,7 +119,6 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       });
       layer.addTo(map);
     };
-    attachLayer();
 
     const placeMarker = (lat, lng) => {
       if (markerRef.current) {
@@ -119,6 +126,7 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       } else {
         markerRef.current = L.marker([lat, lng], { icon: pinIcon, draggable: true }).addTo(map);
         markerRef.current.on('dragend', () => {
+          if (disposed || !markerRef.current) return;
           const p = markerRef.current.getLatLng();
           setPicked({ lat: p.lat, lng: p.lng });
         });
@@ -126,14 +134,43 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       setPicked({ lat, lng });
     };
 
-    if (start) placeMarker(start.lat, start.lng);
-    else setPicked(null);
-
     const onMapClick = (e) => placeMarker(e.latlng.lat, e.latlng.lng);
-    map.on('click', onMapClick);
-    map.whenReady(() => map.invalidateSize());
+
+    try {
+      map = L.map(containerRef.current, {
+        center: [center.lat, center.lng],
+        zoom: start ? 14 : DEFAULT_VIEW.zoom,
+      });
+
+      attachLayer();
+
+      if (start) placeMarker(start.lat, start.lng);
+      else setPicked(null);
+
+      map.on('click', onMapClick);
+      map.whenReady(() => {
+        if (!disposed) map.invalidateSize();
+      });
+    } catch (e) {
+      // A map failure must never take the whole page down: keep the dialog
+      // open and explain what happened instead.
+      console.error('[MapPicker] failed to initialise', e);
+      setInitError(
+        'تعذّر تشغيل الخريطة في هذا المتصفح. يمكنك إدخال خط الطول وخط العرض يدويًا في الحقول بالأعلى.',
+      );
+      if (map) {
+        try {
+          map.remove();
+        } catch {
+          /* already destroyed — ignore */
+        }
+      }
+      markerRef.current = null;
+      return undefined;
+    }
 
     return () => {
+      disposed = true;
       map.off('click', onMapClick);
       map.remove();
       markerRef.current = null;
@@ -165,9 +202,10 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
 
         <div className="map-picker-canvas-wrap">
           <div className="map-picker-canvas" ref={containerRef} dir="ltr" />
-          {tilesFailed && (
+          {(initError || tilesFailed) && (
             <div className="map-picker-tiles-error" role="alert">
-              تعذّر تحميل صور الخريطة. تحقق من اتصال الإنترنت ثم أعد فتح هذه النافذة.
+              {initError ??
+                'تعذّر تحميل صور الخريطة. تحقق من اتصال الإنترنت ثم أعد فتح هذه النافذة.'}
             </div>
           )}
         </div>
