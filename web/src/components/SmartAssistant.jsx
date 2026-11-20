@@ -285,31 +285,39 @@ export default function SmartAssistant() {
     try {
       if (aiEnabled) {
         const history = prior.slice(-10).map((m) => ({ role: m.role, text: m.text }));
-        const data = await api.post('/public/assistant', { message: text, history });
+        let data;
+        try {
+          data = await api.post('/public/assistant', { message: text, history });
+        } catch (err) {
+          // One automatic retry for transient failures (cold start, deploy blip).
+          if (err?.status === 429 || err?.status === 400) throw err;
+          data = await api.post('/public/assistant', { message: text, history });
+        }
         setMessages((m) => [...m, { role: 'bot', text: data?.reply ?? 'تعذّر توليد رد.' }]);
       } else {
         const reply = await buildLocalReply(key ?? detectQuestion(text) ?? 'unknown');
         setMessages((m) => [...m, { role: 'bot', ...reply }]);
       }
     } catch (err) {
-      const fallbackKey = key ?? detectQuestion(text) ?? 'unknown';
-      if (aiEnabled) {
-        try {
-          const reply = await buildLocalReply(fallbackKey);
-          setMessages((m) => [...m, { role: 'bot', ...reply }]);
-          return;
-        } catch {
-          /* ignore */
-        }
-      }
       const busy = err?.status === 429;
+      const unavailable = err?.status === 503;
+      if (!aiEnabled) {
+        setMessages((m) => [...m, { role: 'bot', text: 'تعذّر جلب البيانات الآن، حاول مرة أخرى بعد قليل.' }]);
+        return;
+      }
+      // The assistant is disabled server-side: fall back to local replies.
+      if (unavailable) setAiEnabled(false);
+      // Never mask an AI failure with the generic local reply — say exactly
+      // what happened so the visitor retries instead of getting a non-answer.
       setMessages((m) => [
         ...m,
         {
           role: 'bot',
           text: busy
             ? 'الرسائل كثيرة الآن، جرّب بعد قليل.'
-            : 'تعذّر جلب البيانات الآن، حاول مرة أخرى بعد قليل.',
+            : unavailable
+              ? 'المساعد الذكي غير متاح حالياً، أعد المحاولة بعد قليل.'
+              : 'تعذّر الوصول إلى المساعد الذكي الآن، حاول مرة أخرى بعد قليل.',
         },
       ]);
     } finally {
