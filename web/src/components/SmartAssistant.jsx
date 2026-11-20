@@ -381,12 +381,13 @@ export default function SmartAssistant() {
         onClick={() => setOpen((v) => !v)}
       >
         {open ? '×' : (
-          <>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 2a7 7 0 0 0-7 7v3.2a3 3 0 0 0-1 2.2V16a2 2 0 0 0 2 2h1v-6H6V9a6 6 0 1 1 12 0v3h-1v6h1a2 2 0 0 0 2-2v-1.6a3 3 0 0 0-1-2.2V9a7 7 0 0 0-7-7z" />
-            </svg>
-            <span>المساعد الذكي</span>
-          </>
+          <img
+            className="smart-assistant-toggle-img"
+            src="/uploads/design/site/assistant-bot.png"
+            alt=""
+            width="56"
+            height="56"
+          />
         )}
       </button>
     </div>
