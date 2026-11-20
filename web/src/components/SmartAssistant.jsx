@@ -96,12 +96,24 @@ export default function SmartAssistant() {
   const [typing, setTyping] = useState(false);
   const [aiEnabled, setAiEnabled] = useState(true);
   const bodyRef = useRef(null);
+  const rootRef = useRef(null);
   const cache = useRef({});
 
   useEffect(() => {
     const el = bodyRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [messages, typing, open]);
+
+  // Close when clicking/tapping anywhere outside the assistant (panel or toggle).
+  useEffect(() => {
+    if (!open) return undefined;
+    const onPointerDown = (e) => {
+      const root = rootRef.current;
+      if (root && !root.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    return () => document.removeEventListener('pointerdown', onPointerDown);
+  }, [open]);
 
   useEffect(() => {
     let alive = true;
@@ -317,7 +329,7 @@ export default function SmartAssistant() {
   };
 
   return (
-    <div className={`smart-assistant${open ? ' smart-assistant--open' : ''}`}>
+    <div className={`smart-assistant${open ? ' smart-assistant--open' : ''}`} ref={rootRef}>
       {open && (
         <div className="smart-assistant-panel" role="dialog" aria-label="المساعد الذكي">
           <div className="smart-assistant-head">
