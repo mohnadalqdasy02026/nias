@@ -662,6 +662,117 @@
   color: var(--color-text-muted);
 }
 
+/* ---- Branch location: pick the coordinates from a map ---- */
+.map-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.map-picker-hint {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.map-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.map-picker {
+  display: flex;
+  flex-direction: column;
+  width: min(760px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+}
+
+.map-picker-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 10px;
+}
+
+.map-picker-head strong {
+  color: var(--color-primary-deep);
+  font-size: 1.05rem;
+}
+
+.map-picker-head span {
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
+}
+
+.map-picker-canvas {
+  height: 380px;
+  direction: ltr;
+  background: #e2e8f0;
+  font-family: inherit;
+  z-index: 0; /* keep Leaflet panes painted inside the dialog */
+}
+
+.map-picker-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.map-picker-coords {
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.map-picker-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.map-picker-actions .btn {
+  min-width: 96px;
+}
+
+/* Leaflet pin: teardrop in the institute green */
+.map-picker-pin {
+  background: transparent;
+  border: 0;
+}
+
+.map-picker-pin span {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--color-primary-dark, #0e7c66);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  transform: rotate(-45deg);
+}
+
+@media (max-width: 640px) {
+  .map-picker-canvas {
+    height: 300px;
+  }
+
+  .map-picker-foot {
+    justify-content: center;
+  }
+}
+
 .admin-form-section {
   margin-bottom: 26px;
   padding-bottom: 22px;

@@ -2,6 +2,7 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../api/client.js';
 import RichEditor from '../../components/admin/RichEditor.jsx';
+import MapPicker from '../../components/admin/MapPicker.jsx';
 import AdminFormPage, { AdminFormSection } from '../../components/admin/AdminFormPage.jsx';
 import { ImageField, useImageUpload } from '../../components/admin/ImageField.jsx';
 import { useAdminRecord } from '../../components/admin/useAdminRecord.js';
@@ -115,6 +116,7 @@ export function BranchForm() {
   const [form, setForm] = useState(emptyForm);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [mapOpen, setMapOpen] = useState(false);
 
   useEffect(() => {
     if (!record) return;
@@ -215,6 +217,19 @@ export function BranchForm() {
               <input value={form.latitude} onChange={(e) => setForm({ ...form, latitude: e.target.value })} dir="ltr" placeholder="مثال: 15.3694" />
             </div>
             <div className="form-field form-field--full">
+              <label>موقع الفرع على الخريطة</label>
+              <div className="map-picker-row">
+                <button type="button" className="btn btn-soft" onClick={() => setMapOpen(true)}>
+                  اختيار الموقع من الخريطة
+                </button>
+                <span className="map-picker-hint" dir="ltr">
+                  {form.latitude && form.longitude
+                    ? `${form.latitude}, ${form.longitude}`
+                    : 'لم يتم تحديد موقع بعد'}
+                </span>
+              </div>
+            </div>
+            <div className="form-field form-field--full">
               <label>صورة الفرع الرئيسية</label>
               <ImageField
                 label="صورة الفرع"
@@ -268,6 +283,16 @@ export function BranchForm() {
           <Link to="/admin/branches" className="btn btn-soft">إلغاء</Link>
         </div>
       </form>
+
+      <MapPicker
+        open={mapOpen}
+        initial={{ lat: form.latitude, lng: form.longitude }}
+        onConfirm={(lat, lng) => {
+          setForm({ ...form, latitude: lat, longitude: lng });
+          setMapOpen(false);
+        }}
+        onClose={() => setMapOpen(false)}
+      />
     </AdminFormPage>
   );
 }
