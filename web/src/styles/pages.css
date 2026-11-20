@@ -7800,3 +7800,24 @@ button,
     box-shadow: none;
   }
 }
+
+/* About page: list styles */
+.about-content ul {
+  margin: 16px 0;
+  padding-inline-start: 22px;
+}
+.about-content ul li {
+  margin-bottom: 10px;
+  line-height: 1.85;
+}
+.about-content .about-list li {
+  margin-bottom: 10px;
+  list-style: disc;
+}
+.about-content .muted {
+  color: var(--color-text-muted);
+}
+.about-content .muted strong {
+  color: var(--color-text);
+  font-weight: 600;
+}
