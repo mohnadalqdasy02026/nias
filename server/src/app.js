@@ -8,6 +8,7 @@ import { apiLimiter } from './middleware/rateLimit.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { createRequestLogger } from './utils/logger.js';
 import apiRoutes from './routes/index.js';
+import { tilesRouter } from './routes/tiles.js';
 
 export const app = express();
 
@@ -67,13 +68,17 @@ app.get('/uploads/:file', async (req, res, next) => {
 
 app.use('/api/v1', apiRoutes);
 
+// Map-tile proxy for the admin branch picker: tiles served from our own
+// origin so no network/extension can intercept external map images.
+app.use('/tiles', tilesRouter);
+
 app.get('/healthz', (_req, res) => {
   res.json({ status: 'ok', service: 'nias-api', time: new Date().toISOString() });
 });
 
 const webDist = path.resolve(process.cwd(), 'web/dist');
 app.use(express.static(webDist));
-app.get(/^\/(?!api|uploads|healthz).*/, (_req, res, next) => {
+app.get(/^\/(?!api|uploads|healthz|tiles).*/, (_req, res, next) => {
   res.sendFile(path.join(webDist, 'index.html'), (err) => {
     if (err && err.code !== 'ENOENT') next(err);
   });

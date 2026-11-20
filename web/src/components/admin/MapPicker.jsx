@@ -15,12 +15,16 @@ const pinIcon = L.divIcon({
   iconAnchor: [11, 22],
 });
 
-// Two independent tile providers: CARTO first (OpenStreetMap tiles are
-// unreachable from some networks — verified blocked on this deployment's
-// network), with plain OpenStreetMap as automatic fallback after a few
-// failed tiles. Both must be allowed by the CSP img-src header
-// (see server/src/app.js).
+// Tile providers in order: first our own same-origin proxy (/tiles/… — the
+// server fetches from CARTO then OpenStreetMap), then the providers
+// directly as last resorts. All three must be allowed by the CSP img-src
+// header (see server/src/app.js).
 const TILE_SOURCES = [
+  {
+    url: '/tiles/{z}/{x}/{y}',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+  },
   {
     url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
     subdomains: 'abcd',
