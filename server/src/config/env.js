@@ -59,5 +59,7 @@ export const env = {
   GEMINI_MODEL: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
   // Tried automatically when the primary model returns 429: each model has
   // its own free-tier quota, so the fallback keeps the assistant answering.
-  GEMINI_FALLBACK_MODEL: process.env.GEMINI_FALLBACK_MODEL || 'gemini-2.5-flash-lite',
+  // gemini-2.5-flash-lite was retired by Google ("no longer available to new
+  // users") — the current replacement is gemini-3.5-flash-lite.
+  GEMINI_FALLBACK_MODEL: process.env.GEMINI_FALLBACK_MODEL || 'gemini-3.5-flash-lite',
 };
