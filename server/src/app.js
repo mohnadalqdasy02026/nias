@@ -18,15 +18,18 @@ app.use(
   helmet({
     contentSecurityPolicy: {
       directives: {
-        // Map tiles for the branch location picker (Leaflet): OpenStreetMap
-        // with CARTO as automatic fallback. Helmet keeps every other default
-        // directive and only overrides img-src here (its default is
-        // 'self' data: which blocks all external map imagery).
+        // Map tiles for the branch location picker (Leaflet): keyless
+        // providers only (Wikimedia OSM, Esri street map, OpenTopoMap) —
+        // CARTO was removed because its free tiles now render an
+        // "API KEY REQUIRED" watermark image. Helmet keeps every other
+        // default directive and only overrides img-src here (its default
+        // is 'self' data: which blocks all external map imagery).
         imgSrc: [
           "'self'",
           'data:',
-          'https://tile.openstreetmap.org',
-          'https://*.basemaps.cartocdn.com',
+          'https://maps.wikimedia.org',
+          'https://server.arcgisonline.com',
+          'https://*.tile.opentopomap.org',
         ],
       },
     },

@@ -14,14 +14,24 @@ export const tilesRouter = Router();
 // Providers tried in order until one returns a real image. Coordinates are
 // validated as plain integers before any URL is built (no SSRF surface:
 // the templates are fixed and only {z}/{x}/{y}/{s} are substituted).
+//
+// All three providers are free and keyless (CARTO's raster tiles now serve
+// an "API KEY REQUIRED" watermark image instead of a map, so it was removed):
+//  1. Wikimedia OSM — Arabic labels, descriptive UA sent above (their policy).
+//  2. Esri World Street Map — NOTE: its URL order is {z}/{y}/{x}, not {z}/{x}/{y}.
+//  3. OpenTopoMap — strict rate limits, kept as last resort only.
 const SOURCES = [
   {
-    tpl: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-    subs: ['a', 'b', 'c', 'd'],
+    tpl: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+    subs: [''],
   },
   {
-    tpl: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    tpl: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
     subs: [''],
+  },
+  {
+    tpl: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    subs: ['a', 'b', 'c'],
   },
 ];
 

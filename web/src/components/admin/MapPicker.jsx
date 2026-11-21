@@ -16,24 +16,34 @@ const pinIcon = L.divIcon({
 });
 
 // Tile providers in order: first our own same-origin proxy (/tiles/… — the
-// server fetches from CARTO then OpenStreetMap), then the providers
-// directly as last resorts. All three must be allowed by the CSP img-src
-// header (see server/src/app.js).
+// server fetches from Wikimedia, then Esri, then OpenTopoMap), then those
+// providers directly as last resorts. All hosts must be allowed by the CSP
+// img-src header (see server/src/app.js). CARTO is intentionally absent:
+// its free raster tiles now return an "API KEY REQUIRED" watermark image
+// instead of a map. The ?v= parameter busts the 24h browser cache of the
+// previous watermark tiles.
 const TILE_SOURCES = [
   {
-    url: '/tiles/{z}/{x}/{y}',
+    url: '/tiles/{z}/{x}/{y}?v=2',
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
   },
   {
-    url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png',
-    subdomains: 'abcd',
+    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
     attribution:
-      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="https://foundation.wikimedia.org/wiki/Maps_Terms_of_Use">Wikimedia</a>',
   },
   {
-    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; Esri, DeLorme, NAVTEQ',
+  },
+  {
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    subdomains: 'abc',
+    maxNativeZoom: 17,
+    attribution:
+      '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)',
   },
 ];
 
@@ -93,6 +103,9 @@ export default function MapPicker({ open, initial = {}, onConfirm, onClose }) {
       const src = TILE_SOURCES[sourceIndex];
       layer = L.tileLayer(src.url, {
         maxZoom: 19,
+        // OpenTopoMap only renders up to z17 — upscale its tiles beyond that
+        // instead of firing tileerror events at high zoom.
+        maxNativeZoom: src.maxNativeZoom,
         attribution: src.attribution,
         // Leaflet reads subdomains.length for EVERY tile URL — even when the
         // template has no {s} — so it must never be undefined (that crashed
